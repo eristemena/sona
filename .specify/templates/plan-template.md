@@ -24,14 +24,18 @@
 **Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
 **Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]  
 **Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
+**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable, no-account flow or NEEDS CLARIFICATION]  
 **Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- **Local-first operation**: Confirm the feature works without accounts, mandatory network access, or remote persistence. List any optional network use and why the core flow still works offline.
+- **Learner-owned content**: Identify the learner-provided or learner-approved source material, how provenance is preserved, and how derived study material remains inspectable and editable.
+- **Bounded review load**: Quantify what new scheduled work is created, how item introduction is capped, and how backlog recovery avoids overwhelming the learner.
+- **Reading and listening integration**: Explain how text, audio, and review state remain connected, including fallback behavior when TTS or audio assets are unavailable.
+- **Complexity justification**: Justify any new dependency, background process, or vendor/service coupling against the personal-use, public-ready architecture principle.
 
 ## Project Structure
 

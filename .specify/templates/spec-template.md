@@ -72,8 +72,35 @@
   Fill them out with the right edge cases.
 -->
 
-- What happens when [boundary condition]?
-- How does system handle [error scenario]?
+- What happens when the learner imports content with missing metadata, malformed timing, or duplicate text?
+- How does the system behave when TTS or audio generation is unavailable while the learner is offline?
+- How does the system prevent new content from creating an unmanageable review spike after skipped study days?
+
+## Local-First & Learning Load Impact *(mandatory)*
+
+<!--
+  ACTION REQUIRED: Describe the constitution-sensitive impact of the feature.
+-->
+
+### Local Data & Privacy
+
+- What learner data is created, updated, migrated, imported, exported, or deleted locally?
+- Does any part of the feature use the network? If yes, explain why it is optional and how the core flow still works without it.
+
+### Source Material & Provenance
+
+- What learner-provided or learner-approved content enters this flow?
+- How can the learner inspect, edit, and trace the derived study material back to its source?
+
+### Review Load & Recovery
+
+- What new review items or scheduled work can this feature create?
+- What caps, pacing, deferment, or backlog-recovery rules keep the workload bounded?
+
+### Reading, Listening, and TTS
+
+- How does this feature connect text, audio, and review state?
+- What is the fallback behavior if TTS, audio assets, or pronunciation support are unavailable?
 
 ## Requirements *(mandatory)*
 
@@ -84,16 +111,17 @@
 
 ### Functional Requirements
 
-- **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
-- **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
-- **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
-- **FR-005**: System MUST [behavior, e.g., "log all security events"]
+- **FR-001**: System MUST [specific capability tied to the learner workflow]
+- **FR-002**: System MUST [local-first data or offline behavior requirement]  
+- **FR-003**: Users MUST be able to [inspect or edit derived study material]
+- **FR-004**: System MUST [persist learner progress, provenance, or settings]
+- **FR-005**: System MUST [bound review creation, pacing, or backlog recovery]
+- **FR-006**: System MUST [define text/audio/TTS behavior, including fallback]
 
 *Example of marking unclear requirements:*
 
-- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+- **FR-007**: System MUST store learner data in [NEEDS CLARIFICATION: local file format, embedded database, or other storage not specified]
+- **FR-008**: System MUST generate audio via [NEEDS CLARIFICATION: OS-native TTS, bundled engine, or optional provider not specified]
 
 ### Key Entities *(include if feature involves data)*
 
@@ -122,7 +150,7 @@
   chosen when the feature description did not specify certain details.
 -->
 
-- [Assumption about target users, e.g., "Users have stable internet connectivity"]
-- [Assumption about scope boundaries, e.g., "Mobile support is out of scope for v1"]
-- [Assumption about data/environment, e.g., "Existing authentication system will be reused"]
-- [Dependency on existing system/service, e.g., "Requires access to the existing user profile API"]
+- [Assumption about target users, e.g., "The primary learner is a self-directed Korean learner using a desktop device"]
+- [Assumption about scope boundaries, e.g., "Accounts, subscriptions, and mandatory cloud sync are out of scope"]
+- [Assumption about data/environment, e.g., "Imported source material and study progress are stored locally first"]
+- [Dependency on existing system/service, e.g., "Any TTS provider is optional and the feature keeps a usable non-TTS fallback"]
