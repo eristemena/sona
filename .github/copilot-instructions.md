@@ -1,3 +1,8 @@
+<!-- SPECKIT START -->
+Active feature plan: [specs/001-feasibility-spike-foundation/plan.md](../specs/001-feasibility-spike-foundation/plan.md)
+Read this plan before implementing or revising anything for the active feature.
+<!-- SPECKIT END -->
+
 ## Read First
 
 - If a feature plan exists under `specs/<feature>/plan.md`, read it before making changes.
