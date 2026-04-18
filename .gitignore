@@ -10,3 +10,4 @@ Thumbs.db
 *.tmp
 *.swp
 .idea/
+artifacts/sqlite/
