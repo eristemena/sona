@@ -1,12 +1,33 @@
 {
   "name": "sona",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first Korean study feasibility spike workspace.",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run build --workspace @sona/desktop && npm run build --workspace @sona/renderer",
+    "spike:tokenizer": "tsx spikes/tokenizer/src/run-tokenizer-spike.ts",
+    "spike:llm-fallback": "tsx spikes/llm-fallback/src/generate-fallback-spec.ts",
+    "spike:sqlite-concurrency": "tsx spikes/sqlite-concurrency/src/run-sqlite-concurrency.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
-  "keywords": [],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "keywords": [
+    "korean",
+    "electron",
+    "nextjs",
+    "spikes"
+  ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "vitest": "^4.0.7"
+  }
 }

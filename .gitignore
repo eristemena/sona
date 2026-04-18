@@ -1,0 +1,12 @@
+node_modules/
+dist/
+out/
+coverage/
+.next/
+*.log
+.env*
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.idea/

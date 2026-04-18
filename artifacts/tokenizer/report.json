@@ -1,0 +1,40 @@
+{
+  "reportId": "tokenizer-report-1776550617905",
+  "generatedAt": "2026-04-18T22:16:57.905Z",
+  "tracks": [
+    "local-js-segmenter",
+    "llm-fallback-reference"
+  ],
+  "strata": [
+    {
+      "name": "article",
+      "segmentCount": 1,
+      "accuracyScore": 0.87,
+      "errorClasses": [],
+      "learnerImpact": "Low impact on reading lookup and review extraction.",
+      "recommendedDisposition": "proceed"
+    },
+    {
+      "name": "sentence-study",
+      "segmentCount": 1,
+      "accuracyScore": 0.85,
+      "errorClasses": [],
+      "learnerImpact": "Low impact on reading lookup and review extraction.",
+      "recommendedDisposition": "proceed"
+    },
+    {
+      "name": "subtitle",
+      "segmentCount": 1,
+      "accuracyScore": 0.57,
+      "errorClasses": [
+        "needs-manual-review"
+      ],
+      "learnerImpact": "Potential token boundary drift may require fallback or manual review.",
+      "recommendedDisposition": "fallback-only"
+    }
+  ],
+  "recommendedTrack": "llm-fallback-reference",
+  "openRisks": [
+    "subtitle: Potential token boundary drift may require fallback or manual review."
+  ]
+}

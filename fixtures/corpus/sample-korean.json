@@ -1,0 +1,31 @@
+[
+  {
+    "id": "article-001",
+    "sourceId": "article-source-001",
+    "sourceType": "article",
+    "stratum": "article",
+    "text": "한국어 학습자는 매일 짧은 글을 읽으면서 표현을 반복해서 익힐 수 있다.",
+    "learnerApproved": true,
+    "capturedAt": "2026-04-19T00:00:00.000Z"
+  },
+  {
+    "id": "subtitle-001",
+    "sourceId": "subtitle-source-001",
+    "sourceType": "subtitle",
+    "stratum": "subtitle",
+    "text": "지금 뭐 해? 같이 갈래?",
+    "startOffset": 1200,
+    "endOffset": 3400,
+    "learnerApproved": true,
+    "capturedAt": "2026-04-19T00:00:00.000Z"
+  },
+  {
+    "id": "sentence-001",
+    "sourceId": "sentence-source-001",
+    "sourceType": "generated-sentence",
+    "stratum": "sentence-study",
+    "text": "새로 배운 단어를 예문 속에서 다시 확인해 보자.",
+    "learnerApproved": true,
+    "capturedAt": "2026-04-19T00:00:00.000Z"
+  }
+]

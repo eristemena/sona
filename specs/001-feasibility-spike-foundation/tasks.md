@@ -11,11 +11,11 @@
 
 **Purpose**: Create the workspace, package layout, and tooling needed for all three spikes.
 
-- [ ] T001 Update root workspace scripts and npm workspaces in /Volumes/xpro/erisristemena/made-by-ai/sona/package.json
-- [ ] T002 [P] Create shared TypeScript base config in /Volumes/xpro/erisristemena/made-by-ai/sona/tsconfig.base.json
-- [ ] T003 [P] Create desktop and renderer package manifests in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/package.json and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/package.json
-- [ ] T004 [P] Create shared package manifests in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/package.json, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/package.json, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/integrations/package.json
-- [ ] T005 [P] Configure Vitest and shared test setup in /Volumes/xpro/erisristemena/made-by-ai/sona/vitest.config.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/setup/vitest.setup.ts
+- [X] T001 Update root workspace scripts and npm workspaces in /Volumes/xpro/erisristemena/made-by-ai/sona/package.json
+- [X] T002 [P] Create shared TypeScript base config in /Volumes/xpro/erisristemena/made-by-ai/sona/tsconfig.base.json
+- [X] T003 [P] Create desktop and renderer package manifests in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/package.json and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/package.json
+- [X] T004 [P] Create shared package manifests in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/package.json, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/package.json, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/integrations/package.json
+- [X] T005 [P] Configure Vitest and shared test setup in /Volumes/xpro/erisristemena/made-by-ai/sona/vitest.config.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/setup/vitest.setup.ts
 
 ---
 
@@ -25,13 +25,13 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T006 Create Electron-safe application API contract in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/app-api.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/preload/src/index.ts
-- [ ] T007 [P] Implement shared spike artifact schemas and validators in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/artifacts/spike-artifact-schema.ts
-- [ ] T008 [P] Implement provenance entities and mappings in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/provenance/corpus-segment.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/provenance/study-candidate-provenance.ts
-- [ ] T009 [P] Create SQLite connection bootstrap with WAL defaults in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/connection.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/001_initial_schema.sql
-- [ ] T010 Implement corpus fixture ingestion utilities in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/fixtures/corpus-loader.ts
-- [ ] T011 Implement local artifact writing utilities in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/artifacts/write-artifact.ts
-- [ ] T012 Create shared benchmark runner utilities in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/benchmark/run-benchmark.ts
+- [X] T006 Create Electron-safe application API contract in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/app-api.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/preload/src/index.ts
+- [X] T007 [P] Implement shared spike artifact schemas and validators in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/artifacts/spike-artifact-schema.ts
+- [X] T008 [P] Implement provenance entities and mappings in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/provenance/corpus-segment.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/provenance/study-candidate-provenance.ts
+- [X] T009 [P] Create SQLite connection bootstrap with WAL defaults in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/connection.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/001_initial_schema.sql
+- [X] T010 Implement corpus fixture ingestion utilities in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/fixtures/corpus-loader.ts
+- [X] T011 Implement local artifact writing utilities in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/artifacts/write-artifact.ts
+- [X] T012 Create shared benchmark runner utilities in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/benchmark/run-benchmark.ts
 
 **Checkpoint**: Foundation ready. User story work can now proceed in parallel.
 
@@ -45,16 +45,16 @@
 
 ### Tests for User Story 1 (required for constitution-sensitive changes) ⚠️
 
-- [ ] T013 [P] [US1] Add tokenizer artifact contract test in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/spike-artifact.tokenizer.test.ts
-- [ ] T014 [P] [US1] Add tokenizer spike benchmark test in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/benchmark/tokenizer-spike.test.ts
+- [X] T013 [P] [US1] Add tokenizer artifact contract test in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/spike-artifact.tokenizer.test.ts
+- [X] T014 [P] [US1] Add tokenizer spike benchmark test in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/benchmark/tokenizer-spike.test.ts
 
 ### Implementation for User Story 1
 
-- [ ] T015 [P] [US1] Implement tokenization evaluation model in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/tokenizer/tokenization-evaluation-result.ts
-- [ ] T016 [P] [US1] Implement local tokenizer and reference-track adapters in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/tokenizer/local-js-segmenter.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/tokenizer/llm-fallback-reference.ts
-- [ ] T017 [US1] Implement tokenizer scoring and learner-impact classification in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/tokenizer/evaluate-tokenizer.ts
-- [ ] T018 [US1] Implement tokenizer spike runner in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/tokenizer/src/run-tokenizer-spike.ts
-- [ ] T019 [US1] Emit the tokenizer report artifact in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/tokenizer/src/write-tokenizer-report.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/artifacts/tokenizer/report.json
+- [X] T015 [P] [US1] Implement tokenization evaluation model in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/tokenizer/tokenization-evaluation-result.ts
+- [X] T016 [P] [US1] Implement local tokenizer and reference-track adapters in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/tokenizer/local-js-segmenter.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/tokenizer/llm-fallback-reference.ts
+- [X] T017 [US1] Implement tokenizer scoring and learner-impact classification in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/tokenizer/evaluate-tokenizer.ts
+- [X] T018 [US1] Implement tokenizer spike runner in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/tokenizer/src/run-tokenizer-spike.ts
+- [X] T019 [US1] Emit the tokenizer report artifact in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/tokenizer/src/write-tokenizer-report.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/artifacts/tokenizer/report.json
 
 **Checkpoint**: User Story 1 should now be independently runnable and produce a planning-ready tokenizer report.
 
@@ -68,18 +68,18 @@
 
 ### Tests for User Story 2 (required for constitution-sensitive changes) ⚠️
 
-- [ ] T020 [P] [US2] Add provider fallback contract test in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/provider-fallback-contract.test.ts
-- [ ] T021 [P] [US2] Add no-key fallback integration test in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provider-fallback-no-key.test.ts
+- [X] T020 [P] [US2] Add provider fallback contract test in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/provider-fallback-contract.test.ts
+- [X] T021 [P] [US2] Add no-key fallback integration test in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provider-fallback-no-key.test.ts
 
 ### Implementation for User Story 2
 
-- [ ] T022 [P] [US2] Implement provider fallback policy model in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/fallback/provider-fallback-policy.ts
-- [ ] T023 [P] [US2] Implement provider adapter interfaces in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/integrations/src/llm/provider-adapter.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/integrations/src/tts/provider-adapter.ts
-- [ ] T024 [US2] Implement fallback eligibility, cap, and latency evaluation in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/fallback/evaluate-fallback-policy.ts
-- [ ] T025 [US2] Implement degraded and no-key local-only result handling in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/fallback/fallback-result.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/fallback/local-only-behavior.ts
-- [ ] T026 [US2] Create local prompt template references in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/llm-fallback/prompts/annotation-help.md and /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/llm-fallback/prompts/translation-help.md
-- [ ] T027 [US2] Implement fallback specification generator in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/llm-fallback/src/generate-fallback-spec.ts
-- [ ] T028 [US2] Emit the provider fallback artifact in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/llm-fallback/src/write-fallback-artifact.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/artifacts/llm-fallback/policy.json
+- [X] T022 [P] [US2] Implement provider fallback policy model in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/fallback/provider-fallback-policy.ts
+- [X] T023 [P] [US2] Implement provider adapter interfaces in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/integrations/src/llm/provider-adapter.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/integrations/src/tts/provider-adapter.ts
+- [X] T024 [US2] Implement fallback eligibility, cap, and latency evaluation in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/fallback/evaluate-fallback-policy.ts
+- [X] T025 [US2] Implement degraded and no-key local-only result handling in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/fallback/fallback-result.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/fallback/local-only-behavior.ts
+- [X] T026 [US2] Create local prompt template references in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/llm-fallback/prompts/annotation-help.md and /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/llm-fallback/prompts/translation-help.md
+- [X] T027 [US2] Implement fallback specification generator in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/llm-fallback/src/generate-fallback-spec.ts
+- [X] T028 [US2] Emit the provider fallback artifact in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/llm-fallback/src/write-fallback-artifact.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/artifacts/llm-fallback/policy.json
 
 **Checkpoint**: User Stories 1 and 2 should both work independently, with provider fallback still optional and no-key safe.
 
@@ -93,16 +93,16 @@
 
 ### Tests for User Story 3 (required for constitution-sensitive changes) ⚠️
 
-- [ ] T029 [P] [US3] Add SQLite concurrency artifact contract test in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/spike-artifact.sqlite-concurrency.test.ts
-- [ ] T030 [P] [US3] Add SQLite concurrency benchmark test in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/benchmark/sqlite-concurrency-spike.test.ts
+- [X] T029 [P] [US3] Add SQLite concurrency artifact contract test in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/spike-artifact.sqlite-concurrency.test.ts
+- [X] T030 [P] [US3] Add SQLite concurrency benchmark test in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/benchmark/sqlite-concurrency-spike.test.ts
 
 ### Implementation for User Story 3
 
-- [ ] T031 [P] [US3] Implement benchmark workload definitions in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/workloads/annotation-refresh.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/workloads/srs-harvest.ts
-- [ ] T032 [P] [US3] Implement concurrency benchmark model in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/benchmark/concurrency-benchmark-run.ts
-- [ ] T033 [US3] Implement SQLite single-writer queue and WAL checkpoint monitor in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/write-queue.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/wal-monitor.ts
-- [ ] T034 [US3] Implement SQLite concurrency benchmark runner in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/sqlite-concurrency/src/run-sqlite-concurrency.ts
-- [ ] T035 [US3] Emit the SQLite concurrency artifact in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/sqlite-concurrency/src/write-concurrency-report.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/artifacts/sqlite-concurrency/report.json
+- [X] T031 [P] [US3] Implement benchmark workload definitions in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/workloads/annotation-refresh.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/workloads/srs-harvest.ts
+- [X] T032 [P] [US3] Implement concurrency benchmark model in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/benchmark/concurrency-benchmark-run.ts
+- [X] T033 [US3] Implement SQLite single-writer queue and WAL checkpoint monitor in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/write-queue.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/wal-monitor.ts
+- [X] T034 [US3] Implement SQLite concurrency benchmark runner in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/sqlite-concurrency/src/run-sqlite-concurrency.ts
+- [X] T035 [US3] Emit the SQLite concurrency artifact in /Volumes/xpro/erisristemena/made-by-ai/sona/spikes/sqlite-concurrency/src/write-concurrency-report.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/artifacts/sqlite-concurrency/report.json
 
 **Checkpoint**: All three user stories should now be independently runnable and produce their planning artifacts.
 
@@ -112,11 +112,11 @@
 
 **Purpose**: Validate the combined feasibility package and close cross-story planning gaps.
 
-- [ ] T036 [P] Consolidate cross-spike planning summary in /Volumes/xpro/erisristemena/made-by-ai/sona/artifacts/planning/feasibility-summary.md
-- [ ] T037 [P] Add end-to-end offline and no-key validation in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-no-key-feasibility.test.ts
-- [ ] T038 [P] Add provenance and artifact integrity validation in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provenance-artifact-integrity.test.ts
-- [ ] T039 Validate review-load cap implications across tokenizer and fallback outputs in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-load-implications.test.ts
-- [ ] T040 Run the quickstart workflow and update verification notes in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/001-feasibility-spike-foundation/quickstart.md
+- [X] T036 [P] Consolidate cross-spike planning summary in /Volumes/xpro/erisristemena/made-by-ai/sona/artifacts/planning/feasibility-summary.md
+- [X] T037 [P] Add end-to-end offline and no-key validation in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-no-key-feasibility.test.ts
+- [X] T038 [P] Add provenance and artifact integrity validation in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provenance-artifact-integrity.test.ts
+- [X] T039 Validate review-load cap implications across tokenizer and fallback outputs in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-load-implications.test.ts
+- [X] T040 Run the quickstart workflow and update verification notes in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/001-feasibility-spike-foundation/quickstart.md
 
 ---
 

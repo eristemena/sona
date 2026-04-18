@@ -1,0 +1,55 @@
+{
+  "artifactId": "fallback-artifact-1776550725928",
+  "generatedAt": "2026-04-18T22:18:45.928Z",
+  "policies": [
+    {
+      "featureArea": "annotation-help",
+      "providerOptions": [
+        "openai",
+        "anthropic",
+        "none"
+      ],
+      "latencyBudgetMs": 3000,
+      "sessionUsageCap": {
+        "maxCalls": 8,
+        "maxEstimatedCostUsd": 1.5
+      },
+      "promptTemplateRef": "spikes/llm-fallback/prompts/annotation-help.md",
+      "noKeyBehavior": "Remain in local-only mode and keep the learner flow usable without blocking.",
+      "failureBehavior": "Return to local-only annotation flow with a visible degraded state."
+    },
+    {
+      "featureArea": "translation-help",
+      "providerOptions": [
+        "openai",
+        "anthropic",
+        "none"
+      ],
+      "latencyBudgetMs": 3000,
+      "sessionUsageCap": {
+        "maxCalls": 8,
+        "maxEstimatedCostUsd": 1.5
+      },
+      "promptTemplateRef": "spikes/llm-fallback/prompts/translation-help.md",
+      "noKeyBehavior": "Remain in local-only mode and keep the learner flow usable without blocking.",
+      "failureBehavior": "Fallback to text-only study with no blocked progression."
+    },
+    {
+      "featureArea": "tts",
+      "providerOptions": [
+        "openai",
+        "google-cloud-tts",
+        "none"
+      ],
+      "latencyBudgetMs": 10000,
+      "sessionUsageCap": {
+        "maxCalls": 5,
+        "maxEstimatedCostUsd": 2
+      },
+      "promptTemplateRef": "spikes/llm-fallback/prompts/tts.md",
+      "noKeyBehavior": "Remain in local-only mode and keep the learner flow usable without blocking.",
+      "failureBehavior": "Mark audio unavailable and continue with reading and review continuity."
+    }
+  ],
+  "sessionBudgetMinutes": 30
+}

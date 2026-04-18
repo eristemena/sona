@@ -53,3 +53,15 @@ Validate that:
 - Compare artifact shapes against [contracts/spike-artifact-contract.md](./contracts/spike-artifact-contract.md).
 - Compare provider policy behavior against [contracts/provider-fallback-contract.md](./contracts/provider-fallback-contract.md).
 - Confirm any failed thresholds are documented as mitigations before moving to `/speckit.tasks`.
+
+## 7. Latest Verification Notes
+
+- 2026-04-19: `npm test` passed the tokenizer contract and benchmark suite.
+- 2026-04-19: `npm run spike:tokenizer` produced `artifacts/tokenizer/report.json` from the local fixture corpus.
+
+## 7. Latest Verification Notes
+
+- 2026-04-19: `npm test` passed the tokenizer contract and benchmark suite.
+- 2026-04-19: `npm run spike:tokenizer` produced `artifacts/tokenizer/report.json` from the local fixture corpus.
+- 2026-04-19: `npm run spike:llm-fallback` produced `artifacts/llm-fallback/policy.json` with no-key and TTS fallback policies.
+- 2026-04-19: `npm run spike:sqlite-concurrency` produced `artifacts/sqlite-concurrency/report.json` using the local SQLite WAL benchmark harness.

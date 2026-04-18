@@ -1,0 +1,23 @@
+{
+  "runId": "sqlite-run-1776550739946",
+  "generatedAt": "2026-04-18T22:18:59.946Z",
+  "hardwareProfile": "2019-era baseline desktop profile",
+  "databaseMode": {
+    "journalMode": "WAL",
+    "checkpointPolicy": "PASSIVE"
+  },
+  "overlappingJobs": [
+    "annotation-refresh",
+    "srs-harvest"
+  ],
+  "datasetSize": {
+    "segments": 3,
+    "candidates": 3
+  },
+  "totalCompletionMs": 0,
+  "maxUiBlockMs": 0,
+  "walSizeBytes": 0,
+  "passFail": "pass",
+  "bottlenecks": [],
+  "mitigations": []
+}
