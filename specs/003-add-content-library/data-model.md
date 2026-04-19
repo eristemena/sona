@@ -5,7 +5,7 @@
 Purpose: Represents one learner-visible card in the Content Library, grouping the sentence-level blocks that came from one import, paste, scrape, or generation event.
 
 Fields:
-- `id`: Stable structural source identifier, derived from `source_type` plus the structural source locator.
+- `id`: Stable structural saved-item identifier, derived from `source_type`, the structural source locator, and the item `createdAt` timestamp.
 - `title`: Learner-visible label used in the library grid.
 - `sourceType`: One of `srt`, `article`, or `generated`.
 - `difficulty`: Required integer difficulty level, stored as `1`, `2`, or `3`.
@@ -33,12 +33,12 @@ State transitions:
 Purpose: Stores the sentence-level Korean text units backing a library item and future reading, lookup, or review features.
 
 Fields:
-- `id`: Structural identifier in the format `(source_type, structural_source_locator, sentence_ordinal)`.
+- `id`: Structural identifier in the format `(source_type, structural_source_locator, content_item_created_at, sentence_ordinal)`.
 - `contentItemId`: Parent `Content Library Item` identifier.
 - `korean`: Sentence text shown to the learner.
 - `romanization`: Nullable romanization text.
 - `tokens`: Nullable token array, stored as JSON.
-- `annotations`: Record of annotation entries keyed by annotation name, stored as nullable JSON values.
+- `annotations`: Record of annotation entries keyed by annotation name, stored as a non-null JSON object with nullable entry values.
 - `difficulty`: Required integer difficulty level for the block.
 - `sourceType`: One of `generated`, `article`, or `srt`.
 - `audioOffset`: Nullable numeric subtitle start offset for listening alignment.

@@ -19,6 +19,7 @@ Columns:
 - `created_at INTEGER NOT NULL`
 
 Behavior:
+- `id` uses the structural format `(source_type, structural_source_locator, created_at)` so confirmed duplicate saves remain distinct while still traceable to the learner-approved source.
 - One row represents one library card.
 - `search_text` stores normalized searchable content derived from the title and source text.
 - `duplicate_check_text` stores normalized text used to warn on likely duplicates before save.
@@ -40,7 +41,7 @@ Columns:
 - `created_at INTEGER NOT NULL`
 
 Behavior:
-- `id` uses the structural format `(source_type, structural_source_locator, sentence_ordinal)`, where the locator is the subtitle file path for SRT imports, the article URL for scraped articles, and the session identifier for pasted or generated content.
+- `id` uses the structural format `(source_type, structural_source_locator, content_item_created_at, sentence_ordinal)`, where the locator is the subtitle file path for SRT imports, the article URL for scraped articles, and the session identifier for pasted or generated content.
 - `sentence_ordinal` must be unique per `content_item_id`.
 - `audio_offset` is nullable and only populated for subtitle-derived blocks.
 

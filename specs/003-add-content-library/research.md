@@ -6,9 +6,9 @@ Rationale: The requested schema is sentence-oriented and already defines the per
 
 Alternatives considered: Storing one large text blob per library item was rejected because it makes future sentence-level study features harder and loses the structural ID requirement. Storing only blocks without a parent library item was rejected because the UI needs a stable item-level record for titles, filter/search, and deletion.
 
-## Decision: Use a structural `ContentBlock.id` built from `(source_type, structural_source_locator, sentence_ordinal)` rather than a content hash
+## Decision: Use structural saved-content identifiers built from `(source_type, structural_source_locator, created_at[, sentence_ordinal])` rather than a content hash
 
-Rationale: The user explicitly required a structural identifier, and this aligns with provenance-first behavior. Structural IDs remain traceable to the learner-approved source even if the same sentence text appears elsewhere. The structural source locator is the subtitle file path for SRT imports, the article URL for scraped articles, and the ingestion session identifier for pasted articles and generated content.
+Rationale: The user explicitly required a structural identifier, and this aligns with provenance-first behavior. Structural IDs remain traceable to the learner-approved source even if the same sentence text appears elsewhere. The structural source locator is the subtitle file path for SRT imports, the article URL for scraped articles, and the ingestion session identifier for pasted articles and generated content. Including the saved item's `created_at` keeps confirmed duplicate saves distinct without falling back to opaque random IDs.
 
 Alternatives considered: Content hashes were rejected because identical text from different sources would collide conceptually and would hide provenance. Random UUIDs were rejected because they make debugging and traceability harder without adding user value.
 
@@ -56,7 +56,7 @@ Alternatives considered: Displaying only the requested difficulty was rejected b
 
 ## Decision: Warn on potential duplicates before save, but allow explicit learner-confirmed duplicate retention
 
-Rationale: Duplicate material can be intentional in language study, especially when the learner wants a second pass through familiar content. The safest policy is therefore to detect likely duplicates, warn clearly, and let the learner decide whether to continue saving.
+Rationale: Duplicate material can be intentional in language study, especially when the learner wants a second pass through familiar content. The safest policy is therefore to detect likely duplicates, warn clearly, and let the learner decide whether to continue saving. When the learner confirms a duplicate save, the persisted item and block identifiers remain source-traceable but become distinct by including the saved item's `created_at` in the structural ID.
 
 Alternatives considered: Hard-blocking duplicates was rejected because it can prevent legitimate repeated study material. Silent duplicate acceptance was rejected because it hides a common mistake and weakens library hygiene.
 
@@ -72,8 +72,8 @@ Rationale: The repo already enforces a narrow preload contract for shell and set
 
 Alternatives considered: Exposing generic IPC channels was rejected because it weakens the boundary and makes testing harder. Reusing the separate `window.sonaApi` file helpers was rejected because this feature belongs in the app’s primary typed desktop API rather than a loose helper surface.
 
-## Decision: Add new SQLite tables for library items and content blocks, while keeping tokens and annotations nullable JSON for now
+## Decision: Add new SQLite tables for library items and content blocks, while keeping tokens nullable JSON and annotations as a non-null JSON object for now
 
-Rationale: The requested schema includes `tokens` and `annotations`, but the current repo does not yet define concrete token or annotation storage types for production content. Persisting them as nullable JSON columns meets the schema contract now while keeping future enrichment compatible with the existing provenance and tokenizer work.
+Rationale: The requested schema includes `tokens` and `annotations`, but the current repo does not yet define concrete token or annotation storage types for production content. Persisting tokens as nullable JSON and annotations as a non-null JSON object with an empty-object default meets the schema contract now while keeping future enrichment compatible with the existing provenance and tokenizer work.
 
 Alternatives considered: Removing `tokens` and `annotations` from the stored schema was rejected because the user explicitly included them. Creating a full normalized token/annotation schema now was rejected because that work is not required to deliver the current library flows.
