@@ -20,6 +20,7 @@ As a learner, I want a single Content Library that shows all saved study content
 1. **Given** the learner has one or more saved content items, **When** the learner opens the Content Library, **Then** each item is listed with a recognizable label, its difficulty level, and its content type.
 2. **Given** the learner has saved content from multiple source types, **When** the learner views the Content Library, **Then** subtitle imports, article content, and generated practice sentences all appear in the same library.
 3. **Given** the learner chooses to delete a content item, **When** the learner confirms deletion, **Then** the item is removed from the Content Library and is no longer available in the local content collection.
+4. **Given** the learner inspects a saved content item, **When** the learner opens its source details, **Then** the app shows enough provenance detail to distinguish the originating subtitle file, article source, or generation request.
 
 ---
 
@@ -61,12 +62,12 @@ As a learner, I want to generate Korean practice sentences for a chosen topic an
 
 **Why this priority**: Generated sentences are a useful supplement to learner-provided materials, but they remain secondary to importing and managing learner-approved source content.
 
-**Independent Test**: Request generated practice sentences for a topic and difficulty, complete the generation flow, and confirm the resulting content appears in the Content Library with generated type and the requested difficulty.
+**Independent Test**: Request generated practice sentences for a topic and difficulty, complete the generation flow, and confirm the resulting content appears in the Content Library with generated type and the validated difficulty while retaining the originally requested difficulty in its provenance details.
 
 **Acceptance Scenarios**:
 
 1. **Given** the learner provides a topic and difficulty for generated practice sentences, **When** the learner starts generation and it succeeds, **Then** the app adds the generated content to the Content Library.
-2. **Given** generated practice content is saved, **When** the learner views it in the Content Library, **Then** the item is labeled as generated content and shows the chosen difficulty.
+2. **Given** generated practice content is saved, **When** the learner views it in the Content Library, **Then** the item is labeled as generated content and shows the validated difficulty, including any relabeling applied after validation.
 3. **Given** sentence generation is unavailable or fails, **When** the learner attempts generation, **Then** the app explains that generated content could not be created and keeps imported subtitle and article content fully available.
 
 ### Edge Cases
@@ -93,6 +94,7 @@ As a learner, I want to generate Korean practice sentences for a chosen topic an
 - Every saved content item must preserve enough provenance for the learner to understand where it came from, including source type and source details appropriate to that type.
 - Generated practice content must preserve the learner-selected topic and difficulty as part of its provenance.
 - The learner must be able to inspect saved content and understand whether it came from a subtitle import, article flow, or generated-sentence flow.
+- The learner must be able to inspect source details that identify the originating subtitle file path, article URL or paste session, or generation topic plus requested difficulty.
 
 ### Review Load & Recovery
 
@@ -130,11 +132,13 @@ As a learner, I want to generate Korean practice sentences for a chosen topic an
 - **FR-018**: The system MUST treat article scraping and AI sentence generation as learner-initiated optional flows rather than mandatory steps for using the library.
 - **FR-019**: The system MUST communicate when scraping or AI sentence generation cannot be completed and must leave existing library content unchanged in that case.
 - **FR-020**: The system MUST avoid creating new review tasks automatically when content is imported, pasted, scraped, or generated into the library.
+- **FR-021**: The system MUST let the learner inspect source details for each saved content item, including the appropriate subtitle file path, article source, or generation request metadata.
+- **FR-022**: The system MUST detect potential duplicate content before saving and warn the learner, while allowing the learner to continue saving it as a distinct item only after explicit confirmation.
 
 ### Key Entities *(include if feature involves data)*
 
 - **Content Item**: A saved unit of Korean study content shown in the Content Library, including its identifying label, content type, difficulty, saved body, and lifecycle state.
-- **Content Source Record**: The provenance details attached to a content item, describing whether it came from a subtitle import, pasted article, scraped article, or generated-sentence request, plus the learner-visible source details for that path.
+- **Content Source Record**: The provenance details attached to a content item, describing whether it came from a subtitle import, pasted article, scraped article, or generated-sentence request, plus the learner-visible source details for that path and any requested-versus-validated difficulty metadata.
 - **Generation Request**: The learner-specified topic and difficulty used to create generated practice sentence content and stored with the resulting content item.
 
 ## Success Criteria *(mandatory)*
@@ -154,5 +158,6 @@ As a learner, I want to generate Korean practice sentences for a chosen topic an
 - The primary user is a self-directed Korean learner using Sona on a desktop device.
 - The library is a content-management surface in this feature phase and does not automatically create flashcards, reviews, or study sessions.
 - Difficulty is assigned during each add-content flow so every saved item can show a difficulty level in the library.
+- Generated content may be relabeled after validation, but the originally requested difficulty remains inspectable in the item provenance.
 - Learners may choose optional network-dependent flows for scraping and AI generation, but subtitle import, article paste, library browsing, and deletion remain core offline-capable behavior.
 - Deleting a content item in this feature removes it from the local library collection only; any broader downstream study artifacts are out of scope until later features define them.

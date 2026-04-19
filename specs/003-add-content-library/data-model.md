@@ -11,7 +11,9 @@ Fields:
 - `difficulty`: Nullable integer difficulty level, stored as `1`, `2`, `3`, or `null`.
 - `difficultyLabel`: Derived badge label: `초급`, `중급`, `고급`, or empty when difficulty is `null`.
 - `sourceLocator`: File path for SRT imports, URL for scraped articles, or session identifier for pasted/generated content.
+- `provenanceDetail`: Learner-visible source detail string shown from a detail affordance.
 - `searchText`: Normalized text used by the library search input.
+- `duplicateCheckText`: Normalized text used to detect likely duplicates before save.
 - `createdAt`: Unix timestamp in milliseconds.
 - `deletedAt`: Nullable Unix timestamp in milliseconds used for deletion bookkeeping or hard-delete orchestration.
 
@@ -20,6 +22,7 @@ Validation rules:
 - `sourceType` must match the originating ingestion flow.
 - `difficulty`, when present, must be one of `1`, `2`, or `3`.
 - `title` must not be empty.
+- `provenanceDetail` must not be empty.
 
 State transitions:
 - `pending-ingestion` -> `saved`
@@ -64,12 +67,15 @@ Fields:
 - `url`: Nullable source URL for scraped articles.
 - `sessionId`: Nullable session identifier for pasted or generated content.
 - `displaySource`: Learner-visible provenance summary.
+- `requestedDifficulty`: Nullable requested difficulty retained for generated content provenance.
+- `validatedDifficulty`: Nullable validated difficulty retained for generated content provenance.
 - `capturedAt`: Unix timestamp in milliseconds.
 
 Validation rules:
 - At least one of `filePath`, `url`, or `sessionId` must be present.
 - `originMode` must be compatible with `sourceType`.
 - `displaySource` must remain non-empty so provenance is always inspectable.
+- When generated content is relabeled, both `requestedDifficulty` and `validatedDifficulty` must be preserved.
 
 Relationships:
 - One `Content Source Record` belongs to one `Content Library Item`.
@@ -113,3 +119,16 @@ Validation rules:
 
 Relationships:
 - Applied against many `Content Library Item` rows.
+
+## Duplicate Check Result
+
+Purpose: Represents the outcome of checking a new save attempt against existing library items before persistence.
+
+Fields:
+- `isDuplicateCandidate`: Boolean indicating whether the save attempt matches likely existing content.
+- `matchingItemIds`: List of existing content item IDs considered similar enough to warn about.
+- `requiresConfirmation`: Boolean indicating whether the learner must explicitly continue before save.
+
+Validation rules:
+- `matchingItemIds` may be empty only when `isDuplicateCandidate` is `false`.
+- `requiresConfirmation` must be `true` whenever `isDuplicateCandidate` is `true`.

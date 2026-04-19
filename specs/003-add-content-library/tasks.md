@@ -24,7 +24,7 @@
 
 - [ ] T003 Create the content-library migration SQL and extend migration loading in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/002_content_library_v1.sql and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/run-migrations.ts
 - [ ] T004 [P] Define shared content entities, difficulty helpers, and structural ID utilities in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/content-block.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/content-library-item.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/difficulty.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/content-id.ts
-- [ ] T005 [P] Implement the SQLite content-library repository with transactional save, list, and delete behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts
+- [ ] T005 [P] Implement the SQLite content-library repository with transactional save, list, delete, and duplicate-candidate lookup behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts
 - [ ] T006 [P] Define the typed content IPC contract in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/content-library.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/window-sona.ts
 - [ ] T007 Implement main-process content IPC registration and startup wiring in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/index.ts
 - [ ] T008 Implement the preload content bridge and renderer type exposure in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/window.d.ts
@@ -42,16 +42,16 @@
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T010 [P] [US1] Add integration coverage for content-library browse, filter, and search behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-browse.test.tsx
+- [ ] T010 [P] [US1] Add integration coverage for content-library browse, filter, search, and provenance-detail display behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-browse.test.tsx
 - [ ] T011 [P] [US1] Add integration coverage for deletion and no-review side effects in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-delete.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-load-implications.test.ts
 
 ### Implementation for User Story 1
 
 - [ ] T012 [P] [US1] Implement library query state, filter mapping, and search helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-content-library.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/content-library-filters.ts
-- [ ] T013 [P] [US1] Build the Content Library card grid, filter pills, and search input UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-card.tsx, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-toolbar.tsx
+- [ ] T013 [P] [US1] Build the Content Library card grid, filter pills, search input, and provenance-detail affordance UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-card.tsx, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-toolbar.tsx
 - [ ] T014 [US1] Integrate the Content Library destination into shell rendering in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/main-content-placeholder.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/app-shell.tsx
 - [ ] T015 [US1] Implement library item deletion flow and empty-state behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-delete-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
-- [ ] T016 [US1] Add Content Library browse and delete manual verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
+- [ ] T016 [US1] Add Content Library browse, provenance-detail, and delete manual verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 **Checkpoint**: User Story 1 should now provide a browsable and manageable Content Library MVP with local deletion and no automatic review creation.
 
@@ -88,7 +88,7 @@
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T024 [P] [US3] Add integration coverage for pasted article save and article filtering in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/article-paste-flow.test.tsx
+- [ ] T024 [P] [US3] Add integration coverage for pasted article save, article filtering, and duplicate-warning behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/article-paste-flow.test.tsx
 - [ ] T025 [P] [US3] Add integration coverage for scrape fallback and non-destructive article scrape failure handling in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/article-scrape-fallback.test.ts
 
 ### Implementation for User Story 3
@@ -96,7 +96,7 @@
 - [ ] T026 [P] [US3] Implement Korean-aware article sentence splitting and article source helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/sentence-splitter.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/article-source.ts
 - [ ] T027 [P] [US3] Implement main-process article paste and scrape services in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/article-content-service.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/providers/article-scraper.ts
 - [ ] T028 [US3] Wire article creation flows into content IPC handlers and preload methods in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts
-- [ ] T029 [US3] Add article paste and scrape controls to the add-content UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
+- [ ] T029 [US3] Add article paste and scrape controls plus duplicate-confirmation UI to the add-content flow in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
 - [ ] T030 [US3] Add article paste, scrape, and offline-fallback verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 **Checkpoint**: User Stories 1 through 3 should now support shared library management plus both local article paste and optional scraping.
@@ -120,7 +120,7 @@
 - [ ] T034 [P] [US4] Implement OpenRouter generation and difficulty-validation services in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/providers/openrouter-content-generator.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/generated-content-service.ts
 - [ ] T035 [US4] Persist generation outcomes and generated content blocks through the repository and content IPC handlers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts
 - [ ] T036 [US4] Add generated-content controls and validated difficulty messaging to the library UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
-- [ ] T037 [US4] Add generated-content, relabel, and reject verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
+- [ ] T037 [US4] Add generated-content, requested-versus-validated difficulty, relabel, and reject verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 **Checkpoint**: All four user stories should now be independently testable, with optional provider-backed generation layered on top of the local-first library.
 
@@ -130,9 +130,9 @@
 
 **Purpose**: Finalize end-to-end regression coverage, offline validation, and documented verification across all content-library flows.
 
-- [ ] T038 [P] Add cross-story provenance integrity coverage for subtitle, article, and generated items in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provenance-artifact-integrity.test.ts
+- [ ] T038 [P] Add cross-story provenance integrity coverage for subtitle, article, and generated items, including learner-visible source details, in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provenance-artifact-integrity.test.ts
 - [ ] T039 [P] Add offline startup and content-library bootstrap regression coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-content-library-startup.test.ts
-- [ ] T040 Validate the full quickstart flow and record latest verification notes in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
+- [ ] T040 Validate the full quickstart flow, including import-to-study-to-review-boundary checks, and record latest verification notes in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 ---
 
@@ -150,7 +150,7 @@
 - **User Story 1 (P1)**: Starts after Foundational. No dependency on the ingest stories.
 - **User Story 2 (P2)**: Starts after Foundational and uses the library surface from US1 to expose imported subtitle content.
 - **User Story 3 (P3)**: Starts after Foundational and builds on the same library surface while remaining independently testable through paste and scrape flows.
-- **User Story 4 (P4)**: Starts after Foundational and reuses the content repository plus library UI while remaining independently testable through validated generation behavior.
+- **User Story 4 (P4)**: Starts after Foundational and reuses the content repository plus library UI while remaining independently testable through validated generation behavior and requested-versus-validated provenance.
 
 ### Within Each User Story
 
@@ -159,6 +159,7 @@
 - Main-process IPC wiring precedes preload updates when the surface changes.
 - Preload and backend wiring precede renderer integration.
 - Renderer implementation precedes quickstart/manual verification updates.
+- The end-to-end manual acceptance path must include the review boundary check that verifies imports do not create scheduled work automatically.
 
 ### Parallel Opportunities
 
@@ -169,6 +170,7 @@
 - Within US3, T024-T027 can run in parallel across tests, domain helpers, and article service files.
 - Within US4, T031-T034 can run in parallel across tests, domain prompt policy, and provider service files.
 - T038 and T039 can run in parallel during the polish phase.
+- T040 depends on at least one implemented import flow plus the library and review-boundary validation path.
 
 ---
 
@@ -176,12 +178,12 @@
 
 ```bash
 # Launch User Story 1 tests together:
-Task: "Add integration coverage for content-library browse, filter, and search behavior in tests/integration/content-library-browse.test.tsx"
+Task: "Add integration coverage for content-library browse, filter, search, and provenance-detail display behavior in tests/integration/content-library-browse.test.tsx"
 Task: "Add integration coverage for deletion and no-review side effects in tests/integration/content-library-delete.test.tsx and tests/integration/review-load-implications.test.ts"
 
 # Launch User Story 1 renderer work together:
 Task: "Implement library query state, filter mapping, and search helpers in apps/renderer/lib/use-content-library.ts and apps/renderer/lib/content-library-filters.ts"
-Task: "Build the Content Library card grid, filter pills, and search input UI in apps/renderer/components/library/content-library-screen.tsx, apps/renderer/components/library/content-library-card.tsx, and apps/renderer/components/library/content-library-toolbar.tsx"
+Task: "Build the Content Library card grid, filter pills, search input, and provenance-detail affordance UI in apps/renderer/components/library/content-library-screen.tsx, apps/renderer/components/library/content-library-card.tsx, and apps/renderer/components/library/content-library-toolbar.tsx"
 ```
 
 ## Parallel Example: User Story 2
@@ -200,7 +202,7 @@ Task: "Implement the SRT parser service and subtitle block mapping in apps/deskt
 
 ```bash
 # Launch User Story 3 tests together:
-Task: "Add integration coverage for pasted article save and article filtering in tests/integration/article-paste-flow.test.tsx"
+Task: "Add integration coverage for pasted article save, article filtering, and duplicate-warning behavior in tests/integration/article-paste-flow.test.tsx"
 Task: "Add integration coverage for scrape fallback and non-destructive article scrape failure handling in tests/integration/article-scrape-fallback.test.ts"
 
 # Launch User Story 3 article services together:
@@ -212,7 +214,7 @@ Task: "Implement main-process article paste and scrape services in apps/desktop/
 
 ```bash
 # Launch User Story 4 tests together:
-Task: "Add integration coverage for generated-content difficulty validation, relabel, and reject behavior in tests/integration/generated-content-difficulty-validation.test.ts"
+Task: "Add integration coverage for generated-content difficulty validation, requested-versus-validated provenance, relabel, and reject behavior in tests/integration/generated-content-difficulty-validation.test.ts"
 Task: "Extend no-key and offline provider fallback coverage for generation failures in tests/integration/offline-no-key-feasibility.test.ts and tests/integration/provider-fallback-no-key.test.ts"
 
 # Launch User Story 4 provider work together:
@@ -229,7 +231,7 @@ Task: "Implement OpenRouter generation and difficulty-validation services in app
 1. Complete Phase 1: Setup.
 2. Complete Phase 2: Foundational.
 3. Complete Phase 3: User Story 1.
-4. Stop and validate the Content Library browse/delete loop independently before adding ingest flows.
+4. Stop and validate the Content Library browse/delete loop plus provenance-detail inspection independently before adding ingest flows.
 
 ### Incremental Delivery
 
@@ -238,7 +240,7 @@ Task: "Implement OpenRouter generation and difficulty-validation services in app
 3. User Story 2 adds subtitle import.
 4. User Story 3 adds article paste and optional scrape.
 5. User Story 4 adds optional validated AI generation.
-6. Phase 7 finishes full offline, provenance, and quickstart validation.
+6. Phase 7 finishes full offline, provenance, duplicate-warning, and import-to-study-to-review-boundary validation.
 
 ### Suggested MVP Scope
 
@@ -262,5 +264,5 @@ Task: "Implement OpenRouter generation and difficulty-validation services in app
 - `[P]` tasks operate on different files and can run in parallel.
 - `[US1]` through `[US4]` map tasks directly to the four user stories in spec.md.
 - User Story 1 is the recommended MVP slice.
-- Persistence, import/export, derivation, and provider flows require tests before implementation.
+- Persistence, import/export, derivation, duplicate-warning, and provider flows require tests before implementation.
 - The feature remains local-first even when scrape and generation paths are optionally enabled.

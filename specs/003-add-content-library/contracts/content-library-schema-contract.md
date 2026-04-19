@@ -13,12 +13,15 @@ Columns:
 - `difficulty INTEGER CHECK (difficulty IN (1, 2, 3) OR difficulty IS NULL)`
 - `source_locator TEXT NOT NULL`
 - `provenance_label TEXT NOT NULL`
+- `provenance_detail TEXT NOT NULL`
 - `search_text TEXT NOT NULL`
+- `duplicate_check_text TEXT NOT NULL`
 - `created_at INTEGER NOT NULL`
 
 Behavior:
 - One row represents one library card.
 - `search_text` stores normalized searchable content derived from the title and source text.
+- `duplicate_check_text` stores normalized text used to warn on likely duplicates before save.
 - No partial row may remain if block persistence fails.
 
 ## Table: `content_blocks`
@@ -55,6 +58,7 @@ Columns:
 Behavior:
 - Stores learner-visible provenance and the source locator used to build structural IDs.
 - At least one of `file_path`, `url`, or `session_id` must be present.
+- Generated-content rows preserve both requested and validated difficulty when they differ.
 
 ## Table: `generation_requests`
 
@@ -77,4 +81,5 @@ Behavior:
 - Content-library migrations execute after the existing shell schema migration path and remain idempotent.
 - Item rows, block rows, source records, and generation records for a single save operation are written transactionally.
 - Deleting a library item cascades to its blocks and provenance record.
+- Duplicate detection happens before insert and must not persist a new item until the learner explicitly confirms continuation.
 - Future schema changes must add new migrations instead of editing applied migrations in place.

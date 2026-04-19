@@ -48,6 +48,24 @@ Rationale: The user explicitly requested post-generation validation with `openai
 
 Alternatives considered: Trusting the generator’s self-reported difficulty was rejected because it hides model drift. Reject-only behavior without relabeling was rejected because some generated content remains useful if the classifier can clearly place it in a neighboring level.
 
+## Decision: Display validated difficulty in the library while preserving requested difficulty in provenance details
+
+Rationale: Once relabeling is allowed, the library cannot truthfully present only the requested difficulty. Showing the validated difficulty keeps the main browsing surface honest, while preserving the requested difficulty in provenance details keeps the learner’s original intent inspectable.
+
+Alternatives considered: Displaying only the requested difficulty was rejected because it would hide drift that the validator found. Displaying only the validated difficulty without provenance was rejected because it would lose the learner's original request context.
+
+## Decision: Warn on potential duplicates before save, but allow explicit learner-confirmed duplicate retention
+
+Rationale: Duplicate material can be intentional in language study, especially when the learner wants a second pass through familiar content. The safest policy is therefore to detect likely duplicates, warn clearly, and let the learner decide whether to continue saving.
+
+Alternatives considered: Hard-blocking duplicates was rejected because it can prevent legitimate repeated study material. Silent duplicate acceptance was rejected because it hides a common mistake and weakens library hygiene.
+
+## Decision: Expose provenance details through a learner-visible detail affordance on each library item
+
+Rationale: The constitution requires derived study material to remain inspectable and traceable to source material. A visible provenance detail affordance on each library item is the lightest way to satisfy that requirement without overloading the card grid.
+
+Alternatives considered: Limiting provenance to backend data only was rejected because it fails the inspectability requirement. Showing full provenance inline on every card was rejected because it would clutter the library UI.
+
 ## Decision: Extend the existing typed `window.sona` API with a focused `content` surface for listing, importing, generating, scraping, and deleting content
 
 Rationale: The repo already enforces a narrow preload contract for shell and settings behavior. Extending that same typed surface keeps the renderer simple, preserves `contextIsolation`, and matches the user’s requirement that all IPC calls follow the preload-defined `window.sona` API.

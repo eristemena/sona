@@ -43,6 +43,7 @@ interface ContentLibraryItem {
   difficulty: DifficultyLevel
   difficultyBadge: DifficultyBadge
   provenanceLabel: string
+  provenanceDetail: string
   createdAt: number
   blockCount: number
 }
@@ -56,23 +57,27 @@ interface ImportSrtInput {
   filePath: string
   title?: string
   difficulty: DifficultyLevel
+  confirmDuplicate?: boolean
 }
 
 interface CreateArticleFromPasteInput {
   title?: string
   text: string
   difficulty: DifficultyLevel
+  confirmDuplicate?: boolean
 }
 
 interface CreateArticleFromUrlInput {
   url: string
   title?: string
   difficulty: DifficultyLevel
+  confirmDuplicate?: boolean
 }
 
 interface GeneratePracticeSentencesInput {
   topic: string
   difficulty: Exclude<DifficultyLevel, null>
+  confirmDuplicate?: boolean
 }
 
 interface SaveContentResult {
@@ -113,14 +118,17 @@ interface WindowSona {
 
 - All methods return typed data only; no raw database handles, filesystem handles, or generic IPC channel names are exposed to the renderer.
 - `listLibraryItems()` supports the library card grid, pill-tab filters, and search input state without requiring direct SQL in the renderer.
+- `listLibraryItems()` returns enough metadata for the learner to inspect both a short provenance label and a fuller provenance detail string.
 - `importSrt()` parses the file in the main process, creates a library item plus sentence-level blocks, and returns the saved result only after persistence succeeds.
 - `createArticleFromPaste()` and `createArticleFromUrl()` both normalize article text into sentence-level blocks with the same boundary rules.
 - `generatePracticeSentences()` persists content only after difficulty validation accepts or relabels the generated result.
 - `deleteContent()` removes the library item and its associated blocks from the local collection.
+- Save methods may require `confirmDuplicate: true` before creating a new item when the repository detects a likely duplicate.
 
 ## Error Model
 
 - Invalid user input is rejected before persistence with normalized, learner-safe errors.
+- Duplicate candidates return a normalized duplicate-warning error until the learner explicitly confirms save.
 - Scrape and provider failures return explicit feature-scoped errors and must not mutate existing library records.
 - Generation validation failures return a non-destructive error or relabeled result rather than saving hidden drift.
 

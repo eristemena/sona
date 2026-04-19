@@ -91,6 +91,7 @@ Manual checks:
 - Confirm the library grid renders All, Articles, Subtitles, and Generated pill filters.
 - Confirm the search input narrows results by title or saved text.
 - Confirm each card shows type and Korean difficulty badge.
+- Confirm each card exposes provenance details identifying the source file, article source, or generation request.
 - Delete an item and confirm it disappears immediately and stays deleted after relaunch.
 
 Expected automated coverage:
@@ -107,18 +108,29 @@ Manual checks:
 - Confirm library browsing, search, deletion, subtitle import, and article paste still work.
 - Confirm scrape and generation failures are explicit and non-destructive.
 
+## 9. Import To Study To Review Boundary Validation
+
+Manual checks:
+
+- Import one subtitle item, one pasted article item, or one generated item into the library.
+- Inspect the saved item in the library and confirm its provenance details and sentence-level content make it study-ready for later reading/listening features.
+- Navigate to the Review destination immediately after import and confirm no new review items or hidden scheduled work were created automatically.
+- Confirm the imported content remains available in the library after this review-boundary check.
+
 Expected automated coverage:
 
 - `tests/integration/offline-content-library-startup.test.ts`
 - `tests/integration/offline-no-key-feasibility.test.ts`
 
-## 9. Provenance and Integrity Validation
+## 10. Provenance, Integrity, and Duplicate Validation
 
 Manual checks:
 
 - Inspect saved library items and confirm subtitle, article, and generated origins remain distinguishable.
 - Confirm generated items retain topic and difficulty provenance.
+- Confirm relabeled generated items show validated difficulty in the library while preserving requested difficulty in provenance details.
 - Confirm subtitle-derived items preserve their file-linked structural IDs and timing offsets.
+- Attempt to save duplicate content and confirm the app warns before save and only continues after explicit confirmation.
 
 Expected automated coverage:
 
