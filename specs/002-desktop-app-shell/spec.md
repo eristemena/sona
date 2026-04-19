@@ -1,6 +1,6 @@
 # Feature Specification: Desktop App Shell
 
-**Feature Branch**: `002-feasibility-spike-foundation`  
+**Feature Branch**: `002-desktop-app-shell`  
 **Created**: 2026-04-19  
 **Status**: Draft  
 **Input**: User description: "Sona needs a desktop app shell that opens on launch and shows a persistent sidebar with navigation items alongside an empty main content area. The sidebar should show the app name and four navigation items: Dashboard, Library, Review, and Settings. The app should remember the user's theme preference and apply it on launch."
