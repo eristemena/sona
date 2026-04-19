@@ -140,7 +140,7 @@ As a learner, I want to generate Korean practice sentences for a chosen topic an
 
 ### Key Entities *(include if feature involves data)*
 
-- **Content Item**: A saved unit of Korean study content shown in the Content Library, including its identifying label, content type, difficulty, saved body, and lifecycle state.
+- **Content Item**: A saved unit of Korean study content shown in the Content Library, including its identifying label, content type, difficulty, saved body, and deletion behavior.
 - **Content Source Record**: The provenance details attached to a content item, describing whether it came from a subtitle import, pasted article, scraped article, or generated-sentence request, plus the learner-visible source details for that path and any requested-versus-validated difficulty metadata.
 - **Generation Request**: The learner-specified topic and difficulty used to create generated practice sentence content and stored with the resulting content item.
 

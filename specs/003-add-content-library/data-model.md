@@ -24,7 +24,7 @@ Validation rules:
 - `title` must not be empty.
 - `provenanceDetail` must not be empty.
 
-State transitions:
+Repository behavior:
 - `pending-ingestion` -> `saved`
 - `saved` -> removed via explicit hard deletion of the item and its dependent records
 - `pending-ingestion` must never transition directly to `saved` if block creation fails

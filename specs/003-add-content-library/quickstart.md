@@ -41,6 +41,13 @@ Start the desktop app for manual validation:
 npm run dev:desktop
 ```
 
+## 3a. Usability Measurement Protocol
+
+- Use a clean local profile with no previously saved content for first-attempt timing checks.
+- For SC-001 and SC-002, record 5 first-attempt runs. Start timing when the learner opens the add-content flow and stop when the saved item appears in the Content Library.
+- For SC-004, build a mixed library of at least 10 items spanning subtitle, article, and generated content, then record the percent of items whose source type is correctly identified by the learner.
+- Record pass or fail against each success criterion in the validation notes together with the measured times or identification percentage.
+
 ## 4. Validate Subtitle Import
 
 Manual checks:
@@ -54,6 +61,8 @@ Expected automated coverage:
 
 - `tests/contract/content-library-schema-contract.test.ts`
 - `tests/integration/subtitle-import-flow.test.ts`
+- `tests/integration/subtitle-import-error.test.ts`
+- `tests/integration/provenance-artifact-integrity.test.ts`
 
 ## 5. Validate Article Paste and Scrape
 
@@ -85,6 +94,7 @@ Expected automated coverage:
 - `tests/contract/window-sona-content-library-contract.test.ts`
 - `tests/integration/generated-content-difficulty-validation.test.ts`
 - `tests/integration/offline-no-key-feasibility.test.ts`
+- `tests/integration/provider-fallback-no-key.test.ts`
 
 ## 7. Validate Content Library Browsing and Deletion
 
@@ -139,5 +149,7 @@ Expected automated coverage:
 - `tests/integration/provenance-artifact-integrity.test.ts`
 - `tests/contract/content-library-schema-contract.test.ts`
 - `tests/integration/subtitle-import-flow.test.ts`
+- `tests/integration/subtitle-import-error.test.ts`
 - `tests/integration/article-paste-flow.test.tsx`
 - `tests/integration/generated-content-difficulty-validation.test.ts`
+- `tests/integration/provider-fallback-no-key.test.ts`
