@@ -140,6 +140,7 @@ interface WindowSona {
 - The renderer-facing preload contract uses camelCase field names; snake_case remains limited to SQLite schema and migration artifacts.
 - `listLibraryItems()` supports the library card grid, pill-tab filters, and search input state without requiring direct SQL in the renderer.
 - `listLibraryItems()` returns enough metadata for the learner to inspect both a short provenance label and a fuller provenance detail string.
+- `provenanceDetail` is the renderer-facing carrier for source-specific provenance in this feature slice and must format the relevant file path, article source, or generation request metadata into a learner-readable string instead of exposing separate source-specific fields.
 - `importSrt()` parses the file in the main process, creates a library item plus sentence-level blocks, and returns the saved result only after persistence succeeds.
 - `createArticleFromPaste()` and `createArticleFromUrl()` both normalize article text into sentence-level blocks with the same boundary rules.
 - `generatePracticeSentences()` persists content only after difficulty validation accepts or relabels the generated result.

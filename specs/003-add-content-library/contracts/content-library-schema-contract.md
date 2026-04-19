@@ -56,7 +56,6 @@ Columns:
 - `display_source TEXT NOT NULL`
 - `requested_difficulty INTEGER CHECK (requested_difficulty IN (1, 2, 3) OR requested_difficulty IS NULL)`
 - `validated_difficulty INTEGER CHECK (validated_difficulty IN (1, 2, 3) OR validated_difficulty IS NULL)`
-- `raw_source_text TEXT`
 - `captured_at INTEGER NOT NULL`
 
 Behavior:

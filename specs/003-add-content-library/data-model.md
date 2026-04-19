@@ -67,7 +67,6 @@ Fields:
 - `url`: Nullable source URL for scraped articles.
 - `sessionId`: Nullable session identifier for pasted or generated content.
 - `displaySource`: Learner-visible provenance summary.
-- `rawSourceText`: Nullable persisted source text retained for reconstruction, debugging, or future derivation flows.
 - `requestedDifficulty`: Nullable requested difficulty retained for generated content provenance.
 - `validatedDifficulty`: Nullable validated difficulty retained for generated content provenance.
 - `capturedAt`: Unix timestamp in milliseconds.
