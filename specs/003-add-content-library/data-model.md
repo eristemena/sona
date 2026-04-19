@@ -10,6 +10,7 @@ Fields:
 - `sourceType`: One of `srt`, `article`, or `generated`.
 - `difficulty`: Required integer difficulty level, stored as `1`, `2`, or `3`.
 - `difficultyLabel`: Derived badge label: `초급`, `중급`, or `고급`.
+- `provenanceLabel`: Short learner-visible provenance label shown on the library card.
 - `sourceLocator`: Structural source locator used in persisted IDs: file path for SRT imports, URL for scraped articles, or session identifier for pasted/generated content.
 - `provenanceDetail`: Learner-visible source detail string shown from a detail affordance.
 - `searchText`: Normalized text used by the library search input.
@@ -66,6 +67,7 @@ Fields:
 - `url`: Nullable source URL for scraped articles.
 - `sessionId`: Nullable session identifier for pasted or generated content.
 - `displaySource`: Learner-visible provenance summary.
+- `rawSourceText`: Nullable persisted source text retained for reconstruction, debugging, or future derivation flows.
 - `requestedDifficulty`: Nullable requested difficulty retained for generated content provenance.
 - `validatedDifficulty`: Nullable validated difficulty retained for generated content provenance.
 - `capturedAt`: Unix timestamp in milliseconds.

@@ -84,6 +84,7 @@ Expected automated coverage:
 
 - `tests/contract/window-sona-content-library-contract.test.ts`
 - `tests/integration/generated-content-difficulty-validation.test.ts`
+- `tests/integration/offline-no-key-feasibility.test.ts`
 
 ## 7. Validate Content Library Browsing and Deletion
 
@@ -121,7 +122,6 @@ Manual checks:
 Expected automated coverage:
 
 - `tests/integration/offline-content-library-startup.test.ts`
-- `tests/integration/offline-no-key-feasibility.test.ts`
 - `tests/integration/import-review-boundary.test.ts`
 
 ## 10. Provenance, Integrity, and Duplicate Validation

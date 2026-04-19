@@ -13,14 +13,15 @@ As a learner, I want a single Content Library that shows all saved study content
 
 **Why this priority**: The library is the shared destination for every content-ingestion path. If learners cannot review and manage their saved content, the three add flows do not produce durable value.
 
-**Independent Test**: Open the Content Library with existing sample items and verify that each item shows its identifying label, difficulty, and content type, then delete one item and confirm it is removed from the library.
+**Independent Test**: Open the Content Library with existing sample items and verify that each item shows its identifying label, difficulty, and content type, that search and type filters narrow the visible results correctly, then delete one item and confirm it is removed from the library.
 
 **Acceptance Scenarios**:
 
 1. **Given** the learner has one or more saved content items, **When** the learner opens the Content Library, **Then** each item is listed with a recognizable label, its difficulty level, and its content type.
 2. **Given** the learner has saved content from multiple source types, **When** the learner views the Content Library, **Then** subtitle imports, article content, and generated practice sentences all appear in the same library.
-3. **Given** the learner chooses to delete a content item, **When** the learner confirms deletion, **Then** the item is removed from the Content Library and is no longer available in the local content collection.
-4. **Given** the learner inspects a saved content item, **When** the learner opens its source details, **Then** the app shows enough provenance detail to distinguish the originating subtitle file, article source, or generation request.
+3. **Given** the learner has multiple saved content items, **When** the learner applies a type filter or enters a search term, **Then** the Content Library narrows the visible items without changing the saved collection.
+4. **Given** the learner chooses to delete a content item, **When** the learner confirms deletion, **Then** the item is removed from the Content Library and is no longer available in the local content collection.
+5. **Given** the learner inspects a saved content item, **When** the learner opens its source details, **Then** the app shows enough provenance detail to distinguish the originating subtitle file, article source, or generation request.
 
 ---
 
@@ -134,6 +135,8 @@ As a learner, I want to generate Korean practice sentences for a chosen topic an
 - **FR-020**: The system MUST avoid creating new review tasks automatically when content is imported, pasted, scraped, or generated into the library.
 - **FR-021**: The system MUST let the learner inspect source details for each saved content item, including the appropriate subtitle file path, article source, or generation request metadata.
 - **FR-022**: The system MUST detect potential duplicate content before saving and warn the learner, while allowing the learner to continue saving it as a distinct item only after explicit confirmation.
+- **FR-023**: The system MUST let the learner narrow library results by content type without changing the saved collection.
+- **FR-024**: The system MUST let the learner search saved library content using title or source-derived text while preserving local-only operation.
 
 ### Key Entities *(include if feature involves data)*
 
