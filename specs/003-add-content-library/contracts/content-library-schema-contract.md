@@ -40,7 +40,7 @@ Columns:
 - `created_at INTEGER NOT NULL`
 
 Behavior:
-- `id` uses the structural format `(source_type, file_path|session_id, sentence_ordinal)`.
+- `id` uses the structural format `(source_type, structural_source_locator, sentence_ordinal)`, where the locator is the subtitle file path for SRT imports, the article URL for scraped articles, and the session identifier for pasted or generated content.
 - `sentence_ordinal` must be unique per `content_item_id`.
 - `audio_offset` is nullable and only populated for subtitle-derived blocks.
 

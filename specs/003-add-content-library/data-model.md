@@ -5,17 +5,16 @@
 Purpose: Represents one learner-visible card in the Content Library, grouping the sentence-level blocks that came from one import, paste, scrape, or generation event.
 
 Fields:
-- `id`: Stable structural source identifier, derived from `source_type` plus `file_path` or `session_id`.
+- `id`: Stable structural source identifier, derived from `source_type` plus the structural source locator.
 - `title`: Learner-visible label used in the library grid.
 - `sourceType`: One of `srt`, `article`, or `generated`.
 - `difficulty`: Required integer difficulty level, stored as `1`, `2`, or `3`.
 - `difficultyLabel`: Derived badge label: `초급`, `중급`, or `고급`.
-- `sourceLocator`: File path for SRT imports, URL for scraped articles, or session identifier for pasted/generated content.
+- `sourceLocator`: Structural source locator used in persisted IDs: file path for SRT imports, URL for scraped articles, or session identifier for pasted/generated content.
 - `provenanceDetail`: Learner-visible source detail string shown from a detail affordance.
 - `searchText`: Normalized text used by the library search input.
 - `duplicateCheckText`: Normalized text used to detect likely duplicates before save.
 - `createdAt`: Unix timestamp in milliseconds.
-- `deletedAt`: Nullable Unix timestamp in milliseconds used for deletion bookkeeping or hard-delete orchestration.
 
 Validation rules:
 - `id` must be unique.
@@ -26,7 +25,7 @@ Validation rules:
 
 State transitions:
 - `pending-ingestion` -> `saved`
-- `saved` -> `deleted`
+- `saved` -> removed via explicit hard deletion of the item and its dependent records
 - `pending-ingestion` must never transition directly to `saved` if block creation fails
 
 ## ContentBlock
@@ -34,7 +33,7 @@ State transitions:
 Purpose: Stores the sentence-level Korean text units backing a library item and future reading, lookup, or review features.
 
 Fields:
-- `id`: Structural identifier in the format `(source_type, file_path|session_id, sentence_ordinal)`.
+- `id`: Structural identifier in the format `(source_type, structural_source_locator, sentence_ordinal)`.
 - `contentItemId`: Parent `Content Library Item` identifier.
 - `korean`: Sentence text shown to the learner.
 - `romanization`: Nullable romanization text.

@@ -6,9 +6,9 @@ Rationale: The requested schema is sentence-oriented and already defines the per
 
 Alternatives considered: Storing one large text blob per library item was rejected because it makes future sentence-level study features harder and loses the structural ID requirement. Storing only blocks without a parent library item was rejected because the UI needs a stable item-level record for titles, filter/search, and deletion.
 
-## Decision: Use a structural `ContentBlock.id` built from `(source_type, file_path|session_id, sentence_ordinal)` rather than a content hash
+## Decision: Use a structural `ContentBlock.id` built from `(source_type, structural_source_locator, sentence_ordinal)` rather than a content hash
 
-Rationale: The user explicitly required a structural identifier, and this aligns with provenance-first behavior. Structural IDs remain traceable to the learner-approved source even if the same sentence text appears elsewhere.
+Rationale: The user explicitly required a structural identifier, and this aligns with provenance-first behavior. Structural IDs remain traceable to the learner-approved source even if the same sentence text appears elsewhere. The structural source locator is the subtitle file path for SRT imports, the article URL for scraped articles, and the ingestion session identifier for pasted articles and generated content.
 
 Alternatives considered: Content hashes were rejected because identical text from different sources would collide conceptually and would hide provenance. Random UUIDs were rejected because they make debugging and traceability harder without adding user value.
 
