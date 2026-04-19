@@ -101,7 +101,7 @@ Expected automated coverage:
 Manual checks:
 
 - Confirm the library grid renders All, Articles, Subtitles, and Generated pill filters.
-- Confirm the search input narrows results by title or saved text.
+- Confirm the search input narrows results by title or source-derived text.
 - Confirm each card shows type and Korean difficulty badge.
 - Confirm each card exposes provenance details identifying the source file, article source, or generation request.
 - Delete an item and confirm it disappears immediately and stays deleted after relaunch.

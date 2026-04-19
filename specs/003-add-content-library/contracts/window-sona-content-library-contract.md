@@ -34,6 +34,7 @@ interface ContentBlock {
   difficulty: RequiredDifficultyLevel
   source_type: ContentSourceType
   audio_offset: number | null
+  sentenceOrdinal: number
   created_at: number
 }
 
