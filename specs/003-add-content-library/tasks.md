@@ -42,13 +42,13 @@
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T010 [P] [US1] Add integration coverage for content-library browse, filter, search, and provenance-detail display behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-browse.test.tsx
-- [ ] T011 [P] [US1] Add integration coverage for deletion, no-review side effects, and explicit import-to-review-boundary behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-delete.test.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-load-implications.test.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/import-review-boundary.test.ts
+- [ ] T010 [P] [US1] Add integration coverage for content-library browse, filter, search, sentence-level content inspection, and provenance-detail display behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-browse.test.tsx
+- [ ] T011 [P] [US1] Add integration coverage for deletion and no-review side effects in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-delete.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-load-implications.test.ts
 
 ### Implementation for User Story 1
 
 - [ ] T012 [P] [US1] Implement library query state, filter mapping, and search helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-content-library.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/content-library-filters.ts
-- [ ] T013 [P] [US1] Build the Content Library card grid, filter pills, search input, and provenance-detail affordance UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-card.tsx, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-toolbar.tsx
+- [ ] T013 [P] [US1] Build the Content Library card grid, filter pills, search input, sentence-level content detail surface, and provenance-detail affordance UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-card.tsx, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-toolbar.tsx
 - [ ] T014 [US1] Integrate the Content Library destination into shell rendering in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/main-content-placeholder.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/app-shell.tsx
 - [ ] T015 [US1] Implement library item deletion flow and empty-state behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-delete-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
 - [ ] T016 [US1] Add Content Library browse, provenance-detail, and delete manual verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
@@ -131,8 +131,8 @@
 **Purpose**: Finalize end-to-end regression coverage, offline validation, and documented verification across all content-library flows.
 
 - [ ] T038 [P] Add cross-story provenance integrity coverage for subtitle, article, and generated items, including learner-visible source details, in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provenance-artifact-integrity.test.ts
-- [ ] T039 [P] Add offline startup and content-library bootstrap regression coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-content-library-startup.test.ts
-- [ ] T040 Validate the full quickstart flow, including import-to-study-to-review-boundary checks, and record latest verification notes in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
+- [ ] T039 [P] Add offline startup, schema-migration preservation, and content-library bootstrap regression coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-content-library-startup.test.ts
+- [ ] T040 Add explicit import-to-study-to-review-boundary regression coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/import-review-boundary.test.ts and validate the full quickstart flow in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 
 ---

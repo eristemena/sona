@@ -153,3 +153,15 @@ Expected automated coverage:
 - `tests/integration/article-paste-flow.test.tsx`
 - `tests/integration/generated-content-difficulty-validation.test.ts`
 - `tests/integration/provider-fallback-no-key.test.ts`
+
+## 11. Migration Safety Validation
+
+Manual checks:
+
+- Start from an existing local profile created before the content-library schema rollout.
+- Launch the upgraded app and confirm schema migration completes without breaking existing local settings or shell state.
+- Confirm the Content Library initializes safely after migration and does not corrupt or remove pre-existing local app data.
+
+Expected automated coverage:
+
+- `tests/integration/offline-content-library-startup.test.ts`

@@ -22,6 +22,7 @@ As a learner, I want a single Content Library that shows all saved study content
 3. **Given** the learner has multiple saved content items, **When** the learner applies a type filter or enters a search term, **Then** the Content Library narrows the visible items without changing the saved collection.
 4. **Given** the learner chooses to delete a content item, **When** the learner confirms deletion, **Then** the item is removed from the Content Library and is no longer available in the local content collection.
 5. **Given** the learner inspects a saved content item, **When** the learner opens its source details, **Then** the app shows enough provenance detail to distinguish the originating subtitle file, article source, or generation request.
+6. **Given** the learner opens a saved content item for closer inspection, **When** the app shows its stored content detail, **Then** the learner can review its sentence-level blocks before taking any later reading, listening, or review action.
 
 ---
 
@@ -31,11 +32,11 @@ As a learner, I want to import a subtitle file from a Korean drama so I can turn
 
 **Why this priority**: Subtitle import is a core learner-owned content path named directly in the product vision and supports text that already carries strong listening context.
 
-**Independent Test**: Import a supported subtitle file, complete the import flow, and confirm that a new subtitle-based content item appears in the Content Library with the correct type and difficulty.
+**Independent Test**: Import a supported Korean SRT subtitle file, complete the import flow, and confirm that a new subtitle-based content item appears in the Content Library with the correct type and difficulty.
 
 **Acceptance Scenarios**:
 
-1. **Given** the learner has a supported subtitle file, **When** the learner imports it into Sona, **Then** the app saves it as a new subtitle-based content item in the Content Library.
+1. **Given** the learner has a supported Korean SRT subtitle file, **When** the learner imports it into Sona, **Then** the app saves it as a new subtitle-based content item in the Content Library.
 2. **Given** a subtitle import completes successfully, **When** the learner views the new library item, **Then** the item is labeled as subtitle content and shows its assigned difficulty.
 3. **Given** the learner imports a subtitle file that cannot be processed, **When** the import fails, **Then** the app explains that the import did not complete and does not add a partial item to the Content Library.
 
@@ -114,7 +115,7 @@ As a learner, I want to generate Korean practice sentences for a chosen topic an
 ### Functional Requirements
 
 - **FR-001**: The system MUST provide a Content Library that contains subtitle imports, article content, and generated practice sentence content in one local collection.
-- **FR-002**: The system MUST allow the learner to import a subtitle file and save it as a library item.
+- **FR-002**: The system MUST allow the learner to import a Korean SRT subtitle file and save it as a library item.
 - **FR-003**: The system MUST allow the learner to add Korean article content by pasting text directly into the app.
 - **FR-004**: The system MUST allow the learner to add Korean article content through a learner-initiated scrape flow.
 - **FR-005**: The system MUST allow the learner to request generated practice sentences by providing a topic and a difficulty level.
@@ -137,6 +138,7 @@ As a learner, I want to generate Korean practice sentences for a chosen topic an
 - **FR-022**: The system MUST detect potential duplicate content before saving and warn the learner, while allowing the learner to continue saving it as a distinct item only after explicit confirmation.
 - **FR-023**: The system MUST let the learner narrow library results by content type without changing the saved collection.
 - **FR-024**: The system MUST let the learner search saved library content using title or source-derived text while preserving local-only operation.
+- **FR-025**: The system MUST let the learner inspect saved content as sentence-level blocks from the library before any later reading, listening, or review action.
 
 ### Key Entities *(include if feature involves data)*
 
