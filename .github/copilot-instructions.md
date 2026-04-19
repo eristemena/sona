@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Active feature plan: [specs/002-desktop-app-shell/plan.md](../specs/002-desktop-app-shell/plan.md)
+Active feature plan: [specs/003-add-content-library/plan.md](../specs/003-add-content-library/plan.md)
 Read this plan before implementing or revising anything for the active feature.
 <!-- SPECKIT END -->
 
