@@ -91,6 +91,8 @@ interface DeleteContentResult {
 }
 ```
 
+`DifficultyLevel` and `DifficultyBadge` remain nullable only for transient pre-save form or validation state. Persisted library items, saved blocks, and save inputs must use the required difficulty variants shown below.
+
 ## Surface
 
 ```ts

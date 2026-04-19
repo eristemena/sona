@@ -52,13 +52,17 @@ Columns:
 - `file_path TEXT`
 - `url TEXT`
 - `session_id TEXT`
+- `display_source TEXT NOT NULL`
+- `requested_difficulty INTEGER CHECK (requested_difficulty IN (1, 2, 3) OR requested_difficulty IS NULL)`
+- `validated_difficulty INTEGER CHECK (validated_difficulty IN (1, 2, 3) OR validated_difficulty IS NULL)`
 - `raw_source_text TEXT`
 - `captured_at INTEGER NOT NULL`
 
 Behavior:
 - Stores learner-visible provenance and the source locator used to build structural IDs.
 - At least one of `file_path`, `url`, or `session_id` must be present.
-- Generated-content rows preserve both requested and validated difficulty when they differ.
+- `display_source` remains non-empty so provenance is always inspectable.
+- Generated-content rows preserve both requested and validated difficulty when they differ, while `generation_requests` retains the full request/validation audit trail for the originating session.
 
 ## Table: `generation_requests`
 
@@ -74,6 +78,7 @@ Columns:
 
 Behavior:
 - Written only for generation attempts.
+- Mirrors the request/validation outcome for generation sessions, including attempts that do not become saved library items.
 - A rejected request may exist without a saved library item.
 
 ## Migration Rules
