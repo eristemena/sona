@@ -40,11 +40,11 @@
 
 **Goal**: Launch Sona into a runnable desktop window that shows the app name, a persistent sidebar, and an empty main content frame.
 
-**Independent Test**: Start the desktop app from a clean local environment and verify that the window opens with the Sona name, the required sidebar items, and an empty main content area while offline.
+**Independent Test**: Start the desktop app from a clean local environment and verify that the window opens with the Sona name, the required sidebar items, and an empty main content area while offline, including relaunch after an interrupted prior session.
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T012 [P] [US1] Add integration coverage for first-launch shell bootstrap in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/desktop-shell-launch.test.ts
+- [ ] T012 [P] [US1] Add integration coverage for first-launch and interrupted-session shell bootstrap in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/desktop-shell-launch.test.ts
 - [ ] T013 [P] [US1] Add integration coverage for offline shell startup in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-shell-startup.test.ts
 
 ### Implementation for User Story 1
@@ -52,7 +52,7 @@
 - [ ] T014 [P] [US1] Implement renderer shell bootstrap hook and bootstrap-state loader in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-shell-bootstrap.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/shell-bootstrap.ts
 - [ ] T015 [P] [US1] Build the shell layout and empty content frame in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/app-shell.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/main-content-placeholder.tsx
 - [ ] T016 [US1] Render the launch shell from the root page in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/page.tsx
-- [ ] T017 [US1] Add first-launch shell manual verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
+- [ ] T017 [US1] Add first-launch and crash-relaunch shell manual verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
 
 **Checkpoint**: User Story 1 should now launch into a stable shell and be testable as the MVP slice.
 
@@ -84,12 +84,12 @@
 
 **Goal**: Persist the learner's theme preference locally, resolve it correctly at launch, and keep the shell theme in sync with manual overrides and system mode.
 
-**Independent Test**: Change the theme preference, relaunch the app, and verify the same theme is restored from local SQLite; also verify that missing or invalid settings fall back safely.
+**Independent Test**: Change the theme preference, relaunch the app, and verify the same theme is restored from local SQLite; also verify that missing or invalid settings resolve by following the system theme when available and otherwise falling back to dark mode.
 
 ### Tests for User Story 3 (required for constitution-sensitive changes) ⚠️
 
 - [ ] T024 [P] [US3] Add integration coverage for theme preference persistence and relaunch restore in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/theme-preference-persistence.test.ts
-- [ ] T025 [P] [US3] Add integration coverage for invalid-setting fallback and system-mode resolution in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/theme-resolution-fallback.test.ts
+- [ ] T025 [P] [US3] Add integration coverage for invalid-setting fallback, system-theme resolution, and dark-mode fallback in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/theme-resolution-fallback.test.ts
 
 ### Implementation for User Story 3
 
@@ -97,7 +97,7 @@
 - [ ] T027 [P] [US3] Implement renderer theme provider and `window.sona.settings` integration in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/theme-provider.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-theme-preference.ts
 - [ ] T028 [US3] Add the Settings destination theme controls and shell theme application in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/settings/theme-settings.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/app-shell.tsx, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/globals.css
 - [ ] T029 [US3] Persist and seed the `appearance.themePreference` setting through the migration-backed settings service in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/settings-repository.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/001_shell_v1.sql
-- [ ] T030 [US3] Add theme persistence and fallback verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
+- [ ] T030 [US3] Add theme persistence, system-theme resolution, and dark-fallback verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
 
 **Checkpoint**: All three user stories should now be independently functional, including persisted theme behavior across launches.
 

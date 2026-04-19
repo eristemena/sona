@@ -19,6 +19,7 @@ As a learner, I want Sona to open directly into a stable desktop shell so I can 
 
 1. **Given** the learner launches Sona, **When** the first window appears, **Then** the app shows a desktop shell with a persistent sidebar and an empty main content area.
 2. **Given** the shell is visible, **When** the learner inspects the sidebar, **Then** the app name and the navigation items Dashboard, Library, Review, and Settings are displayed in a consistent order.
+3. **Given** the previous app session ended unexpectedly, **When** the learner relaunches Sona, **Then** the app still opens into a usable shell with the sidebar and main content area intact.
 
 ---
 
@@ -48,7 +49,7 @@ As a learner, I want Sona to remember my chosen theme so the app feels consisten
 **Acceptance Scenarios**:
 
 1. **Given** the learner has previously chosen a theme, **When** the learner relaunches Sona, **Then** the saved theme is applied before or as the shell appears.
-2. **Given** no theme preference has been saved yet, **When** the learner launches Sona for the first time, **Then** the app uses the default theme defined for the product and keeps the shell usable.
+2. **Given** no theme preference has been saved yet, **When** the learner launches Sona for the first time, **Then** the app follows the current system theme when available and otherwise falls back to dark mode while keeping the shell usable.
 
 ### Edge Cases
 
@@ -94,9 +95,11 @@ As a learner, I want Sona to remember my chosen theme so the app feels consisten
 - **FR-007**: The system MUST provide an empty main content area as the placeholder region for the currently selected destination until feature-specific content is added.
 - **FR-008**: The system MUST store the learner's theme preference locally and reuse it on later launches.
 - **FR-009**: The system MUST apply the saved theme preference when the app opens.
-- **FR-010**: The system MUST fall back to the product's default theme when no valid saved theme preference is available.
+- **FR-010**: The system MUST resolve theme preference in this order: valid saved learner preference, then current system theme when available, then dark mode fallback.
 - **FR-011**: The system MUST allow the sidebar navigation items to be reached and identified through keyboard interaction as well as pointer interaction.
 - **FR-012**: The system MUST function without network connectivity or account setup.
+- **FR-013**: The system MUST support producing a packaged desktop application for local installation in this feature phase.
+- **FR-014**: The system MUST relaunch into a usable shell even if the previous session ended unexpectedly.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -113,10 +116,11 @@ As a learner, I want Sona to remember my chosen theme so the app feels consisten
 - **SC-003**: After a learner saves a theme preference and relaunches the app, the same theme is restored on 100% of tested relaunches.
 - **SC-004**: In keyboard-access testing, learners can reach each sidebar navigation item and identify the active navigation region without pointer input.
 - **SC-005**: The shell remains fully usable with network access disabled in 100% of tested launch scenarios.
+- **SC-006**: A packaged desktop build can be produced for the validation machine and launches into the offline shell successfully during packaging verification.
 
 ## Assumptions
 
 - The primary user is a self-directed Korean learner using Sona on a desktop device.
 - The shell is a foundation feature, so the main content area is intentionally empty until later feature work supplies screen-specific content.
-- A product default theme already exists for first launch and invalid-preference fallback behavior.
+- On first launch or after an invalid stored value, the shell follows the system theme when available and otherwise defaults to dark mode.
 - Theme preference is a local user setting and does not sync across devices or accounts.
