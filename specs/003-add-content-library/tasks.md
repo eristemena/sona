@@ -43,7 +43,7 @@
 ### Tests for User Story 1 ⚠️
 
 - [ ] T010 [P] [US1] Add integration coverage for content-library browse, filter, search, and provenance-detail display behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-browse.test.tsx
-- [ ] T011 [P] [US1] Add integration coverage for deletion and no-review side effects in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-delete.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-load-implications.test.ts
+- [ ] T011 [P] [US1] Add integration coverage for deletion, no-review side effects, and explicit import-to-review-boundary behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-delete.test.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-load-implications.test.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/import-review-boundary.test.ts
 
 ### Implementation for User Story 1
 
@@ -61,11 +61,11 @@
 
 **Goal**: Import Korean drama subtitle files into the local Content Library as subtitle-derived sentence blocks with preserved timing.
 
-**Independent Test**: Import a supported SRT file, confirm a new subtitle item appears in the library with the requested difficulty, and verify malformed subtitle input is rejected without creating a partial item.
+**Independent Test**: Import a supported SRT file, confirm a new subtitle item appears in the library with the required difficulty, and verify malformed or duplicate subtitle input is rejected or warned without creating a partial item.
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T017 [P] [US2] Add integration coverage for successful subtitle import into the library in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/subtitle-import-flow.test.ts
+- [ ] T017 [P] [US2] Add integration coverage for successful subtitle import and duplicate-warning behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/subtitle-import-flow.test.ts
 - [ ] T018 [P] [US2] Add integration coverage for malformed subtitle rejection and subtitle provenance retention in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/subtitle-import-error.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provenance-artifact-integrity.test.ts
 
 ### Implementation for User Story 2
@@ -73,7 +73,7 @@
 - [ ] T019 [P] [US2] Add subtitle import input types and subtitle-specific mapping helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/subtitle-import.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/provenance/corpus-segment.ts
 - [ ] T020 [P] [US2] Implement the SRT parser service and subtitle block mapping in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/srt-import-service.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/subtitle-block-mapper.ts
 - [ ] T021 [US2] Wire subtitle import through content IPC handlers and repository persistence in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts
-- [ ] T022 [US2] Add subtitle import controls to the library UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
+- [ ] T022 [US2] Add subtitle import controls and duplicate-confirmation UI to the library flow in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
 - [ ] T023 [US2] Add subtitle import and timing-offset verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 **Checkpoint**: User Stories 1 and 2 should now work together, with subtitle files importing into the shared library while remaining independently testable.
@@ -111,7 +111,7 @@
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T031 [P] [US4] Add integration coverage for generated-content difficulty validation, relabel, and reject behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/generated-content-difficulty-validation.test.ts
+- [ ] T031 [P] [US4] Add integration coverage for generated-content difficulty validation, relabel, reject, and duplicate-warning behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/generated-content-difficulty-validation.test.ts
 - [ ] T032 [P] [US4] Extend no-key and offline provider fallback coverage for generation failures in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-no-key-feasibility.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provider-fallback-no-key.test.ts
 
 ### Implementation for User Story 4
@@ -119,7 +119,7 @@
 - [ ] T033 [P] [US4] Implement generation request models, difficulty prompt policy, and validation result mapping in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/generation-request.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/difficulty-policy.ts
 - [ ] T034 [P] [US4] Implement OpenRouter generation and difficulty-validation services in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/providers/openrouter-content-generator.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/generated-content-service.ts
 - [ ] T035 [US4] Persist generation outcomes and generated content blocks through the repository and content IPC handlers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts
-- [ ] T036 [US4] Add generated-content controls and validated difficulty messaging to the library UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
+- [ ] T036 [US4] Add generated-content controls, duplicate-confirmation UI, and validated difficulty messaging to the library UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
 - [ ] T037 [US4] Add generated-content, requested-versus-validated difficulty, relabel, and reject verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 **Checkpoint**: All four user stories should now be independently testable, with optional provider-backed generation layered on top of the local-first library.
@@ -133,6 +133,7 @@
 - [ ] T038 [P] Add cross-story provenance integrity coverage for subtitle, article, and generated items, including learner-visible source details, in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provenance-artifact-integrity.test.ts
 - [ ] T039 [P] Add offline startup and content-library bootstrap regression coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-content-library-startup.test.ts
 - [ ] T040 Validate the full quickstart flow, including import-to-study-to-review-boundary checks, and record latest verification notes in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
+
 
 ---
 

@@ -8,8 +8,8 @@ Fields:
 - `id`: Stable structural source identifier, derived from `source_type` plus `file_path` or `session_id`.
 - `title`: Learner-visible label used in the library grid.
 - `sourceType`: One of `srt`, `article`, or `generated`.
-- `difficulty`: Nullable integer difficulty level, stored as `1`, `2`, `3`, or `null`.
-- `difficultyLabel`: Derived badge label: `초급`, `중급`, `고급`, or empty when difficulty is `null`.
+- `difficulty`: Required integer difficulty level, stored as `1`, `2`, or `3`.
+- `difficultyLabel`: Derived badge label: `초급`, `중급`, or `고급`.
 - `sourceLocator`: File path for SRT imports, URL for scraped articles, or session identifier for pasted/generated content.
 - `provenanceDetail`: Learner-visible source detail string shown from a detail affordance.
 - `searchText`: Normalized text used by the library search input.
@@ -20,7 +20,7 @@ Fields:
 Validation rules:
 - `id` must be unique.
 - `sourceType` must match the originating ingestion flow.
-- `difficulty`, when present, must be one of `1`, `2`, or `3`.
+- `difficulty` must be one of `1`, `2`, or `3`.
 - `title` must not be empty.
 - `provenanceDetail` must not be empty.
 
@@ -40,7 +40,7 @@ Fields:
 - `romanization`: Nullable romanization text.
 - `tokens`: Nullable token array, stored as JSON.
 - `annotations`: Record of annotation entries keyed by annotation name, stored as nullable JSON values.
-- `difficulty`: Nullable integer difficulty level for the block.
+- `difficulty`: Required integer difficulty level for the block.
 - `sourceType`: One of `generated`, `article`, or `srt`.
 - `audioOffset`: Nullable numeric subtitle start offset for listening alignment.
 - `sentenceOrdinal`: Stable 1-based sequence within the source item.
@@ -49,6 +49,7 @@ Fields:
 Validation rules:
 - `korean` must not be empty.
 - `sentenceOrdinal` must be positive and unique within a given source item.
+- `difficulty` must be one of `1`, `2`, or `3`.
 - `audioOffset` is required only for subtitle-derived blocks and must be `null` otherwise.
 - `sourceType` must match the parent item’s source type.
 

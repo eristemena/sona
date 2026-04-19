@@ -120,7 +120,7 @@ As a learner, I want to generate Korean practice sentences for a chosen topic an
 - **FR-006**: The system MUST save each successfully added content item locally so it remains available across later app sessions.
 - **FR-007**: The system MUST display each library item with a recognizable label or title that lets the learner identify what was added.
 - **FR-008**: The system MUST display the content type for each library item.
-- **FR-009**: The system MUST display the difficulty for each library item.
+- **FR-009**: The system MUST display a non-null difficulty for each library item.
 - **FR-010**: The system MUST make subtitle imports, article content, and generated practice sentences distinguishable from one another in the Content Library.
 - **FR-011**: The system MUST preserve source provenance for every saved content item so the learner can understand how it entered the library.
 - **FR-012**: The system MUST preserve the learner-selected topic and difficulty for generated practice sentence content.
@@ -157,7 +157,7 @@ As a learner, I want to generate Korean practice sentences for a chosen topic an
 
 - The primary user is a self-directed Korean learner using Sona on a desktop device.
 - The library is a content-management surface in this feature phase and does not automatically create flashcards, reviews, or study sessions.
-- Difficulty is assigned during each add-content flow so every saved item can show a difficulty level in the library.
+- Difficulty is required during each add-content flow so every saved item shows a non-null difficulty level in the library.
 - Generated content may be relabeled after validation, but the originally requested difficulty remains inspectable in the item provenance.
 - Learners may choose optional network-dependent flows for scraping and AI generation, but subtitle import, article paste, library browsing, and deletion remain core offline-capable behavior.
 - Deleting a content item in this feature removes it from the local library collection only; any broader downstream study artifacts are out of scope until later features define them.

@@ -9,6 +9,7 @@ Defines the typed preload bridge additions required for content ingestion, libra
 ```ts
 type ContentSourceType = 'generated' | 'article' | 'srt'
 type DifficultyLevel = 1 | 2 | 3 | null
+type RequiredDifficultyLevel = 1 | 2 | 3
 type DifficultyBadge = '초급' | '중급' | '고급' | null
 type LibraryFilter = 'all' | 'article' | 'srt' | 'generated'
 
@@ -40,8 +41,8 @@ interface ContentLibraryItem {
   id: string
   title: string
   sourceType: ContentSourceType
-  difficulty: DifficultyLevel
-  difficultyBadge: DifficultyBadge
+  difficulty: RequiredDifficultyLevel
+  difficultyBadge: Exclude<DifficultyBadge, null>
   provenanceLabel: string
   provenanceDetail: string
   createdAt: number
@@ -56,27 +57,27 @@ interface ListLibraryItemsInput {
 interface ImportSrtInput {
   filePath: string
   title?: string
-  difficulty: DifficultyLevel
+  difficulty: RequiredDifficultyLevel
   confirmDuplicate?: boolean
 }
 
 interface CreateArticleFromPasteInput {
   title?: string
   text: string
-  difficulty: DifficultyLevel
+  difficulty: RequiredDifficultyLevel
   confirmDuplicate?: boolean
 }
 
 interface CreateArticleFromUrlInput {
   url: string
   title?: string
-  difficulty: DifficultyLevel
+  difficulty: RequiredDifficultyLevel
   confirmDuplicate?: boolean
 }
 
 interface GeneratePracticeSentencesInput {
   topic: string
-  difficulty: Exclude<DifficultyLevel, null>
+  difficulty: RequiredDifficultyLevel
   confirmDuplicate?: boolean
 }
 

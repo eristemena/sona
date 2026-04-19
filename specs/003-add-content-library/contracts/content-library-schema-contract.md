@@ -10,7 +10,7 @@ Columns:
 - `id TEXT PRIMARY KEY NOT NULL`
 - `title TEXT NOT NULL`
 - `source_type TEXT NOT NULL CHECK (source_type IN ('generated', 'article', 'srt'))`
-- `difficulty INTEGER CHECK (difficulty IN (1, 2, 3) OR difficulty IS NULL)`
+- `difficulty INTEGER NOT NULL CHECK (difficulty IN (1, 2, 3))`
 - `source_locator TEXT NOT NULL`
 - `provenance_label TEXT NOT NULL`
 - `provenance_detail TEXT NOT NULL`
@@ -34,7 +34,7 @@ Columns:
 - `romanization TEXT`
 - `tokens_json TEXT`
 - `annotations_json TEXT NOT NULL DEFAULT '{}'`
-- `difficulty INTEGER CHECK (difficulty IN (1, 2, 3) OR difficulty IS NULL)`
+- `difficulty INTEGER NOT NULL CHECK (difficulty IN (1, 2, 3))`
 - `source_type TEXT NOT NULL CHECK (source_type IN ('generated', 'article', 'srt'))`
 - `audio_offset REAL`
 - `created_at INTEGER NOT NULL`
