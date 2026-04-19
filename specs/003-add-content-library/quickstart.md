@@ -7,7 +7,7 @@ This feature is in planning. The commands and checks below define the expected v
 - Node.js 20 LTS or newer.
 - npm available locally.
 - A desktop environment supported by the current Electron workflow.
-- Optional provider credentials configured locally only if generation or scrape testing requires them.
+- Optional provider credentials configured locally only for AI generation testing.
 
 ## 2. Install Dependencies
 

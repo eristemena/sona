@@ -61,7 +61,6 @@ Purpose: Preserves learner-visible provenance about how a library item entered S
 
 Fields:
 - `contentItemId`: Parent item identifier.
-- `sourceType`: `srt`, `article`, or `generated`.
 - `originMode`: `file-import`, `article-paste`, `article-scrape`, or `generation-request`.
 - `filePath`: Nullable absolute file path for SRT imports.
 - `url`: Nullable source URL for scraped articles.
@@ -73,7 +72,7 @@ Fields:
 
 Validation rules:
 - At least one of `filePath`, `url`, or `sessionId` must be present.
-- `originMode` must be compatible with `sourceType`.
+- `originMode` must be compatible with the parent item `sourceType`.
 - `displaySource` must remain non-empty so provenance is always inspectable.
 - When generated content is relabeled, both `requestedDifficulty` and `validatedDifficulty` must be preserved.
 
