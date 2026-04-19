@@ -1,6 +1,6 @@
 import type Database from "better-sqlite3";
 
-import type { CorpusSegment } from "../../../../domain/src/provenance/corpus-segment.js";
+import type { CorpusSegment } from "@sona/domain/provenance/corpus-segment";
 
 export function runSrsHarvest(
   database: Database.Database,

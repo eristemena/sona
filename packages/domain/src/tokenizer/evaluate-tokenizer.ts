@@ -11,7 +11,11 @@ export function evaluateTokenizers(
   const stratumResults: TokenizerStratumResult[] = strata.map((stratum) => {
     const stratumSegments = segments.filter((segment) => segment.stratum === stratum)
     const scores = adapters.map((adapter) => scoreAdapter(adapter, stratumSegments))
-    const best = scores.sort((left, right) => right.score - left.score)[0]
+    const best = scores.sort((left, right) => right.score - left.score)[0] ?? {
+      score: 0,
+      errorClasses: ["no-tokenizer-results"],
+      learnerImpact: "No tokenizer result was produced for this stratum.",
+    };
 
     return {
       name: stratum,

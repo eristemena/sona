@@ -3,11 +3,13 @@ dist/
 out/
 coverage/
 .next/
+*.tsbuildinfo
 *.log
 .env*
 .DS_Store
 Thumbs.db
 *.tmp
 *.swp
+.vscode/
 .idea/
 artifacts/sqlite/

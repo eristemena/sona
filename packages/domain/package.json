@@ -4,9 +4,45 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./*": "./src/*.ts"
+    "./contracts/*": {
+      "types": "./dist/contracts/*.d.ts",
+      "import": "./dist/contracts/*.js"
+    },
+    "./settings/*": {
+      "types": "./dist/settings/*.d.ts",
+      "import": "./dist/settings/*.js"
+    },
+    "./provenance/*": {
+      "types": "./dist/provenance/*.d.ts",
+      "import": "./dist/provenance/*.js"
+    },
+    "./artifacts/*": {
+      "types": "./dist/artifacts/*.d.ts",
+      "import": "./dist/artifacts/*.js"
+    },
+    "./benchmark/*": {
+      "types": "./dist/benchmark/*.d.ts",
+      "import": "./dist/benchmark/*.js"
+    },
+    "./fallback/*": {
+      "types": "./dist/fallback/*.d.ts",
+      "import": "./dist/fallback/*.js"
+    },
+    "./fixtures/*": {
+      "types": "./dist/fixtures/*.d.ts",
+      "import": "./dist/fixtures/*.js"
+    },
+    "./tokenizer/*": {
+      "types": "./dist/tokenizer/*.d.ts",
+      "import": "./dist/tokenizer/*.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js"
+    }
   },
   "scripts": {
+    "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   }
 }

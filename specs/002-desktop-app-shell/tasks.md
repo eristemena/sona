@@ -11,11 +11,11 @@
 
 **Purpose**: Add the desktop-shell dependencies, build scripts, and renderer scaffolding needed across all stories.
 
-- [ ] T001 Update root workspace scripts for desktop shell build and package flows in /Volumes/xpro/erisristemena/made-by-ai/sona/package.json
-- [ ] T002 [P] Add Electron shell packaging and runtime dependencies in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/package.json
-- [ ] T003 [P] Add Next.js renderer UI dependencies for Tailwind CSS and shadcn/ui in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/package.json
-- [ ] T004 [P] Configure renderer app skeleton, Tailwind entrypoints, and static-export defaults in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/next.config.mjs, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/layout.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/page.tsx, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/globals.css
-- [ ] T005 [P] Add desktop and renderer TypeScript path configuration for shared shell contracts in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/tsconfig.json, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/tsconfig.json, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/tsconfig.json
+- [X] T001 Update root workspace scripts for desktop shell build and package flows in /Volumes/xpro/erisristemena/made-by-ai/sona/package.json
+- [X] T002 [P] Add Electron shell packaging and runtime dependencies in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/package.json
+- [X] T003 [P] Add Next.js renderer UI dependencies for Tailwind CSS and shadcn/ui in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/package.json
+- [X] T004 [P] Configure renderer app skeleton, Tailwind entrypoints, and static-export defaults in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/next.config.mjs, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/layout.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/page.tsx, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/globals.css
+- [X] T005 [P] Add desktop and renderer TypeScript path configuration for shared shell contracts in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/tsconfig.json, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/tsconfig.json, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/tsconfig.json
 
 ---
 
@@ -25,12 +25,12 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T006 Create the v1 shell migration SQL and migration runner in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/001_shell_v1.sql and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/run-migrations.ts
-- [ ] T007 [P] Implement shell settings repository and theme resolution service in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/settings-repository.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/settings/theme-preference.ts
-- [ ] T008 [P] Define shared desktop shell IPC and bridge types in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/window-sona.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/shell-bootstrap.ts
-- [ ] T009 Implement Electron main-process bootstrap, BrowserWindow creation, and IPC handlers in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/index.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/create-main-window.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/shell-handlers.ts
-- [ ] T010 Implement the typed preload bridge exposing `window.sona` in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/window.d.ts
-- [ ] T011 [P] Add contract coverage for the shell schema and `window.sona` bootstrap surface in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/shell-schema-contract.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/window-sona-api-contract.test.ts
+- [X] T006 Create the v1 shell migration SQL and migration runner in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/001_shell_v1.sql and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/run-migrations.ts
+- [X] T007 [P] Implement shell settings repository and theme resolution service in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/settings-repository.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/settings/theme-preference.ts
+- [X] T008 [P] Define shared desktop shell IPC and bridge types in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/window-sona.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/shell-bootstrap.ts
+- [X] T009 Implement Electron main-process bootstrap, BrowserWindow creation, and IPC handlers in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/index.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/create-main-window.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/shell-handlers.ts
+- [X] T010 Implement the typed preload bridge exposing `window.sona` in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/window.d.ts
+- [X] T011 [P] Add contract coverage for the shell schema and `window.sona` bootstrap surface in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/shell-schema-contract.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/window-sona-api-contract.test.ts
 
 **Checkpoint**: Foundation ready. The desktop runtime can initialize the local schema, resolve theme state, and expose typed shell bootstrap data to the renderer.
 
@@ -44,15 +44,15 @@
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T012 [P] [US1] Add integration coverage for first-launch and interrupted-session shell bootstrap in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/desktop-shell-launch.test.ts
-- [ ] T013 [P] [US1] Add integration coverage for offline shell startup in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-shell-startup.test.ts
+- [X] T012 [P] [US1] Add integration coverage for first-launch and interrupted-session shell bootstrap in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/desktop-shell-launch.test.ts
+- [X] T013 [P] [US1] Add integration coverage for offline shell startup in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-shell-startup.test.ts
 
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Implement renderer shell bootstrap hook and bootstrap-state loader in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-shell-bootstrap.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/shell-bootstrap.ts
-- [ ] T015 [P] [US1] Build the shell layout and empty content frame in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/app-shell.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/main-content-placeholder.tsx
-- [ ] T016 [US1] Render the launch shell from the root page in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/page.tsx
-- [ ] T017 [US1] Add first-launch and crash-relaunch shell manual verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
+- [X] T014 [P] [US1] Implement renderer shell bootstrap hook and bootstrap-state loader in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-shell-bootstrap.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/shell-bootstrap.ts
+- [X] T015 [P] [US1] Build the shell layout and empty content frame in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/app-shell.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/main-content-placeholder.tsx
+- [X] T016 [US1] Render the launch shell from the root page in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/page.tsx
+- [X] T017 [US1] Add first-launch and crash-relaunch shell manual verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
 
 **Checkpoint**: User Story 1 should now launch into a stable shell and be testable as the MVP slice.
 
@@ -66,15 +66,15 @@
 
 ### Tests for User Story 2
 
-- [ ] T018 [P] [US2] Add integration coverage for sidebar navigation and active destination rendering in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/sidebar-navigation.test.ts
-- [ ] T019 [P] [US2] Add accessibility-focused navigation interaction coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/sidebar-keyboard-navigation.test.ts
+- [X] T018 [P] [US2] Add integration coverage for sidebar navigation and active destination rendering in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/sidebar-navigation.test.ts
+- [X] T019 [P] [US2] Add accessibility-focused navigation interaction coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/sidebar-keyboard-navigation.test.ts
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Implement ordered navigation definitions and selection state helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/navigation.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-active-destination.ts
-- [ ] T021 [P] [US2] Build the persistent sidebar navigation UI with app name, four destinations, and active styling in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/sidebar-nav.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/sidebar-nav-item.tsx
-- [ ] T022 [US2] Integrate destination switching into the shell layout in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/app-shell.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/main-content-placeholder.tsx
-- [ ] T023 [US2] Add manual verification steps for pointer and keyboard navigation in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
+- [X] T020 [P] [US2] Implement ordered navigation definitions and selection state helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/navigation.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-active-destination.ts
+- [X] T021 [P] [US2] Build the persistent sidebar navigation UI with app name, four destinations, and active styling in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/sidebar-nav.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/sidebar-nav-item.tsx
+- [X] T022 [US2] Integrate destination switching into the shell layout in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/app-shell.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/main-content-placeholder.tsx
+- [X] T023 [US2] Add manual verification steps for pointer and keyboard navigation in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
 
 **Checkpoint**: User Stories 1 and 2 should now work independently, with a persistent accessible sidebar and empty main panel destinations.
 
@@ -88,16 +88,16 @@
 
 ### Tests for User Story 3 (required for constitution-sensitive changes) ⚠️
 
-- [ ] T024 [P] [US3] Add integration coverage for theme preference persistence and relaunch restore in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/theme-preference-persistence.test.ts
-- [ ] T025 [P] [US3] Add integration coverage for invalid-setting fallback, system-theme resolution, and dark-mode fallback in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/theme-resolution-fallback.test.ts
+- [X] T024 [P] [US3] Add integration coverage for theme preference persistence and relaunch restore in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/theme-preference-persistence.test.ts
+- [X] T025 [P] [US3] Add integration coverage for invalid-setting fallback, system-theme resolution, and dark-mode fallback in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/theme-resolution-fallback.test.ts
 
 ### Implementation for User Story 3
 
-- [ ] T026 [P] [US3] Implement main-process theme settings handlers and system-theme subscriptions in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/settings-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/theme/native-theme-events.ts
-- [ ] T027 [P] [US3] Implement renderer theme provider and `window.sona.settings` integration in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/theme-provider.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-theme-preference.ts
-- [ ] T028 [US3] Add the Settings destination theme controls and shell theme application in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/settings/theme-settings.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/app-shell.tsx, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/globals.css
-- [ ] T029 [US3] Persist and seed the `appearance.themePreference` setting through the migration-backed settings service in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/settings-repository.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/001_shell_v1.sql
-- [ ] T030 [US3] Add theme persistence, system-theme resolution, and dark-fallback verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
+- [X] T026 [P] [US3] Implement main-process theme settings handlers and system-theme subscriptions in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/settings-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/theme/native-theme-events.ts
+- [X] T027 [P] [US3] Implement renderer theme provider and `window.sona.settings` integration in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/theme-provider.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-theme-preference.ts
+- [X] T028 [US3] Add the Settings destination theme controls and shell theme application in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/settings/theme-settings.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/app-shell.tsx, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/globals.css
+- [X] T029 [US3] Persist and seed the `appearance.themePreference` setting through the migration-backed settings service in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/settings-repository.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/001_shell_v1.sql
+- [X] T030 [US3] Add theme persistence, system-theme resolution, and dark-fallback verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
 
 **Checkpoint**: All three user stories should now be independently functional, including persisted theme behavior across launches.
 
@@ -107,10 +107,10 @@
 
 **Purpose**: Finalize packaging, developer workflow, and end-to-end validation across the shell feature.
 
-- [ ] T031 [P] Add desktop package scripts and electron-builder configuration in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/package.json and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/electron-builder.yml
-- [ ] T032 [P] Add renderer and desktop developer workflow commands to /Volumes/xpro/erisristemena/made-by-ai/sona/package.json and /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
-- [ ] T033 Validate packaged offline launch and record the result in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
-- [ ] T034 Run the complete quickstart validation path and update the latest verification notes in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
+- [X] T031 [P] Add desktop package scripts and electron-builder configuration in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/package.json and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/electron-builder.yml
+- [X] T032 [P] Add renderer and desktop developer workflow commands to /Volumes/xpro/erisristemena/made-by-ai/sona/package.json and /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
+- [X] T033 Validate packaged offline launch and record the result in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
+- [X] T034 Run the complete quickstart validation path and update the latest verification notes in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/002-desktop-app-shell/quickstart.md
 
 ---
 

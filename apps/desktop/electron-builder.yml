@@ -1,0 +1,43 @@
+appId: ai.madeby.sona
+productName: Sona
+directories:
+  app: ../..
+  output: ../../dist/electron-builder
+extraMetadata:
+  main: apps/desktop/dist/main/index.js
+files:
+  - apps/desktop/dist/**
+  - apps/desktop/package.json
+  - package.json
+  - from: packages/data
+    to: node_modules/@sona/data
+    filter:
+      - package.json
+      - dist/**
+      - src/sqlite/migrations/*.sql
+  - from: packages/domain
+    to: node_modules/@sona/domain
+    filter:
+      - package.json
+      - dist/**
+  - from: node_modules/better-sqlite3
+    to: node_modules/better-sqlite3
+    filter:
+      - '**/*'
+  - from: node_modules/bindings
+    to: node_modules/bindings
+    filter:
+      - '**/*'
+  - from: node_modules/file-uri-to-path
+    to: node_modules/file-uri-to-path
+    filter:
+      - '**/*'
+  - '!**/*.map'
+asarUnpack:
+  - node_modules/better-sqlite3/**
+extraResources:
+  - from: ../renderer/out
+    to: renderer
+mac:
+  target:
+    - dir

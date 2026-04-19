@@ -5,7 +5,11 @@
   "description": "Local-first Korean study feasibility spike workspace.",
   "type": "module",
   "scripts": {
-    "build": "npm run build --workspace @sona/desktop && npm run build --workspace @sona/renderer",
+    "build": "npm run build --workspace @sona/domain && npm run build --workspace @sona/data && npm run build --workspace @sona/renderer && npm run build --workspace @sona/desktop",
+    "typecheck": "npm run typecheck --workspace @sona/domain && npm run typecheck --workspace @sona/data && npm run typecheck --workspace @sona/renderer && npm run typecheck --workspace @sona/desktop",
+    "dev:renderer": "npm run dev --workspace @sona/renderer",
+    "dev:desktop": "npm run start --workspace @sona/desktop",
+    "package:desktop": "npm run build && npm run package --workspace @sona/desktop && npm rebuild better-sqlite3",
     "spike:tokenizer": "tsx spikes/tokenizer/src/run-tokenizer-spike.ts",
     "spike:llm-fallback": "tsx spikes/llm-fallback/src/generate-fallback-spec.ts",
     "spike:sqlite-concurrency": "tsx spikes/sqlite-concurrency/src/run-sqlite-concurrency.ts",
@@ -25,7 +29,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
     "@types/node": "^22.13.10",
+    "jsdom": "^26.1.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
     "vitest": "^4.0.7"

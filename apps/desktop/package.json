@@ -2,13 +2,24 @@
   "name": "@sona/desktop",
   "version": "0.1.0",
   "private": true,
+  "description": "Electron desktop shell for Sona.",
+  "author": "made-by-ai",
   "type": "module",
   "main": "dist/main/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "rebuild:native": "npm rebuild better-sqlite3 --build-from-source --runtime=electron --target=$(node -p \"require('./package.json').devDependencies.electron\") --dist-url=https://electronjs.org/headers --target_arch=$(node -p \"process.arch\")",
+    "start": "npm run rebuild:native && electron .",
+    "poststart": "npm rebuild better-sqlite3",
+    "package": "npm run rebuild:native && electron-builder --config electron-builder.yml --publish never"
   },
   "dependencies": {
-    "electron": "^33.2.1"
+    "@sona/data": "0.1.0",
+    "@sona/domain": "0.1.0"
+  },
+  "devDependencies": {
+    "electron": "33.2.1",
+    "electron-builder": "^25.1.8"
   }
 }

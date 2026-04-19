@@ -1,0 +1,120 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+@import 'tailwindcss';
+
+:root {
+  --bg-base: #0f1117;
+  --bg-surface: #1a1d27;
+  --bg-elevated: #22263a;
+  --border: #2e3248;
+  --text-primary: #e8eaf0;
+  --text-secondary: #8b90a8;
+  --text-muted: #555a72;
+  --accent: #6c8ef5;
+  --accent-hover: #8aa5ff;
+  --accent-subtle: color-mix(in srgb, var(--accent) 14%, transparent);
+  --success: #4ecda4;
+  --warning: #f5a623;
+  --danger: #e05c5c;
+  --shadow-soft: 0 24px 60px rgba(6, 10, 20, 0.32);
+}
+
+:root[data-theme='light'] {
+  --bg-base: #f7f7fa;
+  --bg-surface: #ffffff;
+  --bg-elevated: #efeff4;
+  --border: #e0e2ed;
+  --text-primary: #1a1d27;
+  --text-secondary: #5a5f7a;
+  --text-muted: #9399b2;
+  --accent: #4a6cf5;
+  --accent-hover: #3355e0;
+  --accent-subtle: color-mix(in srgb, var(--accent) 10%, transparent);
+  --shadow-soft: 0 24px 60px rgba(21, 29, 46, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg-base);
+  color: var(--text-primary);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 16%, transparent), transparent 34%),
+    linear-gradient(160deg, var(--bg-base) 0%, color-mix(in srgb, var(--bg-base) 90%, black) 100%);
+  color: var(--text-primary);
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  transform: translateY(-200%);
+  border-radius: 0.5rem;
+  background: var(--accent);
+  color: white;
+  padding: 0.75rem 1rem;
+  transition: transform 150ms ease;
+  z-index: 20;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.6) 0, transparent 22%), radial-gradient(circle at 80% 0%, rgba(255,255,255,0.35) 0, transparent 18%);
+  mix-blend-mode: soft-light;
+}
+
+.shell-loading {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  color: var(--text-secondary);
+}
+
+.shell-loading-panel {
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-surface) 82%, transparent);
+  box-shadow: var(--shadow-soft);
+  border-radius: 1.25rem;
+  padding: 1.5rem 1.75rem;
+  backdrop-filter: blur(24px);
+}
+
+@media (forced-colors: active) {
+  :root,
+  :root[data-theme='light'] {
+    --bg-base: Canvas;
+    --bg-surface: Canvas;
+    --bg-elevated: Canvas;
+    --border: ButtonBorder;
+    --text-primary: CanvasText;
+    --text-secondary: CanvasText;
+    --text-muted: GrayText;
+    --accent: Highlight;
+    --accent-hover: Highlight;
+    --accent-subtle: Canvas;
+  }
+}

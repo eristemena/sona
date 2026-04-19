@@ -3,10 +3,30 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "exports": {
+    "./sqlite/migrations/*": {
+      "types": "./dist/sqlite/migrations/*.d.ts",
+      "import": "./dist/sqlite/migrations/*.js"
+    },
+    "./sqlite/workloads/*": {
+      "types": "./dist/sqlite/workloads/*.d.ts",
+      "import": "./dist/sqlite/workloads/*.js"
+    },
+    "./sqlite/*": {
+      "types": "./dist/sqlite/*.d.ts",
+      "import": "./dist/sqlite/*.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js"
+    }
+  },
   "scripts": {
+    "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@sona/domain": "0.1.0",
     "better-sqlite3": "^11.8.1"
   }
 }
