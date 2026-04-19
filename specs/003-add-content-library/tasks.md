@@ -89,14 +89,14 @@
 ### Tests for User Story 3 ⚠️
 
 - [ ] T024 [P] [US3] Add integration coverage for pasted article save, article filtering, and duplicate-warning behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/article-paste-flow.test.tsx
-- [ ] T025 [P] [US3] Add integration coverage for scrape fallback and non-destructive article scrape failure handling in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/article-scrape-fallback.test.ts
+- [ ] T025 [P] [US3] Add integration coverage for article scrape duplicate-warning, fallback, and non-destructive failure handling in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/article-scrape-fallback.test.ts
 
 ### Implementation for User Story 3
 
 - [ ] T026 [P] [US3] Implement Korean-aware article sentence splitting and article source helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/sentence-splitter.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/article-source.ts
 - [ ] T027 [P] [US3] Implement main-process article paste and scrape services in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/article-content-service.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/providers/article-scraper.ts
 - [ ] T028 [US3] Wire article creation flows into content IPC handlers and preload methods in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts
-- [ ] T029 [US3] Add article paste and scrape controls plus duplicate-confirmation UI to the add-content flow in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
+- [ ] T029 [US3] Add article paste and scrape controls plus duplicate-confirmation UI for both article save paths in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
 - [ ] T030 [US3] Add article paste, scrape, and offline-fallback verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 **Checkpoint**: User Stories 1 through 3 should now support shared library management plus both local article paste and optional scraping.
@@ -204,7 +204,7 @@ Task: "Implement the SRT parser service and subtitle block mapping in apps/deskt
 ```bash
 # Launch User Story 3 tests together:
 Task: "Add integration coverage for pasted article save, article filtering, and duplicate-warning behavior in tests/integration/article-paste-flow.test.tsx"
-Task: "Add integration coverage for scrape fallback and non-destructive article scrape failure handling in tests/integration/article-scrape-fallback.test.ts"
+Task: "Add integration coverage for article scrape duplicate-warning, fallback, and non-destructive failure handling in tests/integration/article-scrape-fallback.test.ts"
 
 # Launch User Story 3 article services together:
 Task: "Implement Korean-aware article sentence splitting and article source helpers in packages/domain/src/content/sentence-splitter.ts and packages/domain/src/content/article-source.ts"

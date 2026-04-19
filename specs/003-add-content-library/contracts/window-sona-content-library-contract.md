@@ -31,7 +31,7 @@ interface ContentBlock {
   romanization: string | null
   tokens: Token[] | null
   annotations: Record<string, Annotation | null>
-  difficulty: DifficultyLevel
+  difficulty: RequiredDifficultyLevel
   source_type: ContentSourceType
   audio_offset: number | null
   created_at: number

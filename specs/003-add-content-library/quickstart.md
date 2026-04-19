@@ -63,6 +63,7 @@ Manual checks:
 - Confirm the library card appears under the Articles filter and participates in search.
 - Disable network access and confirm article paste still works.
 - Attempt a scrape with a reachable URL and confirm the article saves as an item.
+- Attempt to scrape an article that matches existing saved content and confirm the app warns before save and only continues after explicit confirmation.
 - Attempt a scrape while offline or with an invalid URL and confirm no partial record is created.
 
 Expected automated coverage:
