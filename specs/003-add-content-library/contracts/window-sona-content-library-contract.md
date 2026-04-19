@@ -32,10 +32,10 @@ interface ContentBlock {
   tokens: Token[] | null
   annotations: Record<string, Annotation | null>
   difficulty: RequiredDifficultyLevel
-  source_type: ContentSourceType
-  audio_offset: number | null
+  sourceType: ContentSourceType
+  audioOffset: number | null
   sentenceOrdinal: number
-  created_at: number
+  createdAt: number
 }
 
 interface ContentLibraryItem {
@@ -82,10 +82,26 @@ interface GeneratePracticeSentencesInput {
   confirmDuplicate?: boolean
 }
 
-interface SaveContentResult {
+interface SaveContentSuccess {
+  ok: true
   item: ContentLibraryItem
   blocks: ContentBlock[]
 }
+
+interface DuplicateWarningResult {
+  ok: false
+  reason: 'duplicate-warning'
+  message: string
+  matchingItemIds: string[]
+}
+
+interface SaveContentFailure {
+  ok: false
+  reason: 'invalid-input' | 'validation-rejected' | 'provider-unavailable' | 'scrape-failed'
+  message: string
+}
+
+type SaveContentResult = SaveContentSuccess | DuplicateWarningResult | SaveContentFailure
 
 interface DeleteContentResult {
   deletedId: string
@@ -121,6 +137,7 @@ interface WindowSona {
 ## Behavior Rules
 
 - All methods return typed data only; no raw database handles, filesystem handles, or generic IPC channel names are exposed to the renderer.
+- The renderer-facing preload contract uses camelCase field names; snake_case remains limited to SQLite schema and migration artifacts.
 - `listLibraryItems()` supports the library card grid, pill-tab filters, and search input state without requiring direct SQL in the renderer.
 - `listLibraryItems()` returns enough metadata for the learner to inspect both a short provenance label and a fuller provenance detail string.
 - `importSrt()` parses the file in the main process, creates a library item plus sentence-level blocks, and returns the saved result only after persistence succeeds.
@@ -132,9 +149,9 @@ interface WindowSona {
 ## Error Model
 
 - Invalid user input is rejected before persistence with normalized, learner-safe errors.
-- Duplicate candidates return a normalized duplicate-warning error until the learner explicitly confirms save.
-- Scrape and provider failures return explicit feature-scoped errors and must not mutate existing library records.
-- Generation validation failures return a non-destructive error or relabeled result rather than saving hidden drift.
+- Duplicate candidates return `DuplicateWarningResult` until the learner explicitly confirms save.
+- Scrape and provider failures return `SaveContentFailure` with feature-scoped reasons and must not mutate existing library records.
+- Generation validation failures return `SaveContentFailure` with `reason: 'validation-rejected'` rather than saving hidden drift.
 
 ## Security Rules
 
