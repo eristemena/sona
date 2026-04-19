@@ -1,6 +1,6 @@
 {
-  "reportId": "tokenizer-report-1776550617905",
-  "generatedAt": "2026-04-18T22:16:57.905Z",
+  "reportId": "tokenizer-report-1776566039229",
+  "generatedAt": "2026-04-19T02:33:59.229Z",
   "tracks": [
     "local-js-segmenter",
     "llm-fallback-reference"
