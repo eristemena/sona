@@ -9,17 +9,17 @@
 
 ### User Story 1 - Read With Synced Audio (Priority: P1)
 
-A learner opens a saved piece of Korean content and studies it in a focused reading view where the text flows naturally while an audio reading plays in sync. As the audio advances, the currently spoken word is highlighted so the learner can track pronunciation and phrasing without losing their place.
+A learner opens a saved piece of Korean content and studies it in a focused reading view where the text flows naturally while a block-level audio reading plays in sync for the currently active reading block. As the audio advances, the currently spoken word in that active block is highlighted so the learner can track pronunciation and phrasing without losing their place.
 
 **Why this priority**: This is the core learning loop for the feature. Without reliable synced reading and listening, the rest of the workflow has little value.
 
-**Independent Test**: Can be fully tested by opening a content item with available audio, starting playback, and confirming that the reading view remains usable while the spoken word stays visually aligned with the audio.
+**Independent Test**: Can be fully tested by opening a content item with available block audio, starting playback for the active reading block, and confirming that the reading view remains usable while the spoken word in that block stays visually aligned with the audio.
 
 **Acceptance Scenarios**:
 
-1. **Given** a learner opens a content item with an available audio reading, **When** playback starts, **Then** the content is shown as continuous Korean reading text and the currently spoken word is visually highlighted as the audio progresses.
-2. **Given** a learner pauses, replays, changes speed, or moves to another point in the audio, **When** playback position changes, **Then** the highlighted word updates to match the new spoken position without forcing the learner to restart the passage.
-3. **Given** a learner opens content that does not have usable audio alignment, **When** the reading view loads, **Then** the learner can still read the text and is clearly informed that synced highlighting is unavailable for that item.
+1. **Given** a learner opens a content item with available audio for the active reading block, **When** playback starts, **Then** the content is shown as continuous Korean reading text and the currently spoken word in that block is visually highlighted as the audio progresses.
+2. **Given** a learner pauses, replays, changes speed, or moves to another point in the active block audio, **When** playback position changes, **Then** the highlighted word updates to match the new spoken position without forcing the learner to restart the block.
+3. **Given** a learner opens content whose active block does not have usable audio alignment metadata, **When** the reading view loads, **Then** the learner can still read the text and is clearly informed that synced highlighting is unavailable for that block.
 
 ---
 
@@ -54,7 +54,7 @@ A learner can save a word they want to remember directly from the reading view s
 
 ### Edge Cases
 
-- Audio playback is available but word-level timing is incomplete or drifts partway through the passage.
+- Audio playback is available for a block but word-level timing is incomplete, malformed, or drifts partway through the block.
 - A learner taps a repeated word that appears multiple times in the visible sentence and expects details for the exact occurrence they selected.
 - A learner opens mixed Korean and non-Korean text, punctuation-heavy text, or quoted dialogue and still expects natural reading flow and word selection behavior.
 - A learner requests deeper grammar detail while offline or while optional enrichment resources are unavailable.
@@ -66,12 +66,12 @@ A learner can save a word they want to remember directly from the reading view s
 
 - The feature creates or updates local reading-session state, playback position, learner-selected word actions, and learner-approved review additions.
 - Any saved review addition created from the reading view remains stored on the local device with its source context.
-- Network use is optional only for enhanced explanation or audio support when the learner has configured it. Core reading, synced playback for prepared audio, basic word inspection, and review capture remain usable without mandatory network access.
+- Network use is optional only for enhanced explanation or block-audio support when the learner has configured it. Core reading, synced playback for prepared block audio, basic word inspection, and review capture remain usable without mandatory network access.
 
 ### Source Material & Provenance
 
-- This flow starts from learner-approved content already saved in Sona, along with any associated audio reading made available for that content.
-- Every review addition created from the reading view retains its source content and sentence context so the learner can inspect where it came from.
+- This flow starts from learner-approved content already saved in Sona, along with any associated block audio made available for that content.
+- Every review addition created from the reading view retains its source content and sentence context so the learner can inspect where it came from later through persisted review-card provenance.
 - The learner can inspect derived study material in context from the reading view rather than relying on opaque automation.
 
 ### Review Load & Recovery
@@ -82,22 +82,22 @@ A learner can save a word they want to remember directly from the reading view s
 
 ### Reading, Listening, and TTS
 
-- Reading, audio, and review state stay connected through a shared reading session so the learner can move from listening to lookup to review capture without losing context.
-- If audio, pronunciation support, or richer explanation detail is unavailable, the learner can continue in a text-first reading mode with basic word details and review capture still available when possible.
+- Reading, block audio, and review state stay connected through a shared reading session so the learner can move from listening to lookup to review capture without losing context.
+- If audio, timing metadata, pronunciation support, or richer explanation detail is unavailable, the learner can continue in a text-first reading mode with basic word details and review capture still available when possible.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST present opened content as continuous Korean reading text in a dedicated reading view that supports concurrent audio playback for the same content item.
-- **FR-002**: The system MUST keep a visible highlight aligned to the currently spoken word during playback and after pause, replay, speed changes, or learner-initiated navigation to a different playback position.
+- **FR-001**: The system MUST present opened content as continuous Korean reading text in a dedicated reading view that supports block-level audio playback for the currently active reading block.
+- **FR-002**: The system MUST keep a visible highlight aligned to the currently spoken word in the active reading block during playback and after pause, replay, speed changes, or learner-initiated navigation to a different playback position within that block.
 - **FR-003**: The system MUST allow a learner to select any displayed word and inspect its meaning and grammar-oriented breakdown without leaving the reading view.
 - **FR-004**: The system MUST allow a learner to request a deeper grammar explanation for the selected word or phrase and either show the explanation in context or clearly state when richer detail is unavailable.
 - **FR-005**: The system MUST allow a learner to add a selected word to the review deck directly from the reading view.
-- **FR-006**: The system MUST preserve the source content and sentence context for every review item added from the reading view so the learner can inspect its provenance later.
+- **FR-006**: The system MUST preserve the source content and sentence context for every review item added from the reading view so that provenance remains queryable and inspectable later.
 - **FR-007**: The system MUST prevent duplicate active review items from being created from reading-view selections and MUST apply existing new-item pacing rules before activating newly added review work.
 - **FR-008**: The system MUST store reading progress, playback position, learner-selected word actions, and learner-added review items locally so the core workflow remains usable without accounts or mandatory cloud services.
-- **FR-009**: The system MUST keep the reading workflow usable when audio, pronunciation support, or richer explanation detail is unavailable by falling back to text-first reading with clear status messaging.
+- **FR-009**: The system MUST keep the reading workflow usable when block audio, timing metadata, pronunciation support, token-to-timestamp mapping, or richer explanation detail is unavailable by falling back to text-first reading with clear status messaging.
 - **FR-010**: The system MUST support repeated word inspection and review actions during a reading session without interrupting playback unless the learner explicitly chooses to pause.
 
 ### Key Entities *(include if feature involves data)*
@@ -112,7 +112,7 @@ A learner can save a word they want to remember directly from the reading view s
 ### Measurable Outcomes
 
 - **SC-001**: In acceptance testing, learners can open saved content and begin a synced reading session in under 10 seconds for at least 90% of attempts.
-- **SC-002**: For content with usable word-level alignment, the highlighted word stays on the spoken word or an immediately adjacent word for at least 95% of playback time during validation runs.
+- **SC-002**: For active reading blocks with usable word-level alignment, the highlighted word stays on the spoken word or an immediately adjacent word for at least 95% of playback time during validation runs.
 - **SC-003**: In usability testing, at least 90% of learners can inspect a word's meaning and grammar details and return to reading without external help on their first attempt.
 - **SC-004**: At least 95% of learner-selected review additions are saved with visible source context and without creating duplicate active review items.
 - **SC-005**: In fallback testing where audio or richer explanation detail is unavailable, learners can still continue reading and add words to review in 100% of tested scenarios.
