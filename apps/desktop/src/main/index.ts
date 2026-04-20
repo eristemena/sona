@@ -2,10 +2,15 @@ import { app, BrowserWindow, nativeTheme } from 'electron'
 import path from 'node:path'
 
 import { createSqliteConnection } from '@sona/data/sqlite/connection'
+import { SqliteContentLibraryRepository } from "@sona/data/sqlite/content-library-repository";
 import { runShellMigrations } from '@sona/data/sqlite/migrations/run-migrations'
 import { SqliteSettingsRepository } from '@sona/data/sqlite/settings-repository'
 
+import { ArticleContentService } from "./content/article-content-service.js";
+import { GeneratedContentService } from "./content/generated-content-service.js";
+import { SrtImportService } from "./content/srt-import-service.js";
 import { createMainWindow } from './create-main-window.js'
+import { registerContentHandlers } from "./ipc/content-handlers.js";
 import { registerSettingsHandlers } from './ipc/settings-handlers.js'
 import { registerShellHandlers } from './ipc/shell-handlers.js'
 import { registerNativeThemeEvents } from './theme/native-theme-events.js'
@@ -19,11 +24,21 @@ async function bootstrapDesktopShell() {
   runShellMigrations(database)
 
   const settingsRepository = new SqliteSettingsRepository(database)
+  const contentRepository = new SqliteContentLibraryRepository(database);
+  const articleContentService = new ArticleContentService();
+  const generatedContentService = new GeneratedContentService();
+  const srtImportService = new SrtImportService();
   const themePreference = settingsRepository.getThemePreferenceMode()
   nativeTheme.themeSource = themePreference
 
   registerShellHandlers({ settingsRepository })
   registerSettingsHandlers({ settingsRepository, windows: () => BrowserWindow.getAllWindows() })
+  registerContentHandlers({
+    articleContentService,
+    contentRepository,
+    generatedContentService,
+    srtImportService,
+  });
   registerNativeThemeEvents({ settingsRepository, windows: () => BrowserWindow.getAllWindows() })
 
   mainWindow = createMainWindow()

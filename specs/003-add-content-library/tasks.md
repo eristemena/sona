@@ -11,8 +11,8 @@
 
 **Purpose**: Add the shared dependencies and module entrypoints needed by all content-library flows.
 
-- [ ] T001 Update workspace and desktop dependencies for content-library ingestion in /Volumes/xpro/erisristemena/made-by-ai/sona/package.json and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/package.json
-- [ ] T002 [P] Add shared content module exports for new content-library domain types in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/package.json and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/index.ts
+- [x] T001 Update workspace and desktop dependencies for content-library ingestion in /Volumes/xpro/erisristemena/made-by-ai/sona/package.json and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/package.json
+- [x] T002 [P] Add shared content module exports for new content-library domain types in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/package.json and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/index.ts
 
 ---
 
@@ -22,13 +22,13 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T003 Create the content-library migration SQL and extend migration loading in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/002_content_library_v1.sql and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/run-migrations.ts
-- [ ] T004 [P] Define shared content entities, difficulty helpers, and structural ID utilities in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/content-block.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/content-library-item.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/difficulty.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/content-id.ts
-- [ ] T005 [P] Implement the SQLite content-library repository with transactional save, list, delete, and duplicate-candidate lookup behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts
-- [ ] T006 [P] Define the typed content IPC contract in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/content-library.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/window-sona.ts
-- [ ] T007 Implement main-process content IPC registration and startup wiring in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/index.ts
-- [ ] T008 Implement the preload content bridge and renderer type exposure in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/window.d.ts
-- [ ] T009 [P] Add contract coverage for the content-library schema and `window.sona.content` surface in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/content-library-schema-contract.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/window-sona-content-library-contract.test.ts
+- [x] T003 Create the content-library migration SQL and extend migration loading in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/002_content_library_v1.sql and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/run-migrations.ts
+- [x] T004 [P] Define shared content entities, difficulty helpers, and structural ID utilities in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/content-block.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/content-library-item.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/difficulty.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/content-id.ts
+- [x] T005 [P] Implement the SQLite content-library repository with transactional save, list, delete, and duplicate-candidate lookup behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts
+- [x] T006 [P] Define the typed content IPC contract in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/content-library.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/window-sona.ts
+- [x] T007 Implement main-process content IPC registration and startup wiring in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/index.ts
+- [x] T008 Implement the preload content bridge and renderer type exposure in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/window.d.ts
+- [x] T009 [P] Add contract coverage for the content-library schema and `window.sona.content` surface in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/content-library-schema-contract.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/window-sona-content-library-contract.test.ts
 
 **Checkpoint**: Foundation ready. The app can initialize content-library tables, persist content-library records transactionally, and expose typed content methods to the renderer.
 
@@ -42,16 +42,16 @@
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T010 [P] [US1] Add integration coverage for content-library browse, filter, search, sentence-level content inspection, and provenance-detail display behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-browse.test.tsx
-- [ ] T011 [P] [US1] Add integration coverage for deletion and no-review side effects in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-delete.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-load-implications.test.ts
+- [x] T010 [P] [US1] Add integration coverage for content-library browse, filter, search, sentence-level content inspection, and provenance-detail display behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-browse.test.tsx
+- [x] T011 [P] [US1] Add integration coverage for deletion and no-review side effects in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-delete.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-load-implications.test.ts
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Implement library query state, filter mapping, and search helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-content-library.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/content-library-filters.ts
-- [ ] T013 [P] [US1] Build the Content Library card grid, filter pills, search input, sentence-level content detail surface, and provenance-detail affordance UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-card.tsx, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-toolbar.tsx
-- [ ] T014 [US1] Integrate the Content Library destination into shell rendering in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/main-content-placeholder.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/app-shell.tsx
-- [ ] T015 [US1] Implement library item deletion flow and empty-state behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-delete-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
-- [ ] T016 [US1] Add Content Library browse, provenance-detail, and delete manual verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
+- [x] T012 [P] [US1] Implement library query state, filter mapping, and search helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-content-library.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/content-library-filters.ts
+- [x] T013 [P] [US1] Build the Content Library card grid, filter pills, search input, sentence-level content detail surface, and provenance-detail affordance UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-card.tsx, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-toolbar.tsx
+- [x] T014 [US1] Integrate the Content Library destination into shell rendering in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/main-content-placeholder.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/app-shell.tsx
+- [x] T015 [US1] Implement library item deletion flow and empty-state behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-delete-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
+- [x] T016 [US1] Add Content Library browse, provenance-detail, and delete manual verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 **Checkpoint**: User Story 1 should now provide a browsable and manageable Content Library MVP with local deletion and no automatic review creation.
 
@@ -65,16 +65,16 @@
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T017 [P] [US2] Add integration coverage for successful subtitle import and duplicate-warning behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/subtitle-import-flow.test.ts
-- [ ] T018 [P] [US2] Add integration coverage for malformed subtitle rejection and subtitle provenance retention in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/subtitle-import-error.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provenance-artifact-integrity.test.ts
+- [x] T017 [P] [US2] Add integration coverage for successful subtitle import and duplicate-warning behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/subtitle-import-flow.test.ts
+- [x] T018 [P] [US2] Add integration coverage for malformed subtitle rejection and subtitle provenance retention in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/subtitle-import-error.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provenance-artifact-integrity.test.ts
 
 ### Implementation for User Story 2
 
-- [ ] T019 [P] [US2] Add subtitle import input types and subtitle-specific mapping helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/subtitle-import.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/provenance/corpus-segment.ts
-- [ ] T020 [P] [US2] Implement the SRT parser service and subtitle block mapping in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/srt-import-service.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/subtitle-block-mapper.ts
-- [ ] T021 [US2] Wire subtitle import through content IPC handlers and repository persistence in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts
-- [ ] T022 [US2] Add subtitle import controls and duplicate-confirmation UI to the library flow in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
-- [ ] T023 [US2] Add subtitle import and timing-offset verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
+- [x] T019 [P] [US2] Add subtitle import input types and subtitle-specific mapping helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/subtitle-import.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/provenance/corpus-segment.ts
+- [x] T020 [P] [US2] Implement the SRT parser service and subtitle block mapping in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/srt-import-service.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/subtitle-block-mapper.ts
+- [x] T021 [US2] Wire subtitle import through content IPC handlers and repository persistence in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts
+- [x] T022 [US2] Add subtitle import controls and duplicate-confirmation UI to the library flow in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
+- [x] T023 [US2] Add subtitle import and timing-offset verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 **Checkpoint**: User Stories 1 and 2 should now work together, with subtitle files importing into the shared library while remaining independently testable.
 
@@ -88,16 +88,16 @@
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T024 [P] [US3] Add integration coverage for pasted article save, article filtering, and duplicate-warning behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/article-paste-flow.test.tsx
-- [ ] T025 [P] [US3] Add integration coverage for article scrape duplicate-warning, fallback, and non-destructive failure handling in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/article-scrape-fallback.test.ts
+- [x] T024 [P] [US3] Add integration coverage for pasted article save, article filtering, and duplicate-warning behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/article-paste-flow.test.tsx
+- [x] T025 [P] [US3] Add integration coverage for article scrape duplicate-warning, fallback, and non-destructive failure handling in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/article-scrape-fallback.test.ts
 
 ### Implementation for User Story 3
 
-- [ ] T026 [P] [US3] Implement Korean-aware article sentence splitting and article source helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/sentence-splitter.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/article-source.ts
-- [ ] T027 [P] [US3] Implement main-process article paste and scrape services in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/article-content-service.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/providers/article-scraper.ts
-- [ ] T028 [US3] Wire article creation flows into content IPC handlers and preload methods in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts
-- [ ] T029 [US3] Add article paste and scrape controls plus duplicate-confirmation UI for both article save paths in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
-- [ ] T030 [US3] Add article paste, scrape, and offline-fallback verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
+- [x] T026 [P] [US3] Implement Korean-aware article sentence splitting and article source helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/sentence-splitter.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/article-source.ts
+- [x] T027 [P] [US3] Implement main-process article paste and scrape services in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/article-content-service.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/providers/article-scraper.ts
+- [x] T028 [US3] Wire article creation flows into content IPC handlers and preload methods in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts
+- [x] T029 [US3] Add article paste and scrape controls plus duplicate-confirmation UI for both article save paths in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
+- [x] T030 [US3] Add article paste, scrape, and offline-fallback verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 **Checkpoint**: User Stories 1 through 3 should now support shared library management plus both local article paste and optional scraping.
 
@@ -111,16 +111,16 @@
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T031 [P] [US4] Add integration coverage for generated-content difficulty validation, relabel, reject, and duplicate-warning behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/generated-content-difficulty-validation.test.ts
-- [ ] T032 [P] [US4] Extend no-key and offline provider fallback coverage for generation failures in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-no-key-feasibility.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provider-fallback-no-key.test.ts
+- [x] T031 [P] [US4] Add integration coverage for generated-content difficulty validation, relabel, reject, and duplicate-warning behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/generated-content-difficulty-validation.test.ts
+- [x] T032 [P] [US4] Extend no-key and offline provider fallback coverage for generation failures in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-no-key-feasibility.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provider-fallback-no-key.test.ts
 
 ### Implementation for User Story 4
 
-- [ ] T033 [P] [US4] Implement generation request models, difficulty prompt policy, and validation result mapping in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/generation-request.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/difficulty-policy.ts
-- [ ] T034 [P] [US4] Implement OpenRouter generation and difficulty-validation services in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/providers/openrouter-content-generator.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/generated-content-service.ts
-- [ ] T035 [US4] Persist generation outcomes and generated content blocks through the repository and content IPC handlers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts
-- [ ] T036 [US4] Add generated-content controls, duplicate-confirmation UI, and validated difficulty messaging to the library UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
-- [ ] T037 [US4] Add generated-content, requested-versus-validated difficulty, relabel, and reject verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
+- [x] T033 [P] [US4] Implement generation request models, difficulty prompt policy, and validation result mapping in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/generation-request.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/difficulty-policy.ts
+- [x] T034 [P] [US4] Implement OpenRouter generation and difficulty-validation services in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/providers/openrouter-content-generator.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/generated-content-service.ts
+- [x] T035 [US4] Persist generation outcomes and generated content blocks through the repository and content IPC handlers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/content-handlers.ts
+- [x] T036 [US4] Add generated-content controls, duplicate-confirmation UI, and validated difficulty messaging to the library UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
+- [x] T037 [US4] Add generated-content, requested-versus-validated difficulty, relabel, and reject verification notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 **Checkpoint**: All four user stories should now be independently testable, with optional provider-backed generation layered on top of the local-first library.
 
@@ -130,9 +130,9 @@
 
 **Purpose**: Finalize end-to-end regression coverage, offline validation, and documented verification across all content-library flows.
 
-- [ ] T038 [P] Add cross-story provenance integrity coverage for subtitle, article, and generated items, including learner-visible source details, in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provenance-artifact-integrity.test.ts
-- [ ] T039 [P] Add offline startup, schema-migration preservation, and content-library bootstrap regression coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-content-library-startup.test.ts
-- [ ] T040 Add explicit import-to-study-to-review-boundary regression coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/import-review-boundary.test.ts and validate the full quickstart flow in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
+- [x] T038 [P] Add cross-story provenance integrity coverage for subtitle, article, and generated items, including learner-visible source details, in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/provenance-artifact-integrity.test.ts
+- [x] T039 [P] Add offline startup, schema-migration preservation, and content-library bootstrap regression coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-content-library-startup.test.ts
+- [x] T040 Add explicit import-to-study-to-review-boundary regression coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/import-review-boundary.test.ts and validate the full quickstart flow in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/003-add-content-library/quickstart.md
 
 
 ---

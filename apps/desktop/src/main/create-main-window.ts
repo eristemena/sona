@@ -24,13 +24,20 @@ export function createMainWindow(): BrowserWindow {
     height: 880,
     minWidth: 1100,
     minHeight: 700,
-    title: 'Sona',
-    backgroundColor: '#0F1117',
+    title: "Sona",
+    backgroundColor: "#0F1117",
     show: false,
     webPreferences: {
-      preload: path.join(fileURLToPath(new URL('..', import.meta.url)), 'preload', 'index.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      preload: path.join(
+        fileURLToPath(new URL("..", import.meta.url)),
+        "preload",
+        "index.mjs",
+      ),
+      sandbox: false,
     },
-  })
+  });
 
   window.once('ready-to-show', () => {
     window.show()

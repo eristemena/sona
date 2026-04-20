@@ -51,6 +51,38 @@ body {
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
+@keyframes stage-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stage-enter {
+  animation: stage-enter 200ms ease both;
+}
+
+.panel-enter {
+  animation: panel-enter 200ms ease both;
+}
+
 a {
   color: inherit;
 }
@@ -116,5 +148,12 @@ select {
     --accent: Highlight;
     --accent-hover: Highlight;
     --accent-subtle: Canvas;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-enter,
+  .panel-enter {
+    animation: none;
   }
 }

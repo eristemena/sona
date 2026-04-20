@@ -4,6 +4,14 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./content": {
+      "types": "./dist/content/index.d.ts",
+      "import": "./dist/content/index.js"
+    },
+    "./content/*": {
+      "types": "./dist/content/*.d.ts",
+      "import": "./dist/content/*.js"
+    },
     "./contracts/*": {
       "types": "./dist/contracts/*.d.ts",
       "import": "./dist/contracts/*.js"

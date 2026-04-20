@@ -8,6 +8,9 @@ export const electronMockState = {
   contextBridge: {
     exposeInMainWorld: vi.fn(),
   },
+  dialog: {
+    showOpenDialog: vi.fn(),
+  },
   ipcRenderer: {
     invoke: vi.fn(),
     on: vi.fn(),
@@ -15,27 +18,29 @@ export const electronMockState = {
   },
   ipcMainHandlers: new Map<string, (...args: unknown[]) => unknown>(),
   ipcMain: {
-    handle: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => {
-      electronMockState.ipcMainHandlers.set(channel, handler)
-    }),
+    handle: vi.fn(
+      (channel: string, handler: (...args: unknown[]) => unknown) => {
+        electronMockState.ipcMainHandlers.set(channel, handler);
+      },
+    ),
   },
   nativeTheme: {
     shouldUseDarkColors: false,
-    themeSource: 'system',
+    themeSource: "system",
     on: vi.fn((event: string, listener: NativeThemeListener) => {
-      if (event === 'updated') {
-        nativeThemeListeners.add(listener)
+      if (event === "updated") {
+        nativeThemeListeners.add(listener);
       }
     }),
   },
   app: {
     isPackaged: false,
-    getPath: vi.fn(() => '/tmp'),
+    getPath: vi.fn(() => "/tmp"),
     whenReady: vi.fn(() => Promise.resolve()),
     on: vi.fn(),
     quit: vi.fn(),
   },
-}
+};
 
 class MockBrowserWindow {
   static getAllWindows() {
@@ -57,10 +62,11 @@ export function createElectronModuleMock() {
     app: electronMockState.app,
     BrowserWindow: MockBrowserWindow,
     contextBridge: electronMockState.contextBridge,
+    dialog: electronMockState.dialog,
     ipcMain: electronMockState.ipcMain,
     ipcRenderer: electronMockState.ipcRenderer,
     nativeTheme: electronMockState.nativeTheme,
-  }
+  };
 }
 
 export function emitNativeThemeUpdated() {
@@ -72,6 +78,7 @@ export function emitNativeThemeUpdated() {
 export function resetElectronMock() {
   nativeThemeListeners.clear()
   electronMockState.contextBridge.exposeInMainWorld.mockReset()
+  electronMockState.dialog.showOpenDialog.mockReset();
   electronMockState.ipcRenderer.invoke.mockReset()
   electronMockState.ipcRenderer.on.mockReset()
   electronMockState.ipcRenderer.removeListener.mockReset()

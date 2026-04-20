@@ -1,6 +1,6 @@
 # Quickstart: Add Content Library
 
-This feature is in planning. The commands and checks below define the expected validation workflow once implementation is complete.
+This feature is implemented and validated through Phase 7. The commands and checks below reflect the current validation workflow for the full shared content-library surface, including subtitle import, article paste or scrape, generated practice sentences, provenance integrity, offline startup, and the import-to-review boundary.
 
 ## 1. Prerequisites
 
@@ -52,9 +52,10 @@ npm run dev:desktop
 
 Manual checks:
 
-- Import a supported Korean SRT file from the desktop app.
+- Open the Content Library, choose `Add content`, keep the `Subtitles` mode selected, and choose a supported Korean `.srt` file from the local machine.
 - Confirm a new Content Library card appears with subtitle type, Korean difficulty badge, and a recognizable title.
 - Confirm the imported item can be reopened and its sentence blocks preserve subtitle timing offsets.
+- Attempt to import the same subtitle file twice and confirm the app warns before saving the duplicate, then only continues after explicit confirmation.
 - Confirm malformed subtitle input shows a safe error and does not create a partial library item.
 
 Expected automated coverage:
@@ -68,10 +69,10 @@ Expected automated coverage:
 
 Manual checks:
 
-- Paste Korean article text and save it as a library item.
+- Open `Add content`, switch to `Paste article`, paste Korean article text, and save it as a library item.
 - Confirm the library card appears under the Articles filter and participates in search.
 - Disable network access and confirm article paste still works.
-- Attempt a scrape with a reachable URL and confirm the article saves as an item.
+- Open `Add content`, switch to `Scrape article`, enter a reachable URL, and confirm the article saves as an item.
 - Attempt to scrape an article that matches existing saved content and confirm the app warns before save and only continues after explicit confirmation.
 - Attempt a scrape while offline or with an invalid URL and confirm no partial record is created.
 
@@ -84,10 +85,13 @@ Expected automated coverage:
 
 Manual checks:
 
-- Request generated practice sentences for a topic and a target difficulty.
+- Open `Add content`, switch to `Generate practice`, enter a topic, and request generated practice sentences for a target difficulty.
 - Confirm the saved item appears under the Generated filter with the correct or validated difficulty badge.
+- Confirm relabeled generated items still save with the validated difficulty badge while preserving the requested difficulty in Source details.
+- Confirm saving the same generated result warns before creating a duplicate and only continues after explicit confirmation.
 - Confirm drift that cannot be accepted or relabeled does not create a saved item.
 - Confirm generation failure leaves the rest of the library usable.
+- Confirm a missing `OPENROUTER_API_KEY` produces a clear provider-unavailable message without affecting subtitle import, article paste, or library browsing.
 
 Expected automated coverage:
 
@@ -103,8 +107,10 @@ Manual checks:
 - Confirm the library grid renders All, Articles, Subtitles, and Generated pill filters.
 - Confirm the search input narrows results by title or source-derived text.
 - Confirm each card shows type and Korean difficulty badge.
+- Select a saved item and confirm the detail pane shows its sentence-level blocks before any later study action.
 - Confirm each card exposes provenance details identifying the source file, article source, or generation request.
 - Delete an item and confirm it disappears immediately and stays deleted after relaunch.
+- Navigate to Review after deletion and confirm no new scheduled review work appears automatically.
 
 Expected automated coverage:
 

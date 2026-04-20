@@ -116,9 +116,8 @@ font-weight: 500;
 │  Sidebar (220px)  │  Main Content Area               │
 │                   │                                  │
 │  • Dashboard      │  [Active screen renders here]    │
-│  • Lessons        │                                  │
-│  • Review (SRS)   │                                  │
 │  • Library        │                                  │
+│  • Review (SRS)   │                                  │
 │  • Settings       │                                  │
 │                   │                                  │
 │  ─────────────    │                                  │
@@ -173,12 +172,155 @@ The most important screen. Must feel like a clean reading environment.
 
 ### 4. Content Library
 
-- Grid of content cards (article tiles + SRT imports)
-- Each card: thumbnail or Hangul character placeholder, title, difficulty badge,
-  source type icon (article vs subtitle), estimated read time
-- Filter bar: All / Articles / Subtitles / Generated — as pill tabs, not a dropdown
-- Search input at top
-- Empty state: friendly illustration + "Import an article or SRT file to get started"
+The Library is a two-column layout: a card grid on the left, a detail panel on the right.
+The detail panel is hidden until a card is selected.
+
+#### Overall Layout
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  [Add content]                              [Search library   🔍]│
+│                                                                  │
+│  Saved content                                                   │
+│  3 items in your local library                                   │
+│                                                                  │
+│  [All]  Articles  Subtitles  Generated                           │
+│                                                                  │
+│  ┌──────────────┐  ┌──────────────┐  │  ┌─────────────────────┐ │
+│  │  Card        │  │  Card        │  │  │  Detail panel       │ │
+│  │  (unselected)│  │  (selected)  │  │  │                     │ │
+│  └──────────────┘  └──────────────┘  │  └─────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+- Card grid: fluid 2-column grid with `gap: 16px`, fills available width left of the detail panel
+- Detail panel: fixed `360px` wide, slides in from the right with `200ms ease` when a card is selected
+- When no card is selected, the card grid expands to fill the full width (3-column)
+- The divider between grid and panel is `1px solid --border`, no shadow
+
+#### Header Row
+
+- Left: title "Saved content" in Heading 1 (22px, weight 600) with item count below in Small (13px, `--text-secondary`) — e.g. "3 items in your local library"
+- Right: "Add content" primary button (36px height, `--accent` background)
+- Below the title/button row: search input, full width minus button width, height 36px, placeholder "Search by title or source", Lucide `Search` icon inside left side of input
+
+#### Filter Tabs
+
+Pill-style tabs, not a dropdown. Rendered as a horizontal row below the search input.
+
+```
+Active tab:   bg --accent, text white, border-radius 20px, padding 6px 16px, font-size 14px weight 500
+Inactive tab: bg transparent, text --text-secondary, border 1px solid --border, same sizing
+              Hover: bg --bg-elevated, text --text-primary
+```
+
+Tabs: All · Articles · Subtitles · Generated. Switching tabs filters cards with no page reload — no animation needed, instant.
+
+#### Content Card (unselected)
+
+Size: full width of its grid column, height auto (minimum `120px`).
+
+```
+┌────────────────────────────────────────┐
+│ [icon]  SUBTITLE          [초급 badge] │  ← top row: source icon + type label left, badge right
+│         Drama Title                    │  ← title: 18px weight 600, --text-primary
+│                                        │
+│ 1,603 sentences · ~45 min read         │  ← metadata: 13px --text-secondary
+│                                        │
+│ [Open]                    [⋯]          │  ← actions: primary button left, overflow menu right
+└────────────────────────────────────────┘
+```
+
+- Background: `--bg-surface`, border: `1px solid --border`, border-radius: `8px`, padding: `16px 20px`
+- Source type label: ALL CAPS, 11px, weight 500, `--text-muted` — e.g. "SUBTITLE", "ARTICLE", "GENERATED"
+- Source icon: Lucide `FileText` for articles, `Film` for subtitles, `Sparkles` for generated. Size 16px, color `--text-muted`
+- Title: 18px, weight 600, `--text-primary`, single line with ellipsis if too long
+- Metadata row: sentence count + estimated read time, separated by `·`, 13px `--text-secondary`
+- "Open" button: Secondary style (bg `--bg-elevated`), 32px height, label "Open"
+- Overflow `⋯` button: Ghost style, 32px × 32px, Lucide `MoreHorizontal` icon — reveals dropdown with "Delete" (danger color)
+- Hover state: border transitions to `--accent` at 40% opacity, `150ms ease`
+- No thumbnail image — source icon is the only visual identifier
+
+#### Content Card (selected)
+
+Same as unselected, but:
+- Border: `1px solid --accent`
+- Background: `--accent-subtle`
+- "Open" button changes to Primary style (`--accent` background)
+- No hover effect (already selected)
+
+#### Detail Panel
+
+Slides in from right when a card is selected. Fixed width `360px`. Background `--bg-surface`, left border `1px solid --border`. Padding `24px`.
+
+```
+┌──────────────────────────────────────┐
+│  SUBTITLE                  [✕ close] │  ← type label + close button (Ghost, Lucide X, 20px)
+│  Drama Title                         │  ← title: 22px weight 600, --text-primary
+│  Subtitle import                     │  ← source method: 13px --text-secondary
+│                                      │
+│  [초급 badge]   1,603 SENTENCES      │  ← badge + sentence count (13px weight 500 --text-muted ALL CAPS)
+│                                      │
+│  ──────────────────────────────────  │  ← divider: 1px --border
+│                                      │
+│  SOURCE DETAILS                      │  ← section label: 11px weight 500 --text-muted ALL CAPS
+│  reply.srt                           │  ← filename or URL: 13px --text-primary, monospace for filenames
+│                                      │
+│  ──────────────────────────────────  │
+│                                      │
+│  SENTENCE PREVIEW                    │  ← section label
+│                                      │
+│  ┌────────────────────────────────┐  │
+│  │ Sentence 1                     │  │  ← sentence card
+│  │ 국민건강증진법에 따른 담배...   │  │
+│  └────────────────────────────────┘  │
+│  ┌────────────────────────────────┐  │
+│  │ Sentence 2                     │  │
+│  │ 기존 담배사업법은 담배를...     │  │
+│  └────────────────────────────────┘  │
+│  (scrollable, max 4 sentences shown) │
+│                                      │
+│  ──────────────────────────────────  │
+│                                      │
+│  [Open]          [Delete]            │  ← primary action left, danger action right
+└──────────────────────────────────────┘
+```
+
+- Close button: top-right, Ghost style, Lucide `X` icon 20px — collapses the panel, deselects the card
+- Section labels: 11px, weight 500, `--text-muted`, ALL CAPS, `margin-bottom: 8px`
+- Source detail value: 13px `--text-primary`; filenames in `font-family: monospace`; URLs truncated with ellipsis
+- Sentence preview cards: `--bg-elevated` background, `8px` border-radius, `12px 16px` padding, `gap: 8px` between cards
+- Sentence text: 15px, weight 400, `--text-primary`, line-height 1.6. No sentence number label, no "NO TIMING METADATA" label — that is internal data, not user-relevant
+- Scrollable area contains sentence preview cards only — header and action row stay fixed
+- "Open" button: Primary style, full width of its half, opens the reading view for this content
+- "Delete" button: Danger style (`--danger` text, `--danger` at 15% bg), triggers a confirmation dialog before deleting
+
+#### Empty State (no content imported yet)
+
+Centered in the content area, vertically and horizontally:
+
+```
+    [Lucide BookOpen icon, 48px, --text-muted]
+
+    Your library is empty
+
+    Import a drama subtitle file, paste a Korean article,
+    or generate practice sentences to get started.
+
+    [Add content]
+```
+
+- Title: 18px, weight 600, `--text-primary`
+- Body: 14px, `--text-secondary`, centered, max-width `320px`
+- Button: Primary style, centered below the body text, `margin-top: 24px`
+
+#### Empty State (filter returns no results)
+
+Same layout, but:
+- Icon: Lucide `SearchX`, 48px, `--text-muted`
+- Title: "No results for "[query]""
+- Body: "Try a different search term or clear the filter."
+- No button — just the message
 
 ### 5. Settings
 

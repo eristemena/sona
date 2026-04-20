@@ -7,7 +7,7 @@
   "type": "module",
   "main": "dist/main/index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && node -e \"const fs=require('node:fs'); const candidates=['dist/preload/index.js','apps/desktop/dist/preload/index.js']; const source=candidates.find((file)=>fs.existsSync(file)); if(!source){throw new Error('preload output not found');} const target=source.replace(/\\.js$/, '.mjs'); if (fs.existsSync(target)) fs.rmSync(target); fs.renameSync(source, target);\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "rebuild:native": "npm rebuild better-sqlite3 --build-from-source --runtime=electron --target=$(node -p \"require('./package.json').devDependencies.electron\") --dist-url=https://electronjs.org/headers --target_arch=$(node -p \"process.arch\")",
     "start": "npm run rebuild:native && electron .",
@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "@sona/data": "0.1.0",
-    "@sona/domain": "0.1.0"
+    "@sona/domain": "0.1.0",
+    "srt-parser-2": "^1.2.3"
   },
   "devDependencies": {
     "electron": "33.2.1",

@@ -5,12 +5,21 @@ import type {
   ThemeUpdateResult,
   WindowSona,
 } from "@sona/domain/contracts/window-sona";
+import type {
+  CreateArticleFromPasteInput,
+  CreateArticleFromUrlInput,
+  GeneratePracticeSentencesInput,
+  ImportSrtInput,
+  ListLibraryItemsInput,
+} from "@sona/domain/contracts/content-library";
+import { CONTENT_CHANNELS } from "@sona/domain/contracts/content-library";
 
 const CHANNELS = {
   getBootstrapState: "sona:shell:get-bootstrap-state",
   getThemePreference: "sona:settings:get-theme-preference",
   setThemePreference: "sona:settings:set-theme-preference",
   themeChanged: "sona:settings:theme-changed",
+  ...CONTENT_CHANNELS,
 } as const;
 
 interface PreloadBridge {
@@ -85,6 +94,54 @@ export function createWindowSonaApi(
         };
       },
     },
+    content: {
+      listLibraryItems(input?: ListLibraryItemsInput) {
+        return preloadIpc.invoke(
+          CHANNELS.listLibraryItems,
+          input,
+        ) as ReturnType<WindowSona["content"]["listLibraryItems"]>;
+      },
+      getContentBlocks(contentItemId: string) {
+        return preloadIpc.invoke(
+          CHANNELS.getContentBlocks,
+          contentItemId,
+        ) as ReturnType<WindowSona["content"]["getContentBlocks"]>;
+      },
+      browseSubtitleFile() {
+        return preloadIpc.invoke(CHANNELS.browseSubtitleFile) as ReturnType<
+          WindowSona["content"]["browseSubtitleFile"]
+        >;
+      },
+      importSrt(input: ImportSrtInput) {
+        return preloadIpc.invoke(CHANNELS.importSrt, input) as ReturnType<
+          WindowSona["content"]["importSrt"]
+        >;
+      },
+      createArticleFromPaste(input: CreateArticleFromPasteInput) {
+        return preloadIpc.invoke(
+          CHANNELS.createArticleFromPaste,
+          input,
+        ) as ReturnType<WindowSona["content"]["createArticleFromPaste"]>;
+      },
+      createArticleFromUrl(input: CreateArticleFromUrlInput) {
+        return preloadIpc.invoke(
+          CHANNELS.createArticleFromUrl,
+          input,
+        ) as ReturnType<WindowSona["content"]["createArticleFromUrl"]>;
+      },
+      generatePracticeSentences(input: GeneratePracticeSentencesInput) {
+        return preloadIpc.invoke(
+          CHANNELS.generatePracticeSentences,
+          input,
+        ) as ReturnType<WindowSona["content"]["generatePracticeSentences"]>;
+      },
+      deleteContent(contentItemId: string) {
+        return preloadIpc.invoke(
+          CHANNELS.deleteContent,
+          contentItemId,
+        ) as ReturnType<WindowSona["content"]["deleteContent"]>;
+      },
+    },
   };
 }
 
@@ -97,9 +154,6 @@ export function exposeWindowSona(
   return api;
 }
 
-const electronProcessType = (process as NodeJS.Process & { type?: string })
-  .type;
-
-if (electronProcessType === "renderer") {
+if (contextBridge && typeof contextBridge.exposeInMainWorld === "function") {
   exposeWindowSona();
 }

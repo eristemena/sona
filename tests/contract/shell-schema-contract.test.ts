@@ -42,7 +42,12 @@ describe('shell schema contract', () => {
     expect(tableNames.map((row) => row.name)).toEqual(
       expect.arrayContaining(['schema_migrations', 'settings']),
     )
-    expect(appliedMigrations).toEqual([{ version: 1, name: '001_shell_v1' }])
+    expect(appliedMigrations).toEqual(
+      expect.arrayContaining([
+        { version: 1, name: "001_shell_v1" },
+        { version: 2, name: "002_content_library_v1" },
+      ]),
+    );
   })
 
   it('seeds and repairs the appearance.themePreference setting through the repository', () => {

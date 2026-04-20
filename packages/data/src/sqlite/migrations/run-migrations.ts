@@ -9,6 +9,8 @@ interface ShellMigration {
   sql: string
 }
 
+const SUPPORTED_MIGRATION_PREFIXES = ["shell", "content_library"] as const;
+
 function resolveMigrationDirectory(): string {
   const currentDir = path.dirname(fileURLToPath(import.meta.url))
   const candidateDirectories = [currentDir, path.resolve(currentDir, '../../../src/sqlite/migrations')]
@@ -31,17 +33,23 @@ function loadShellMigrations(): ShellMigration[] {
   const migrationDirectory = resolveMigrationDirectory()
 
   return readdirSync(migrationDirectory)
-    .filter((fileName) => fileName.endsWith('.sql') && fileName.includes('shell'))
+    .filter(
+      (fileName) =>
+        fileName.endsWith(".sql") &&
+        SUPPORTED_MIGRATION_PREFIXES.some((prefix) =>
+          fileName.includes(prefix),
+        ),
+    )
     .sort()
     .map((fileName) => {
-      const version = Number(fileName.slice(0, 3))
+      const version = Number(fileName.slice(0, 3));
 
       return {
         version,
-        name: fileName.replace(/\.sql$/, ''),
-        sql: readFileSync(path.join(migrationDirectory, fileName), 'utf8'),
-      }
-    })
+        name: fileName.replace(/\.sql$/, ""),
+        sql: readFileSync(path.join(migrationDirectory, fileName), "utf8"),
+      };
+    });
 }
 
 export function runShellMigrations(database: Database.Database) {

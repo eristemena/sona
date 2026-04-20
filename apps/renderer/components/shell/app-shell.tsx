@@ -35,8 +35,11 @@ export function AppShell() {
         navigation={state.navigation}
         onSelect={setActiveDestination}
       />
-      <MainContentPlaceholder activeDestination={activeDestination} />
+      <MainContentPlaceholder
+        activeDestination={activeDestination}
+        key={activeDestination}
+      />
       <div className="grain-overlay" />
     </div>
-  )
+  );
 }
