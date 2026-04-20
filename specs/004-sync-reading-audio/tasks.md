@@ -115,6 +115,9 @@
 - [ ] T036 [P] Add regression coverage for reading-progress restore, later review-card provenance retrieval, and cached-audio cleanup on invalidation in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/reading-progress-persistence.test.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-card-provenance.test.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/audio-cache-cleanup.test.ts
 - [ ] T037 [P] Extend offline startup and migration-safety coverage for the reading surface in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/offline-content-library-startup.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/reading-view-offline-fallback.test.tsx
 - [ ] T038 Run the full synced-reading quickstart validation path and capture any final copy or fallback fixes in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/004-sync-reading-audio/quickstart.md
+- [ ] T039 [P] Add startup-time validation coverage for the synced-reading open path and record the under-10-second acceptance procedure in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/benchmark/reading-session-startup.benchmark.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/specs/004-sync-reading-audio/quickstart.md
+- [ ] T040 [P] Add a first-attempt lookup usability acceptance checklist for meaning and grammar inspection in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/004-sync-reading-audio/quickstart.md
+- [ ] T041 [P] Add explicit combined fallback-and-review continuity coverage so text-first reading, add-to-deck, and playback continuity are validated together in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/reading-fallback-review-continuity.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/specs/004-sync-reading-audio/quickstart.md
 
 ---
 
@@ -148,7 +151,7 @@
 - Within US1, T011-T014 and T016 can run in parallel across test, provider, repository, and renderer-hook files.
 - Within US2, T020-T023 and T025 can run in parallel across tests, cache service, provider logic, and popup UI files.
 - Within US3, T028-T032 and T034 can run in parallel across tests, domain policy, repository, service, and renderer files.
-- T036 and T037 can run in parallel during the polish phase.
+- T036, T037, T039, T040, and T041 can run in parallel during the polish phase.
 
 ---
 
@@ -205,7 +208,7 @@ Task: "Add add-to-deck actions, duplicate or deferred messaging, and session-end
 2. User Story 1 delivers the MVP synced-reading surface.
 3. User Story 2 adds contextual lookup and richer grammar help.
 4. User Story 3 adds learner-triggered review capture and passive exposure batching.
-5. Phase 6 finishes cleanup, restore, and offline regression validation.
+5. Phase 6 finishes cleanup, restore, explicit success-criteria validation, and offline regression validation.
 
 ### Suggested MVP Scope
 
@@ -228,5 +231,5 @@ Task: "Add add-to-deck actions, duplicate or deferred messaging, and session-end
 - `[P]` tasks operate on different files and can run in parallel.
 - `[US1]` through `[US3]` map tasks directly to the three user stories in spec.md.
 - User Story 1 is the recommended MVP slice.
-- Persistence, audio generation, timing fallback, annotation caching, and review scheduling require tests before implementation.
+- Persistence, audio generation, timing fallback, annotation caching, review scheduling, and success-criteria validation require tests before implementation.
 - The feature remains local-first even when hosted TTS and grammar enrichment are optionally enabled.
