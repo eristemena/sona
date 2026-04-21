@@ -68,4 +68,22 @@ describe('shell schema contract', () => {
 
     expect(JSON.parse(storedSetting.value_json)).toEqual({ mode: 'system' })
   })
+
+  it("stores and clears the integrations.openaiApiKey setting through the repository", () => {
+    const database = createTestDatabase();
+    const repository = new SqliteSettingsRepository(database);
+
+    expect(repository.hasOpenAiApiKey()).toBe(false);
+    expect(repository.getOpenAiApiKey()).toBeNull();
+
+    repository.setOpenAiApiKey("  sk-test-openai  ");
+
+    expect(repository.hasOpenAiApiKey()).toBe(true);
+    expect(repository.getOpenAiApiKey()).toBe("sk-test-openai");
+
+    repository.setOpenAiApiKey(null);
+
+    expect(repository.hasOpenAiApiKey()).toBe(false);
+    expect(repository.getOpenAiApiKey()).toBeNull();
+  });
 })

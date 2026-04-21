@@ -7,10 +7,18 @@ import { runShellMigrations } from '@sona/data/sqlite/migrations/run-migrations'
 import { SqliteSettingsRepository } from '@sona/data/sqlite/settings-repository'
 
 import { ArticleContentService } from "./content/article-content-service.js";
+import { AnnotationCacheService } from "./content/annotation-cache-service.js";
+import { AudioCacheService } from "./content/audio-cache-service.js";
 import { GeneratedContentService } from "./content/generated-content-service.js";
+import { ReadingProgressService } from "./content/reading-progress-service.js";
+import { ReviewCardService } from "./content/review-card-service.js";
+import { ReadingSessionService } from "./content/reading-session-service.js";
 import { SrtImportService } from "./content/srt-import-service.js";
 import { createMainWindow } from './create-main-window.js'
 import { registerContentHandlers } from "./ipc/content-handlers.js";
+import { registerReadingHandlers } from "./ipc/reading-handlers.js";
+import { OpenRouterReadingAnnotationProvider } from "./providers/openrouter-reading-annotation-provider.js";
+import { createOpenAiTtsProvider } from "./providers/openai-tts-provider.js";
 import { registerSettingsHandlers } from './ipc/settings-handlers.js'
 import { registerShellHandlers } from './ipc/shell-handlers.js'
 import { registerNativeThemeEvents } from './theme/native-theme-events.js'
@@ -28,6 +36,33 @@ async function bootstrapDesktopShell() {
   const articleContentService = new ArticleContentService();
   const generatedContentService = new GeneratedContentService();
   const srtImportService = new SrtImportService();
+  const openAiTtsProvider = createOpenAiTtsProvider(() =>
+    settingsRepository.getOpenAiApiKey(),
+  );
+  const openRouterReadingAnnotationProvider =
+    new OpenRouterReadingAnnotationProvider();
+  const audioCacheService = new AudioCacheService({
+    repository: contentRepository,
+    cacheDirectory: path.join(app.getPath("userData"), "reading-audio-cache"),
+    provider: openAiTtsProvider,
+    getReadingAudioMode: () => settingsRepository.getReadingAudioMode(),
+    getReadingAudioVoice: () => settingsRepository.getReadingAudioVoice(),
+  });
+  const readingProgressService = new ReadingProgressService(contentRepository);
+  const annotationCacheService = new AnnotationCacheService({
+    repository: contentRepository,
+    provider: openRouterReadingAnnotationProvider,
+  });
+  const reviewCardService = new ReviewCardService({
+    repository: contentRepository,
+  });
+  const readingSessionService = new ReadingSessionService({
+    repository: contentRepository,
+    readingProgressService,
+    audioCacheService,
+    annotationCacheService,
+    reviewCardService,
+  });
   const themePreference = settingsRepository.getThemePreferenceMode()
   nativeTheme.themeSource = themePreference
 
@@ -38,6 +73,11 @@ async function bootstrapDesktopShell() {
     contentRepository,
     generatedContentService,
     srtImportService,
+  });
+  registerReadingHandlers({
+    readingSessionService,
+    readingProgressService,
+    audioCacheService,
   });
   registerNativeThemeEvents({ settingsRepository, windows: () => BrowserWindow.getAllWindows() })
 

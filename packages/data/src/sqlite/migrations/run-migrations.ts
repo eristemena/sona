@@ -9,7 +9,11 @@ interface ShellMigration {
   sql: string
 }
 
-const SUPPORTED_MIGRATION_PREFIXES = ["shell", "content_library"] as const;
+const SUPPORTED_MIGRATION_PREFIXES = [
+  "shell",
+  "content_library",
+  "sync_reading_audio",
+] as const;
 
 function resolveMigrationDirectory(): string {
   const currentDir = path.dirname(fileURLToPath(import.meta.url))

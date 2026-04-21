@@ -17,6 +17,7 @@
   "dependencies": {
     "@sona/data": "0.1.0",
     "@sona/domain": "0.1.0",
+    "@sona/integrations": "0.1.0",
     "srt-parser-2": "^1.2.3"
   },
   "devDependencies": {

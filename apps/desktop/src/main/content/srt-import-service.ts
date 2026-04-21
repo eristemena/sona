@@ -2,7 +2,11 @@ import { readFile } from 'node:fs/promises'
 
 import SrtParser2 from 'srt-parser-2'
 
-import { isSupportedSubtitlePath, normalizeSubtitleCueText, type ParsedSubtitleCue } from '@sona/domain/content'
+import {
+  isSupportedSubtitlePath,
+  normalizeSubtitleCueText,
+  type ParsedSubtitleCue,
+} from "@sona/domain/content/subtitle-import";
 import type { ImportSrtInput } from '@sona/domain/contracts/content-library'
 import type { SaveContentDraft } from '@sona/data/sqlite/content-library-repository'
 

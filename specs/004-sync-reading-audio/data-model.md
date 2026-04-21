@@ -34,13 +34,14 @@ Purpose: Stores the local cache record for synthesized audio and word-level timi
 Fields:
 - `id`: Stable audio asset identifier.
 - `blockId`: Parent content block identifier.
-- `provider`: `openrouter` for this feature slice.
-- `modelId`: `openai/tts-1`.
+- `provider`: `openai` for this feature slice.
+- `modelId`: `gpt-4o-mini-tts` by default for direct OpenAI TTS generation.
+- `readingAudioMode`: persisted settings value that distinguishes standard versus learner-slow generation and participates in audio-cache invalidation for regenerated clips.
 - `voice`: Configured voice identifier used for synthesis.
 - `textHash`: Hash of normalized block text used for cache invalidation.
 - `audioFilePath`: Absolute path to the cached audio file in the app-data directory.
-- `timingFormat`: `verbose_json`.
-- `timingsJson`: Persisted word-level timestamp payload returned from synthesis.
+- `timingFormat`: `verbose_json` word-timestamp payload persisted for karaoke sync.
+- `timingsJson`: Persisted word-level timestamp payload used to drive karaoke highlighting.
 - `durationMs`: Total audio duration in milliseconds.
 - `generationState`: `pending`, `ready`, `failed`, or `unavailable`.
 - `failureReason`: Nullable learner-safe error summary.
@@ -88,10 +89,11 @@ Fields:
 - `canonicalForm`: Canonical morpheme or lemma returned by the lookup prompt.
 - `sentenceContextHash`: Hash of the surrounding sentence context.
 - `surface`: Original tapped surface form.
-- `partOfSpeech`: Provider-returned part of speech.
-- `englishGloss`: Primary learner-facing gloss.
+- `meaning`: What the tapped word or construction means in this specific sentence.
 - `romanization`: Provider-returned romanization.
-- `grammarNote`: Short grammar-oriented breakdown for immediate popup display.
+- `pattern`: Grammar pattern for the tapped form in context.
+- `register`: Register label, such as informal, polite, or formal.
+- `sentenceTranslation`: Natural English translation of the full sentence.
 - `grammarExplanation`: Optional richer explanation text.
 - `modelId`: Model that produced the cached payload.
 - `responseJson`: Full structured response stored for inspection and refresh.
@@ -105,7 +107,7 @@ Validation rules:
 - The cache key is `(canonicalForm, sentenceContextHash)`.
 - `staleAfter` defaults to 30 days after `refreshedAt`.
 - A different `modelId` marks an entry stale immediately, even if `staleAfter` has not elapsed.
-- `grammarNote` is required for all successful lookups; `grammarExplanation` may be null.
+- `meaning`, `pattern`, `register`, and `sentenceTranslation` are required for all successful lookups; `grammarExplanation` may be null.
 
 State transitions:
 - `miss` -> `fresh`

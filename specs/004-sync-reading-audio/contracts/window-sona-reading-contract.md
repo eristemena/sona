@@ -58,10 +58,12 @@ interface WordLookupInput {
 
 interface WordLookupResult {
   canonicalForm: string
-  partOfSpeech: string
-  englishGloss: string
+  surface: string
+  meaning: string
   romanization: string
-  grammarNote: string
+  pattern: string
+  register: string
+  sentenceTranslation: string
   grammarExplanation: string | null
   cacheState: AnnotationCacheState
   modelId: string | null
@@ -147,6 +149,7 @@ interface WindowSona {
 - `ensureBlockAudio()` may generate audio on first open or return a cached asset. It never exposes provider keys or raw provider responses to the renderer.
 - `ensureBlockAudio()` returns `state: 'unavailable'` or `state: 'failed'` with a learner-safe message when hosted audio cannot be produced, while the reading session remains usable.
 - `lookupWord()` first checks the local annotation cache by `(canonical_form, sentence_context_hash)` and may return `cacheState: 'stale'` while a background refresh is queued.
+- `lookupWord()` returns sentence-context meaning for the tapped form plus a natural English translation of the full sentence so Korean constructions are not reduced to dictionary-only glosses.
 - `explainGrammar()` uses the same cache key and returns the richer explanation path without requiring the renderer to know whether the result came from cache or provider.
 - `addToDeck()` creates at most one new FSRS-backed review card per learner action and must report whether the action created a card, hit a duplicate, or was deferred by pacing.
 - `flushExposureLog()` is called with a batch of observed tokens and must be safe to retry without creating unbounded duplicates.

@@ -77,16 +77,31 @@ describe('content library delete integration', () => {
     render(<AppShell />)
 
     await user.click(await screen.findByRole('button', { name: /library/i }))
-    expect(await screen.findByRole('button', { name: 'Delete Drama Episode 1' })).toBeInTheDocument()
+    expect(
+      await screen.findByRole("button", {
+        name: "More options for Drama Episode 1",
+      }),
+    ).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Delete Drama Episode 1' }))
+    await user.click(
+      screen.getByRole("button", { name: "More options for Drama Episode 1" }),
+    );
+    await user.click(screen.getByRole("menuitem", { name: "Delete" }));
     expect(screen.getByRole('dialog', { name: 'Remove Drama Episode 1?' })).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Delete item' }))
 
     await waitFor(() => {
-      expect(screen.queryByRole('button', { name: 'Delete Drama Episode 1' })).not.toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Delete Seoul Food Column' })).toBeInTheDocument()
+      expect(
+        screen.queryByRole("button", {
+          name: "More options for Drama Episode 1",
+        }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("button", {
+          name: "More options for Seoul Food Column",
+        }),
+      ).toBeInTheDocument();
     })
 
     await user.click(screen.getByRole('button', { name: /review/i }))

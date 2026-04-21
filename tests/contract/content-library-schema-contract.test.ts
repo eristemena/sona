@@ -121,4 +121,81 @@ describe('content library schema contract', () => {
     expect(repository.listLibraryItems()).toHaveLength(0)
     expect(repository.getContentBlocks(contentItemId)).toHaveLength(0)
   })
+
+  it("derives reading tokens for legacy content blocks that were saved without tokens_json", async () => {
+    const {
+      buildContentBlockId,
+      buildContentItemId,
+      normalizeSearchText,
+      toDifficultyBadge,
+    } = await import("../../packages/domain/src/content/index.js");
+    const { SqliteContentLibraryRepository } =
+      await import("../../packages/data/src/sqlite/content-library-repository.js");
+
+    const database = createTestDatabase();
+    const repository = new SqliteContentLibraryRepository(database);
+    const createdAt = 1_713_571_200_001;
+    const sourceLocator = "generation-request:legacy-no-tokens";
+    const contentItemId = buildContentItemId({
+      sourceType: "generated",
+      sourceLocator,
+      createdAt,
+    });
+
+    repository.saveContent({
+      item: {
+        id: contentItemId,
+        title: "Legacy token fallback",
+        sourceType: "generated",
+        difficulty: 1,
+        difficultyLabel: toDifficultyBadge(1),
+        provenanceLabel: "Generation request",
+        sourceLocator,
+        provenanceDetail: "Legacy generated content without persisted tokens.",
+        searchText: normalizeSearchText(
+          "Legacy token fallback 아메리카노 주세요",
+        ),
+        duplicateCheckText: normalizeSearchText("아메리카노 주세요"),
+        createdAt,
+      },
+      blocks: [
+        {
+          id: buildContentBlockId({
+            sourceType: "generated",
+            sourceLocator,
+            contentItemCreatedAt: createdAt,
+            sentenceOrdinal: 1,
+          }),
+          contentItemId,
+          korean: "아메리카노 주세요.",
+          romanization: null,
+          tokens: null,
+          annotations: {},
+          difficulty: 1,
+          sourceType: "generated",
+          audioOffset: null,
+          sentenceOrdinal: 1,
+          createdAt,
+        },
+      ],
+      sourceRecord: {
+        contentItemId,
+        originMode: "generation-request",
+        filePath: null,
+        url: null,
+        sessionId: sourceLocator,
+        displaySource: "Legacy generated content without persisted tokens.",
+        requestedDifficulty: 1,
+        validatedDifficulty: 1,
+        capturedAt: createdAt,
+      },
+    });
+
+    const session = repository.getReadingSession(contentItemId);
+
+    expect(session?.blocks[0]?.tokens.map((token) => token.surface)).toEqual([
+      "아메리카노",
+      "주세요",
+    ]);
+  });
 })

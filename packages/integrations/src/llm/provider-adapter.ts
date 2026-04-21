@@ -1,32 +1,33 @@
-export interface LlmProviderRequest {
-  featureArea: 'tokenization-help' | 'annotation-help' | 'translation-help'
-  prompt: string
-  text: string
+export interface ReadingAnnotationLookupRequest {
+  token: string;
+  sentenceContext: string;
+  canonicalForm?: string;
 }
 
-export interface LlmProviderResponse {
-  content: string
-  latencyMs: number
-  estimatedCostUsd: number
+export interface ReadingGrammarExplanationRequest extends ReadingAnnotationLookupRequest {
+  canonicalForm: string;
 }
 
-export interface LlmProviderAdapter {
-  id: 'openai' | 'anthropic'
-  invoke(request: LlmProviderRequest): Promise<LlmProviderResponse>
-}
-export interface LlmProviderRequest {
-  featureArea: 'tokenization-help' | 'annotation-help' | 'translation-help'
-  prompt: string
-  text: string
-}
-
-export interface LlmProviderResponse {
-  content: string
-  latencyMs: number
-  estimatedCostUsd: number
+export interface ReadingAnnotationResponse {
+  canonicalForm: string;
+  surface: string;
+  meaning: string;
+  romanization: string;
+  pattern: string;
+  register: string;
+  sentenceTranslation: string;
+  grammarExplanation: string | null;
+  modelId: string;
+  responseJson: string;
 }
 
-export interface LlmProviderAdapter {
-  id: 'openai' | 'anthropic'
-  invoke(request: LlmProviderRequest): Promise<LlmProviderResponse>
+export interface ReadingAnnotationProviderAdapter {
+  id: "openrouter";
+  modelId: string;
+  lookupWord(
+    request: ReadingAnnotationLookupRequest,
+  ): Promise<ReadingAnnotationResponse>;
+  explainGrammar(
+    request: ReadingGrammarExplanationRequest,
+  ): Promise<ReadingAnnotationResponse>;
 }

@@ -4,12 +4,25 @@ import path from 'node:path'
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
+import { AnnotationCacheService } from "../../apps/desktop/src/main/content/annotation-cache-service.js";
+import { AudioCacheService } from "../../apps/desktop/src/main/content/audio-cache-service.js";
 import { registerContentHandlers } from '../../apps/desktop/src/main/ipc/content-handlers.js'
+import { registerReadingHandlers } from "../../apps/desktop/src/main/ipc/reading-handlers.js";
 import { registerShellHandlers } from '../../apps/desktop/src/main/ipc/shell-handlers.js'
+import { ReadingProgressService } from "../../apps/desktop/src/main/content/reading-progress-service.js";
+import { ReadingSessionService } from "../../apps/desktop/src/main/content/reading-session-service.js";
+import { ReviewCardService } from "../../apps/desktop/src/main/content/review-card-service.js";
 import { createSqliteConnection } from '../../packages/data/src/sqlite/connection.js'
 import { SqliteContentLibraryRepository } from '../../packages/data/src/sqlite/content-library-repository.js'
 import { runShellMigrations } from '../../packages/data/src/sqlite/migrations/run-migrations.js'
+import { READING_CHANNELS } from "../../packages/domain/src/contracts/content-reading.js";
 import { SqliteSettingsRepository } from '../../packages/data/src/sqlite/settings-repository.js'
+import {
+  buildContentBlockId,
+  buildContentItemId,
+  normalizeSearchText,
+  toDifficultyBadge,
+} from "../../packages/domain/src/content/index.js";
 import { CONTENT_CHANNELS } from '../../packages/domain/src/contracts/content-library.js'
 import { THEME_PREFERENCE_SETTING_KEY } from '../../packages/domain/src/settings/theme-preference.js'
 import { electronMockState, resetElectronMock } from '../setup/electron-mock.js'
@@ -68,20 +81,25 @@ describe('offline content-library startup', () => {
 
     const tables = migratedDatabase
       .prepare(
-        "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('content_library_items', 'content_blocks', 'content_source_records', 'generation_requests') ORDER BY name",
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('annotations', 'block_audio_assets', 'content_library_items', 'content_blocks', 'content_source_records', 'exposure_log', 'generation_requests', 'reading_progress', 'review_cards') ORDER BY name",
       )
-      .all() as Array<{ name: string }>
+      .all() as Array<{ name: string }>;
     const appliedVersions = migratedDatabase
       .prepare('SELECT version FROM schema_migrations ORDER BY version ASC')
       .all() as Array<{ version: number }>
 
     expect(tables.map((row) => row.name)).toEqual([
-      'content_blocks',
-      'content_library_items',
-      'content_source_records',
-      'generation_requests',
-    ])
-    expect(appliedVersions.map((row) => row.version)).toEqual([1, 2])
+      "annotations",
+      "block_audio_assets",
+      "content_blocks",
+      "content_library_items",
+      "content_source_records",
+      "exposure_log",
+      "generation_requests",
+      "reading_progress",
+      "review_cards",
+    ]);
+    expect(appliedVersions.map((row) => row.version)).toEqual([1, 2, 3]);
 
     migratedDatabase.close()
   })
@@ -134,4 +152,154 @@ describe('offline content-library startup', () => {
 
     database.close()
   })
+
+  it("boots reading handlers against a migrated offline database and opens a text-first reading session", async () => {
+    const databasePath = createDatabasePath("sona-offline-reading-bootstrap-");
+    const database = createSqliteConnection({ databasePath });
+    runShellMigrations(database);
+
+    const contentRepository = new SqliteContentLibraryRepository(database);
+    const createdAt = 1_714_150_000_000;
+    const sourceLocator = "article://offline-reading-startup";
+    const contentItemId = buildContentItemId({
+      sourceType: "article",
+      sourceLocator,
+      createdAt,
+    });
+    const blockId = buildContentBlockId({
+      sourceType: "article",
+      sourceLocator,
+      contentItemCreatedAt: createdAt,
+      sentenceOrdinal: 1,
+    });
+
+    contentRepository.saveContent({
+      item: {
+        id: contentItemId,
+        title: "Offline reading startup",
+        sourceType: "article",
+        difficulty: 2,
+        difficultyLabel: toDifficultyBadge(2),
+        provenanceLabel: "Article paste",
+        sourceLocator,
+        provenanceDetail: "Used for offline reading bootstrap validation.",
+        searchText: normalizeSearchText(
+          "Offline reading startup 오늘도 천천히 읽어요",
+        ),
+        duplicateCheckText: normalizeSearchText("오늘도 천천히 읽어요"),
+        createdAt,
+      },
+      blocks: [
+        {
+          id: blockId,
+          contentItemId,
+          korean: "오늘도 천천히 읽어요",
+          romanization: null,
+          tokens: [
+            { surface: "오늘도" },
+            { surface: "천천히" },
+            { surface: "읽어요" },
+          ],
+          annotations: {},
+          difficulty: 2,
+          sourceType: "article",
+          audioOffset: null,
+          sentenceOrdinal: 1,
+          createdAt,
+        },
+      ],
+      sourceRecord: {
+        contentItemId,
+        originMode: "article-paste",
+        filePath: null,
+        url: sourceLocator,
+        sessionId: null,
+        displaySource: "Article paste",
+        requestedDifficulty: null,
+        validatedDifficulty: null,
+        capturedAt: createdAt,
+      },
+    });
+
+    const audioCacheService = new AudioCacheService({
+      repository: contentRepository,
+      cacheDirectory: path.join(
+        path.dirname(databasePath),
+        "reading-audio-cache",
+      ),
+    });
+    const readingSessionService = new ReadingSessionService({
+      repository: contentRepository,
+      readingProgressService: new ReadingProgressService(contentRepository),
+      audioCacheService,
+      annotationCacheService: new AnnotationCacheService({
+        repository: contentRepository,
+        provider: {
+          id: "openrouter",
+          modelId: "openai/gpt-4o-mini",
+          lookupWord: async () => {
+            throw new Error("offline");
+          },
+          explainGrammar: async () => {
+            throw new Error("offline");
+          },
+        },
+      }),
+      reviewCardService: new ReviewCardService({
+        repository: contentRepository,
+      }),
+    });
+
+    registerReadingHandlers(
+      {
+        readingSessionService,
+        readingProgressService: new ReadingProgressService(contentRepository),
+        audioCacheService,
+      },
+      {
+        ipcMain: electronMockState.ipcMain,
+      },
+    );
+
+    const getReadingSessionHandler = electronMockState.ipcMainHandlers.get(
+      READING_CHANNELS.getReadingSession,
+    );
+    const ensureBlockAudioHandler = electronMockState.ipcMainHandlers.get(
+      READING_CHANNELS.ensureBlockAudio,
+    );
+
+    if (!getReadingSessionHandler || !ensureBlockAudioHandler) {
+      throw new Error(
+        "Expected reading handlers to be registered during offline startup.",
+      );
+    }
+
+    const snapshot = await getReadingSessionHandler(undefined, contentItemId);
+    const audioAsset = await ensureBlockAudioHandler(undefined, blockId);
+
+    expect(snapshot).toMatchObject({
+      contentItemId,
+      itemTitle: "Offline reading startup",
+      blocks: [
+        {
+          id: blockId,
+          korean: "오늘도 천천히 읽어요",
+        },
+      ],
+      progress: {
+        activeBlockId: null,
+        playbackState: "idle",
+        playbackRate: 1,
+        currentTimeMs: 0,
+        highlightedTokenIndex: null,
+      },
+    });
+    expect(audioAsset).toMatchObject({
+      blockId,
+      state: "unavailable",
+    });
+    expect(audioAsset.failureMessage).toMatch(/text-first mode/i);
+
+    database.close();
+  });
 })

@@ -1,4 +1,8 @@
 import type { NavigationDestinationId, ShellBootstrapState } from './shell-bootstrap.js'
+import type {
+  ReadingAudioMode,
+  ReadingAudioVoice,
+} from "../settings/reading-audio-preference.js";
 import type { ResolvedTheme, ThemePreferenceMode } from '../settings/theme-preference.js'
 import type {
   CreateArticleFromPasteInput,
@@ -10,12 +14,36 @@ import type {
   SaveContentSuccess,
   SaveContentResult,
 } from "./content-library.js";
+import type {
+  AddToDeckInput,
+  AddToDeckResult,
+  ExposureLogInput,
+  ExposureLogResult,
+  GrammarExplanationInput,
+  ReadingAudioAsset,
+  ReadingSessionSnapshot,
+  SaveReadingProgressInput,
+  WordLookupInput,
+  WordLookupResult,
+} from "./content-reading.js";
 
 export type { NavigationDestinationId, ResolvedTheme, ThemePreferenceMode }
 
 export interface ThemeUpdateResult {
   themePreference: ThemePreferenceMode
   resolvedTheme: ResolvedTheme
+}
+
+export interface ApiKeyStatus {
+  configured: boolean;
+}
+
+export interface ReadingAudioModeUpdateResult {
+  mode: ReadingAudioMode;
+}
+
+export interface ReadingAudioVoiceUpdateResult {
+  voice: ReadingAudioVoice;
 }
 
 export interface WindowSona {
@@ -25,6 +53,16 @@ export interface WindowSona {
   settings: {
     getThemePreference(): Promise<ThemePreferenceMode>;
     setThemePreference(mode: ThemePreferenceMode): Promise<ThemeUpdateResult>;
+    getOpenAiApiKeyStatus(): Promise<ApiKeyStatus>;
+    setOpenAiApiKey(apiKey: string | null): Promise<ApiKeyStatus>;
+    getReadingAudioMode(): Promise<ReadingAudioMode>;
+    setReadingAudioMode(
+      mode: ReadingAudioMode,
+    ): Promise<ReadingAudioModeUpdateResult>;
+    getReadingAudioVoice(): Promise<ReadingAudioVoice>;
+    setReadingAudioVoice(
+      voice: ReadingAudioVoice,
+    ): Promise<ReadingAudioVoiceUpdateResult>;
     subscribeThemeChanges(
       listener: (update: ThemeUpdateResult) => void,
     ): () => void;
@@ -48,6 +86,15 @@ export interface WindowSona {
       input: GeneratePracticeSentencesInput,
     ): Promise<SaveContentResult>;
     deleteContent(contentItemId: string): Promise<DeleteContentResult>;
+  };
+  reading: {
+    getReadingSession(contentItemId: string): Promise<ReadingSessionSnapshot>;
+    ensureBlockAudio(blockId: string): Promise<ReadingAudioAsset>;
+    lookupWord(input: WordLookupInput): Promise<WordLookupResult>;
+    explainGrammar(input: GrammarExplanationInput): Promise<WordLookupResult>;
+    addToDeck(input: AddToDeckInput): Promise<AddToDeckResult>;
+    saveReadingProgress(input: SaveReadingProgressInput): Promise<void>;
+    flushExposureLog(input: ExposureLogInput): Promise<ExposureLogResult>;
   };
 }
 

@@ -17,25 +17,75 @@ describe('window.sona preload contract', () => {
     electronMockState.ipcRenderer.invoke.mockResolvedValueOnce({ appName: 'Sona' })
 
     type ExposedApi = {
-      shell: { getBootstrapState: () => Promise<unknown> }
+      shell: { getBootstrapState: () => Promise<unknown> };
       settings: {
-        getThemePreference: () => Promise<unknown>
-        setThemePreference: (mode: string) => Promise<unknown>
-        subscribeThemeChanges: (listener: (update: unknown) => void) => () => void
-      }
-    }
+        getThemePreference: () => Promise<unknown>;
+        setThemePreference: (mode: string) => Promise<unknown>;
+        getOpenAiApiKeyStatus: () => Promise<unknown>;
+        setOpenAiApiKey: (apiKey: string | null) => Promise<unknown>;
+        getReadingAudioMode: () => Promise<unknown>;
+        setReadingAudioMode: (mode: string) => Promise<unknown>;
+        getReadingAudioVoice: () => Promise<unknown>;
+        setReadingAudioVoice: (voice: string) => Promise<unknown>;
+        subscribeThemeChanges: (
+          listener: (update: unknown) => void,
+        ) => () => void;
+      };
+    };
 
     const typedApi = api as ExposedApi
 
     await typedApi.shell.getBootstrapState()
     await typedApi.settings.getThemePreference()
+    await typedApi.settings.getOpenAiApiKeyStatus();
+    await typedApi.settings.setOpenAiApiKey("sk-test");
+    await typedApi.settings.getReadingAudioMode();
+    await typedApi.settings.setReadingAudioMode("learner-slow");
+    await typedApi.settings.getReadingAudioVoice();
+    await typedApi.settings.setReadingAudioVoice("coral");
 
     expect(name).toBe('sona')
     expect(electronMockState.contextBridge.exposeInMainWorld).toHaveBeenCalledWith('sona', expect.any(Object))
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(1, 'sona:shell:get-bootstrap-state')
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(2, 'sona:settings:get-theme-preference')
+    expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
+      3,
+      "sona:settings:get-openai-api-key-status",
+    );
+    expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
+      4,
+      "sona:settings:set-openai-api-key",
+      "sk-test",
+    );
+    expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
+      5,
+      "sona:settings:get-reading-audio-mode",
+    );
+    expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
+      6,
+      "sona:settings:set-reading-audio-mode",
+      "learner-slow",
+    );
+    expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
+      7,
+      "sona:settings:get-reading-audio-voice",
+    );
+    expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
+      8,
+      "sona:settings:set-reading-audio-voice",
+      "coral",
+    );
 
     await expect(typedApi.settings.setThemePreference('sepia')).rejects.toThrow('Invalid theme preference mode.')
+    await expect(
+      typedApi.settings.setOpenAiApiKey({} as never),
+    ).rejects.toThrow("Invalid OpenAI API key value.");
+    await expect(
+      typedApi.settings.setReadingAudioMode("fast" as never),
+    ).rejects.toThrow("Invalid reading audio mode.");
+    await expect(
+      typedApi.settings.setReadingAudioVoice("robot" as never),
+    ).rejects.toThrow("Invalid reading audio voice.");
   })
 
   it('subscribes and unsubscribes to theme updates through ipcRenderer', async () => {

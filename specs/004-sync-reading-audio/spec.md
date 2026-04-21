@@ -99,6 +99,8 @@ A learner can save a word they want to remember directly from the reading view s
 - **FR-008**: The system MUST store reading progress, playback position, learner-selected word actions, and learner-added review items locally so the core workflow remains usable without accounts or mandatory cloud services.
 - **FR-009**: The system MUST keep the reading workflow usable when block audio, timing metadata, pronunciation support, token-to-timestamp mapping, or richer explanation detail is unavailable by falling back to text-first reading with clear status messaging.
 - **FR-010**: The system MUST support repeated word inspection and review actions during a reading session without interrupting playback unless the learner explicitly chooses to pause.
+- **FR-011**: The system MUST request hosted block audio directly from the OpenAI speech API using the `gpt-4o-mini-tts` model by default, with the `openaiApiKey` stored in settings and kept separate from the OpenRouter key used for lookup and grammar calls.
+- **FR-011a**: The system MUST let the learner choose between standard pacing and a learner-slow generation mode for newly synthesized reading audio, while keeping playback controls unchanged.
 
 ### Key Entities *(include if feature involves data)*
 

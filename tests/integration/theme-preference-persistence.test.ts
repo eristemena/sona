@@ -67,4 +67,48 @@ describe('theme preference persistence integration', () => {
 
     reopenedDatabase.close()
   })
+
+  it("persists the reading-audio mode across relaunches", async () => {
+    const directory = mkdtempSync(
+      path.join(tmpdir(), "sona-reading-audio-mode-"),
+    );
+    tempDirectories.push(directory);
+    const databasePath = path.join(directory, "sona.db");
+    const database = createSqliteConnection({ databasePath });
+
+    runShellMigrations(database);
+
+    const repository = new SqliteSettingsRepository(database);
+    const { registerSettingsHandlersWithRuntime } =
+      await import("../../apps/desktop/src/main/ipc/settings-handlers.js");
+
+    registerSettingsHandlersWithRuntime(
+      {
+        settingsRepository: repository,
+        windows: () => [],
+      },
+      {
+        ipcMain: electronMockState.ipcMain,
+        nativeTheme: electronMockState.nativeTheme,
+      },
+    );
+
+    const setReadingAudioMode = electronMockState.ipcMainHandlers.get(
+      "sona:settings:set-reading-audio-mode",
+    );
+    const update = await setReadingAudioMode?.({}, "learner-slow");
+
+    expect(update).toEqual({ mode: "learner-slow" });
+    expect(repository.getReadingAudioMode()).toBe("learner-slow");
+
+    database.close();
+
+    const reopenedDatabase = createSqliteConnection({ databasePath });
+    runShellMigrations(reopenedDatabase);
+    const reopenedRepository = new SqliteSettingsRepository(reopenedDatabase);
+
+    expect(reopenedRepository.getReadingAudioMode()).toBe("learner-slow");
+
+    reopenedDatabase.close();
+  });
 })

@@ -9,6 +9,7 @@ import {
   splitKoreanArticleSentences,
   toDifficultyBadge,
 } from '@sona/domain/content'
+import { localJsSegmenter } from "@sona/domain/tokenizer/local-js-segmenter";
 import type { CreateArticleFromPasteInput, CreateArticleFromUrlInput } from '@sona/domain/contracts/content-library'
 import { validateCorpusSegment } from '@sona/domain/provenance/corpus-segment'
 
@@ -122,7 +123,7 @@ export class ArticleContentService {
 
       return {
         id: buildContentBlockId({
-          sourceType: 'article',
+          sourceType: "article",
           sourceLocator: input.sourceLocator,
           contentItemCreatedAt: input.createdAt,
           sentenceOrdinal,
@@ -130,14 +131,16 @@ export class ArticleContentService {
         contentItemId,
         korean: segment.text,
         romanization: null,
-        tokens: null,
+        tokens: localJsSegmenter
+          .tokenize(segment.text)
+          .map((surface) => ({ surface, normalized: surface })),
         annotations: {},
         difficulty: input.difficulty,
-        sourceType: 'article' as const,
+        sourceType: "article" as const,
         audioOffset: null,
         sentenceOrdinal,
         createdAt: input.createdAt,
-      }
+      };
     })
 
     return {

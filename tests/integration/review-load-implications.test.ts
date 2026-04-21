@@ -111,13 +111,11 @@ describe("review-load implications", () => {
 
     repository.deleteContent(contentItemId);
 
-    const reviewTables = database
-      .prepare(
-        "SELECT name FROM sqlite_master WHERE type = 'table' AND (name LIKE '%review%' OR name LIKE '%srs%')",
-      )
-      .all() as Array<{ name: string }>;
+    const reviewCardCount = database
+      .prepare("SELECT COUNT(*) as total FROM review_cards")
+      .get() as { total: number };
 
-    expect(reviewTables).toEqual([]);
+    expect(reviewCardCount.total).toBe(0);
     expect(repository.listLibraryItems()).toEqual([]);
   });
 });

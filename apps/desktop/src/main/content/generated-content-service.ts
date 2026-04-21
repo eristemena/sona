@@ -11,6 +11,7 @@ import {
   toDifficultyBadge,
   type RequiredDifficultyLevel,
 } from '@sona/domain/content'
+import { localJsSegmenter } from "@sona/domain/tokenizer/local-js-segmenter";
 import type { GeneratePracticeSentencesInput } from '@sona/domain/contracts/content-library'
 import { validateCorpusSegment } from '@sona/domain/provenance/corpus-segment'
 
@@ -119,7 +120,7 @@ export class GeneratedContentService {
 
       return {
         id: buildContentBlockId({
-          sourceType: 'generated',
+          sourceType: "generated",
           sourceLocator: input.sessionId,
           contentItemCreatedAt: input.createdAt,
           sentenceOrdinal,
@@ -127,14 +128,16 @@ export class GeneratedContentService {
         contentItemId,
         korean: segment.text,
         romanization: null,
-        tokens: null,
+        tokens: localJsSegmenter
+          .tokenize(segment.text)
+          .map((surface) => ({ surface, normalized: surface })),
         annotations: {},
         difficulty: input.validatedDifficulty,
-        sourceType: 'generated' as const,
+        sourceType: "generated" as const,
         audioOffset: null,
         sentenceOrdinal,
         createdAt: input.createdAt,
-      }
+      };
     })
 
     const provenanceDetail = formatGenerationProvenanceDetail({

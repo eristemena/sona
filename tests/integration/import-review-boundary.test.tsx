@@ -51,20 +51,18 @@ describe('import-to-study-to-review boundary', () => {
       },
     })
 
-    const reviewTables = database
-      .prepare(
-        "SELECT name FROM sqlite_master WHERE type = 'table' AND (name LIKE '%review%' OR name LIKE '%srs%')",
-      )
-      .all() as Array<{ name: string }>
+    const reviewCardCount = database
+      .prepare("SELECT COUNT(*) as total FROM review_cards")
+      .get() as { total: number };
 
-    expect(reviewTables).toEqual([])
+    expect(reviewCardCount.total).toBe(0);
 
     window.sona = {
       shell: {
         getBootstrapState: vi.fn(async () =>
           createShellBootstrapState({
-            themePreference: 'system',
-            systemTheme: 'dark',
+            themePreference: "system",
+            systemTheme: "dark",
           }),
         ),
       },
@@ -74,8 +72,13 @@ describe('import-to-study-to-review boundary', () => {
         subscribeThemeChanges: vi.fn(() => () => undefined),
       },
       content: {
-        listLibraryItems: vi.fn(async (input?: { filter?: string; search?: string }) => repository.listLibraryItems(input)),
-        getContentBlocks: vi.fn(async (contentItemId: string) => repository.getContentBlocks(contentItemId)),
+        listLibraryItems: vi.fn(
+          async (input?: { filter?: string; search?: string }) =>
+            repository.listLibraryItems(input),
+        ),
+        getContentBlocks: vi.fn(async (contentItemId: string) =>
+          repository.getContentBlocks(contentItemId),
+        ),
         browseSubtitleFile: vi.fn(async () => null),
         importSrt: vi.fn(),
         createArticleFromPaste: vi.fn(),
@@ -83,7 +86,29 @@ describe('import-to-study-to-review boundary', () => {
         generatePracticeSentences: vi.fn(),
         deleteContent: vi.fn(),
       },
-    } as unknown as WindowSona
+      reading: {
+        getReadingSession: vi.fn(async (contentItemId: string) =>
+          repository.getReadingSession(contentItemId),
+        ),
+        ensureBlockAudio: vi.fn(async (blockId: string) => ({
+          blockId,
+          state: "unavailable" as const,
+          audioFilePath: null,
+          durationMs: null,
+          modelId: "gpt-4o-mini-tts",
+          voice: "alloy",
+          timings: [],
+          fromCache: false,
+          failureMessage:
+            "Hosted block audio is unavailable without an OpenRouter API key.",
+        })),
+        lookupWord: vi.fn(),
+        explainGrammar: vi.fn(),
+        addToDeck: vi.fn(),
+        saveReadingProgress: vi.fn(async () => undefined),
+        flushExposureLog: vi.fn(async () => ({ written: 0 })),
+      },
+    } as unknown as WindowSona;
 
     const user = userEvent.setup()
     render(<AppShell />)

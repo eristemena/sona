@@ -3,7 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "exports": {
+    "./tts/*": {
+      "types": "./dist/tts/*.d.ts",
+      "import": "./dist/tts/*.js"
+    },
+    "./llm/*": {
+      "types": "./dist/llm/*.d.ts",
+      "import": "./dist/llm/*.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js"
+    }
+  },
   "scripts": {
+    "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

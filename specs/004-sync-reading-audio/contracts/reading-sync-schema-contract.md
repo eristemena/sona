@@ -12,7 +12,7 @@ Defines the local persistence contract for synced reading audio, annotation cach
 CREATE TABLE block_audio_assets (
   id TEXT PRIMARY KEY NOT NULL,
   block_id TEXT NOT NULL REFERENCES content_blocks(id) ON DELETE CASCADE,
-  provider TEXT NOT NULL CHECK (provider IN ('openrouter')),
+  provider TEXT NOT NULL CHECK (provider IN ('openai')),
   model_id TEXT NOT NULL,
   voice TEXT NOT NULL,
   text_hash TEXT NOT NULL,

@@ -1,10 +1,17 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 import type {
+  ApiKeyStatus,
+  ReadingAudioModeUpdateResult,
+  ReadingAudioVoiceUpdateResult,
   ThemePreferenceMode,
   ThemeUpdateResult,
   WindowSona,
 } from "@sona/domain/contracts/window-sona";
+import type {
+  ReadingAudioMode,
+  ReadingAudioVoice,
+} from "@sona/domain/settings/reading-audio-preference";
 import type {
   CreateArticleFromPasteInput,
   CreateArticleFromUrlInput,
@@ -13,13 +20,28 @@ import type {
   ListLibraryItemsInput,
 } from "@sona/domain/contracts/content-library";
 import { CONTENT_CHANNELS } from "@sona/domain/contracts/content-library";
+import type {
+  AddToDeckInput,
+  ExposureLogInput,
+  GrammarExplanationInput,
+  SaveReadingProgressInput,
+  WordLookupInput,
+} from "@sona/domain/contracts/content-reading";
+import { READING_CHANNELS } from "@sona/domain/contracts/content-reading";
 
 const CHANNELS = {
   getBootstrapState: "sona:shell:get-bootstrap-state",
   getThemePreference: "sona:settings:get-theme-preference",
   setThemePreference: "sona:settings:set-theme-preference",
+  getOpenAiApiKeyStatus: "sona:settings:get-openai-api-key-status",
+  setOpenAiApiKey: "sona:settings:set-openai-api-key",
+  getReadingAudioMode: "sona:settings:get-reading-audio-mode",
+  setReadingAudioMode: "sona:settings:set-reading-audio-mode",
+  getReadingAudioVoice: "sona:settings:get-reading-audio-voice",
+  setReadingAudioVoice: "sona:settings:set-reading-audio-voice",
   themeChanged: "sona:settings:theme-changed",
   ...CONTENT_CHANNELS,
+  ...READING_CHANNELS,
 } as const;
 
 interface PreloadBridge {
@@ -46,6 +68,18 @@ interface PreloadIpc {
 
 function isThemePreferenceMode(value: unknown): value is ThemePreferenceMode {
   return value === "system" || value === "dark" || value === "light";
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || typeof value === "string";
+}
+
+function isReadingAudioMode(value: unknown): value is ReadingAudioMode {
+  return value === "standard" || value === "learner-slow";
+}
+
+function isReadingAudioVoice(value: unknown): value is ReadingAudioVoice {
+  return value === "alloy" || value === "coral" || value === "shimmer";
 }
 
 export function createWindowSonaApi(
@@ -78,6 +112,51 @@ export function createWindowSonaApi(
           CHANNELS.setThemePreference,
           mode,
         ) as Promise<ThemeUpdateResult>;
+      },
+      getOpenAiApiKeyStatus() {
+        return preloadIpc.invoke(
+          CHANNELS.getOpenAiApiKeyStatus,
+        ) as Promise<ApiKeyStatus>;
+      },
+      setOpenAiApiKey(apiKey: string | null) {
+        if (!isNullableString(apiKey)) {
+          return Promise.reject(new Error("Invalid OpenAI API key value."));
+        }
+
+        return preloadIpc.invoke(
+          CHANNELS.setOpenAiApiKey,
+          apiKey,
+        ) as Promise<ApiKeyStatus>;
+      },
+      getReadingAudioMode() {
+        return preloadIpc.invoke(
+          CHANNELS.getReadingAudioMode,
+        ) as Promise<ReadingAudioMode>;
+      },
+      setReadingAudioMode(mode: ReadingAudioMode) {
+        if (!isReadingAudioMode(mode)) {
+          return Promise.reject(new Error("Invalid reading audio mode."));
+        }
+
+        return preloadIpc.invoke(
+          CHANNELS.setReadingAudioMode,
+          mode,
+        ) as Promise<ReadingAudioModeUpdateResult>;
+      },
+      getReadingAudioVoice() {
+        return preloadIpc.invoke(
+          CHANNELS.getReadingAudioVoice,
+        ) as Promise<ReadingAudioVoice>;
+      },
+      setReadingAudioVoice(voice: ReadingAudioVoice) {
+        if (!isReadingAudioVoice(voice)) {
+          return Promise.reject(new Error("Invalid reading audio voice."));
+        }
+
+        return preloadIpc.invoke(
+          CHANNELS.setReadingAudioVoice,
+          voice,
+        ) as Promise<ReadingAudioVoiceUpdateResult>;
       },
       subscribeThemeChanges(listener: (update: ThemeUpdateResult) => void) {
         const handler = (
@@ -140,6 +219,47 @@ export function createWindowSonaApi(
           CHANNELS.deleteContent,
           contentItemId,
         ) as ReturnType<WindowSona["content"]["deleteContent"]>;
+      },
+    },
+    reading: {
+      getReadingSession(contentItemId: string) {
+        return preloadIpc.invoke(
+          CHANNELS.getReadingSession,
+          contentItemId,
+        ) as ReturnType<WindowSona["reading"]["getReadingSession"]>;
+      },
+      ensureBlockAudio(blockId: string) {
+        return preloadIpc.invoke(
+          CHANNELS.ensureBlockAudio,
+          blockId,
+        ) as ReturnType<WindowSona["reading"]["ensureBlockAudio"]>;
+      },
+      lookupWord(input: WordLookupInput) {
+        return preloadIpc.invoke(CHANNELS.lookupWord, input) as ReturnType<
+          WindowSona["reading"]["lookupWord"]
+        >;
+      },
+      explainGrammar(input: GrammarExplanationInput) {
+        return preloadIpc.invoke(CHANNELS.explainGrammar, input) as ReturnType<
+          WindowSona["reading"]["explainGrammar"]
+        >;
+      },
+      addToDeck(input: AddToDeckInput) {
+        return preloadIpc.invoke(CHANNELS.addToDeck, input) as ReturnType<
+          WindowSona["reading"]["addToDeck"]
+        >;
+      },
+      saveReadingProgress(input: SaveReadingProgressInput) {
+        return preloadIpc.invoke(
+          CHANNELS.saveReadingProgress,
+          input,
+        ) as ReturnType<WindowSona["reading"]["saveReadingProgress"]>;
+      },
+      flushExposureLog(input: ExposureLogInput) {
+        return preloadIpc.invoke(
+          CHANNELS.flushExposureLog,
+          input,
+        ) as ReturnType<WindowSona["reading"]["flushExposureLog"]>;
       },
     },
   };

@@ -6,9 +6,9 @@ Rationale: The feature needs first-open audio generation without making the lear
 
 Alternatives considered: Generating one file for an entire content item was rejected because it makes word-level invalidation and partial regeneration expensive when only one block changes. Storing audio blobs directly in SQLite was rejected because it increases database churn and backup size for a binary-heavy workload.
 
-## Decision: Use OpenRouter-routed OpenAI TTS as the primary hosted audio path, with text-first fallback when audio is unavailable
+## Decision: Use direct OpenAI TTS as the primary hosted audio path, with text-first fallback when audio is unavailable
 
-Rationale: The repository already uses OpenRouter patterns for optional provider-backed content work, and the existing fallback policy explicitly models `tts` as an optional capability. The user selected `openai/tts-1` routed through OpenRouter, so the plan keeps provider use in the main process and treats missing credentials, provider latency, or unsupported response shapes as non-fatal. The learner can still open the reading view, read the text, tap words, and add cards even when no audio can be produced.
+Rationale: The reading-audio path should not depend on OpenRouter model availability. This slice uses the OpenAI speech API directly with the `gpt-4o-mini-tts` model, with the `openaiApiKey` stored in settings and kept separate from the OpenRouter key used for lookup and grammar calls. Missing credentials, provider latency, or unavailable timing extraction remain non-fatal. The learner can still open the reading view, read the text, tap words, and add cards even when no audio can be produced. Reading audio also supports a learner-slow generation mode so the app can request calmer, slower delivery without relying on extreme playback-rate stretching.
 
 Alternatives considered: Introducing a separate direct-to-OpenAI integration was rejected because it duplicates provider configuration and weakens the existing OpenRouter abstraction. Blocking the reading view until audio is ready was rejected because it violates the local-first core loop.
 

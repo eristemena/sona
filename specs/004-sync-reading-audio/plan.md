@@ -3,16 +3,16 @@
 **Branch**: `[004-sync-reading-audio]` | **Date**: 2026-04-20 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/specs/004-sync-reading-audio/spec.md`
 
-**Note**: This plan covers the first learner-facing reading session for saved content: block-level TTS generation on first open, cached audio replay, word-synced karaoke highlighting, tapped word lookup with cached annotations and optional richer grammar help, direct `Add to deck` card creation via FSRS defaults, and passive exposure logging flushed in batches after the session ends.
+**Note**: This plan covers the first learner-facing reading session for saved content: block-level TTS generation on first open, cached audio replay, word-synced karaoke highlighting, tapped word lookup with sentence-context meaning, full-sentence translation, and optional richer grammar help, direct `Add to deck` card creation via FSRS defaults, and passive exposure logging flushed in batches after the session ends.
 
 ## Summary
 
-Build a local-first reading surface on top of the content library by treating each `ContentBlock` as the unit of playback, lookup, and review capture. When a learner opens content, the renderer loads reading blocks through the typed desktop bridge, requests block audio from the main process for the currently active block on first open, and reuses cached audio files plus persisted word timestamps on subsequent opens. The renderer owns playback UI and karaoke highlight state using the audio element’s `currentTime`, while the main process owns OpenRouter-routed provider calls, annotation cache refresh, FSRS card creation, provenance persistence, progress persistence, and batch exposure-log writes. Core reading remains usable offline or without API keys: text-first reading, cached replay, and learner-triggered deck capture still work even if hosted TTS, timestamp parsing, or lookup enrichment is unavailable.
+Build a local-first reading surface on top of the content library by treating each `ContentBlock` as the unit of playback, lookup, and review capture. When a learner opens content, the renderer loads reading blocks through the typed desktop bridge, requests block audio from the main process for the currently active block on first open, and reuses cached audio files plus persisted word timestamps on subsequent opens. The renderer owns playback UI and karaoke highlight state using the audio element’s `currentTime`, while the main process owns direct OpenAI TTS calls for reading audio, OpenRouter-routed annotation refresh, FSRS card creation, provenance persistence, progress persistence, and batch exposure-log writes. Lookup responses are sentence-contextual: they describe what the tapped form means inside the full Korean sentence, identify the grammar pattern and register, and include a natural English translation of the entire sentence so Korean constructions remain understandable in context. Core reading remains usable offline or without API keys: text-first reading, cached replay, and learner-triggered deck capture still work even if hosted TTS, timestamp parsing, or lookup enrichment is unavailable.
 
 ## Technical Context
 
 **Language/Version**: TypeScript 5.8.x across Electron main/preload, domain/data packages, and Next.js 15.1 renderer  
-**Primary Dependencies**: Electron 33, Next.js 15.1, React 19, better-sqlite3, existing OpenAI SDK routed through OpenRouter, Motion for React popup animation, `ts-fsrs` for review-card initialization  
+**Primary Dependencies**: Electron 33, Next.js 15.1, React 19, better-sqlite3, direct OpenAI speech API access for reading audio, OpenRouter chat completions for lookup and grammar help, Motion for React popup animation, `ts-fsrs` for review-card initialization  
 **Storage**: Local SQLite for reading progress, annotation cache, exposure log, and review-card metadata plus app-data file cache for synthesized block audio  
 **Testing**: Vitest contract and integration tests, workspace typecheck, build verification, and manual offline/provider fallback validation  
 **Target Platform**: Desktop app, macOS-first packaging and validation through Electron with a static-export renderer
@@ -27,11 +27,11 @@ Build a local-first reading surface on top of the content library by treating ea
 
 ### Pre-Research Gate
 
-- **Local-first operation**: PASS. Opening saved content, reading flowing Korean text, replaying any already cached audio, and adding words to review remain local. Network use is optional and limited to first-open hosted TTS generation and provider-backed annotation or grammar refresh. If those fail, the reading view still opens and remains usable in text-first mode.
+- **Local-first operation**: PASS. Opening saved content, reading flowing Korean text, replaying any already cached audio, and adding words to review remain local. Network use is optional and limited to first-open OpenAI TTS generation and OpenRouter-backed annotation or grammar refresh. If those fail, the reading view still opens and remains usable in text-first mode.
 - **Learner-owned content**: PASS. The flow begins from learner-approved library content already stored locally. Derived artifacts, including audio cache metadata, annotation cache entries, and review cards, remain tied back to the source block and sentence context so the learner can inspect where each study aid came from.
 - **Bounded review load**: PASS. New scheduled work is created only when the learner explicitly taps `Add to deck`, one card at a time. Duplicate blocking and existing pacing rules apply before activating a card, and no bulk seeding or automatic harvesting occurs.
 - **Reading and listening integration**: PASS. Text, block-level audio, and review capture are unified in a single reading session. Synced highlighting follows the active block audio asset when available, and the same reading surface still supports lookup and deck capture when audio or timing metadata is missing.
-- **Complexity justification**: PASS. Motion is a focused UI dependency for anchored popup enter and exit transitions. `ts-fsrs` is the repository’s chosen scheduling baseline. OpenRouter reuse avoids adding a second hosted provider path, and app-data file caching is simpler than storing large binaries in SQLite.
+- **Complexity justification**: PASS. Motion is a focused UI dependency for anchored popup enter and exit transitions. `ts-fsrs` is the repository’s chosen scheduling baseline. Direct OpenAI TTS for reading audio keeps the speech path explicit, while OpenRouter remains isolated to lookup and grammar calls. App-data file caching is simpler than storing large binaries in SQLite.
 
 ### Post-Design Re-Check
 

@@ -114,6 +114,36 @@ function installWindowSona() {
   })
 
   const getContentBlocks = vi.fn(async (contentItemId: string) => BLOCKS_BY_ID[contentItemId] ?? [])
+  const getReadingSession = vi.fn(async (contentItemId: string) => {
+    const item = SAMPLE_ITEMS.find((entry) => entry.id === contentItemId);
+
+    return {
+      contentItemId,
+      itemTitle: item?.title ?? "Reading session",
+      provenanceLabel: item?.provenanceLabel ?? "Article paste",
+      provenanceDetail: item?.provenanceDetail ?? "Reading session",
+      blocks: (BLOCKS_BY_ID[contentItemId] ?? []).map((block) => ({
+        id: block.id,
+        contentItemId,
+        korean: block.korean,
+        romanization: block.romanization,
+        audioOffset: block.audioOffset,
+        sentenceOrdinal: block.sentenceOrdinal,
+        tokens: (block.tokens ?? []).map((token, index) => ({
+          index,
+          surface: token.surface,
+          ...(token.normalized ? { normalized: token.normalized } : {}),
+        })),
+      })),
+      progress: {
+        activeBlockId: BLOCKS_BY_ID[contentItemId]?.[0]?.id ?? null,
+        playbackState: "idle" as const,
+        playbackRate: 1,
+        currentTimeMs: 0,
+        highlightedTokenIndex: null,
+      },
+    };
+  });
 
   window.sona = {
     shell: { getBootstrapState: vi.fn() },
@@ -131,9 +161,29 @@ function installWindowSona() {
       generatePracticeSentences: vi.fn(),
       deleteContent: vi.fn(),
     },
-  } as unknown as WindowSona
+    reading: {
+      getReadingSession,
+      ensureBlockAudio: vi.fn(async (blockId: string) => ({
+        blockId,
+        state: "unavailable" as const,
+        audioFilePath: null,
+        durationMs: null,
+        modelId: "gpt-4o-mini-tts",
+        voice: "alloy",
+        timings: [],
+        fromCache: false,
+        failureMessage:
+          "Hosted block audio is unavailable without an OpenRouter API key.",
+      })),
+      lookupWord: vi.fn(),
+      explainGrammar: vi.fn(),
+      addToDeck: vi.fn(),
+      saveReadingProgress: vi.fn(async () => undefined),
+      flushExposureLog: vi.fn(async () => ({ written: 0 })),
+    },
+  } as unknown as WindowSona;
 
-  return { getContentBlocks, listLibraryItems }
+  return { getContentBlocks, getReadingSession, listLibraryItems };
 }
 
 describe('content library browse integration', () => {

@@ -29,9 +29,9 @@ const COPY: Record<
   },
   settings: {
     eyebrow: "Settings",
-    title: "Appearance is available now.",
+    title: "Appearance and reading audio are available now.",
     description:
-      "Theme preference is the first persistent shell setting and is applied locally on launch.",
+      "Theme preference and the local OpenAI reading-audio key both persist on launch without leaving the desktop shell.",
   },
 };
 

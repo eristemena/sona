@@ -144,20 +144,140 @@ Navigation items have an icon + label. Active state uses `--accent-subtle` backg
 
 ### 2. Reading View
 
-The most important screen. Must feel like a clean reading environment.
+The most important screen. Must feel like a clean reading environment — closer to a Kindle or a well-designed article page than a language app. The UI chrome should be invisible; only the Korean text and the word popup demand attention.
 
-- Full-width Korean text, centered, max 720px
-- Generous padding: `48px` top and bottom
-- **Tap-to-lookup**: clicking any word opens an inline popup card (not a modal) anchored
-  below the tapped word. The card shows: word, romanization, meaning, grammar note.
-  Animate in with a subtle fade + translate-y (8px → 0). Dismiss on outside click.
-- **Karaoke highlight**: as TTS audio plays, the current word is highlighted with
-  `--accent-subtle` background and `--accent` text color. Transitions smoothly word by word.
-- Audio controls: a minimal floating bar at the bottom of the content area.
-  Play/pause, speed toggle (0.75× / 1× / 1.25×), replay sentence. Do not use a
-  heavy media player chrome.
-- Difficulty badge top-right: `초급` / `중급` / `고급` (use Korean terms, not English).
-  Color: success/warning/danger respectively.
+#### Overall Layout
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  ← Back          카페에서 커피 주문하기            [초급 badge] │  ← header bar
+│──────────────────────────────────────────────────────────────│
+│                                                              │
+│                   아메리카노 주세요.                           │
+│                                                              │
+│                   따뜻한 라떼 하나 주문할게요.                  │  ← reading body
+│                                                              │
+│                   커피 한 잔 주세요.                           │
+│                                                              │
+│                        ...                                   │
+│                                                              │
+│──────────────────────────────────────────────────────────────│
+│  ▶  ↺   ————————————————●————————  0.8×  1×  1.25×          │  ← audio bar (pinned bottom)
+└──────────────────────────────────────────────────────────────┘
+```
+
+#### Header Bar
+
+- Height: `52px`, background `--bg-base`, bottom border `1px solid --border`
+- Left: back arrow (Lucide `ArrowLeft`, 20px, Ghost button) — navigates back to Library
+- Center: content title, 16px weight 600 `--text-primary`, truncated with ellipsis if too long
+- Right: difficulty badge (`초급` / `중급` / `고급`) — same badge style as Library cards
+- No other controls in the header. No debug info, no block counters, no source type label.
+
+#### Reading Body
+
+- Centered column, max-width `720px`, horizontal margin auto
+- Padding: `48px` top, `120px` bottom (leaves room for the pinned audio bar)
+- All ContentBlock sentences render as a **single continuous flow of text** — not as separate cards, not as numbered blocks. No "BLOCK 1", "BLOCK 2" labels. No "Make active" buttons. The text reads like a document.
+- Sentence spacing: `margin-bottom: 24px` between sentences
+- Korean text: Pretendard, 20px, weight 400, line-height 1.8, `--text-primary`
+- Romanization (when toggled on): renders on its own line directly below the Korean sentence, 14px italic `--text-secondary`, line-height 1.4
+
+#### Karaoke Highlight
+
+As TTS audio plays, the currently spoken word is highlighted inline within the flowing text:
+- Background: `--accent-subtle` (`#6C8EF514`)
+- Text color: `--accent`
+- Border-radius: `4px`, padding: `0 2px`
+- Transition: `80ms linear` — advances word by word as audio plays
+- Only one word highlighted at a time. No sentence-level highlight, no block-level highlight.
+- When audio is paused or stopped, highlight is removed entirely.
+
+#### Tap-to-Lookup Popup
+
+Tapping any word (whether audio is playing or not) opens an inline popup anchored below the tapped word.
+
+**Critical positioning rules — read carefully:**
+- The popup must use `position: absolute` (or `position: fixed`) with a high `z-index` (at least `100`). It floats above all other content.
+- It must **never** affect page layout. It must **never** cause a scrollbar to appear. It must **never** push other elements down.
+- The reading body's `overflow` must remain `auto` — the popup must not interact with scroll at all.
+- Anchor the popup to the bounding rect of the tapped word element using `getBoundingClientRect()`. Position it below the word by default; if the word is near the bottom of the viewport, flip it above.
+- The popup renders inside a React portal (`ReactDOM.createPortal`) attached to `document.body` — not inside the reading text container. This is the only way to guarantee it doesn't affect layout.
+
+```
+┌─────────────────────────────────────┐
+│  줄래?                        [✕]   │  ← tapped word (18px 600) + close button
+│  jul-lae                            │  ← romanization (13px italic --text-secondary)
+│                                     │
+│  Will you (do something for me)?    │  ← construction meaning (15px --text-primary)
+│  ─────────────────────────────────  │  ← divider
+│  -(아/어) 줄래? · Request · Informal │  ← grammar pattern · register (13px --text-muted)
+│                                     │
+│  "Will you take me to a place my    │  ← full sentence translation (13px --text-secondary
+│  poor imagination can't picture?"   │     italic, max 3 lines)
+│                                     │
+│  [Explain grammar]  [Add to deck +] │  ← two action buttons
+└─────────────────────────────────────┘
+```
+
+- Width: `280px`, background `--bg-elevated`, border `1px solid --border`, border-radius `8px`, padding `16px`
+- Shadow: `0 4px 16px rgba(0,0,0,0.4)`
+- Animate in: fade + translate-y 8px → 0, `150ms ease`
+- Dismiss: click outside the popup, or tap the `✕` button
+
+**Annotation is sentence-contextual, not word-isolated.** The LLM receives the full sentence alongside the tapped word and explains the word *in the context of that sentence*. This is essential for Korean — grammatical constructions like -(아/어) 줄래?, -(으)론, -(ㄹ) 수 없다 are meaningless without sentence context. The popup always shows:
+1. The tapped surface form (as it appears in the text)
+2. Its romanization
+3. The meaning of the word/construction in this sentence — not a dictionary definition
+4. The grammatical pattern it belongs to, and register
+5. A natural English translation of the full sentence — so the learner can verify their understanding of the whole, not just the tapped word
+
+**Do not show:** "Source model", model name, internal IDs, canonical form separately, or any debug metadata.
+
+**Do not use a grid or table layout** — render as a simple vertical stack in this exact order: tapped form → romanization → construction meaning → divider → grammar pattern line → sentence translation → action buttons.
+
+- "Explain grammar" is a Ghost button — triggers a deeper LLM call, expands the popup downward with a grammar note (see below)
+- "Add to deck +" is a Secondary button — adds the word to `srs_cards`. Changes to "✓ Added" (disabled, `--success` color) after tap. If word is already in deck or in `known_words`, shows "Already known" (disabled, muted) from the start.
+- The popup grows downward when grammar is expanded — it does not reposition or jump
+- Only one popup open at a time — tapping a new word closes the previous popup instantly
+
+#### Grammar Explanation (expanded popup)
+
+When "Explain grammar" is tapped, the popup expands below the divider:
+
+```
+│  ─────────────────────────────────  │
+│  Grammar note                       │  ← 11px weight 500 --text-muted ALL CAPS
+│                                     │
+│  주문하다 is a transitive verb...    │  ← LLM explanation, 14px --text-primary,
+│  commonly used with -을/를...        │     line-height 1.6, max 4 sentences
+│                                     │
+│  Usage: 커피를 주문하다              │  ← example, 14px --text-secondary italic
+└─────────────────────────────────────┘
+```
+
+- While loading: show a subtle shimmer placeholder (2 lines) inside the expanded area — not a spinner
+- If LLM call fails: show "Couldn't load explanation. Tap to retry." in `--text-muted`, 13px
+
+#### Audio Bar (pinned bottom)
+
+Pinned to the bottom of the main content area (not the window — it scrolls with the content area but sticks to the bottom edge). Height `56px`, background `--bg-surface`, top border `1px solid --border`.
+
+```
+  ▶  ↺    ─────────────●────────────    0.75×  1×  1.25×
+```
+
+- Play/pause: Lucide `Play` / `Pause`, 20px, Ghost button, `width: 36px height: 36px`
+- Replay sentence: Lucide `RotateCcw`, 16px, Ghost button — replays the current sentence from its start
+- Progress scrubber: a simple range input, `--accent` for the filled portion, `--border` for the track. No timestamp labels, no time display. The scrubber communicates position visually, not numerically.
+- Speed: three pill buttons (`0.75×` · `1×` · `1.25×`). Active pill: `--accent` background, white text. Inactive: Ghost style. No dropdown.
+- No "Scrub audio" label. No "Cached block audio is ready." status message. No debug panel. No side panel of any kind.
+- If TTS is not configured (no OpenAI key): the audio bar is hidden entirely. The reading view works in text-only mode with no audio controls visible.
+
+#### Empty / Loading States
+
+- On first open of a ContentBlock: show the Korean text immediately (never wait for TTS to render text). Audio bar shows a loading state (play button disabled, progress bar grayed out) while TTS generates. Once audio is ready the play button becomes active — no full-screen loader.
+- If TTS generation fails: audio bar shows a subtle "Audio unavailable" label (13px `--text-muted`) with a Lucide `RefreshCw` retry icon. Text reading continues to work normally.
 
 ### 3. SRS Review (Flashcard)
 
