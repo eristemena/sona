@@ -40,6 +40,7 @@ CREATE TABLE review_cards (
 Rules:
 - Due-queue reads use `activation_state = 'active'` and `due_at <= now`.
 - The table remains the single durable SRS card store for both reading capture and daily review.
+- New cards are persisted directly as `active` or `deferred`; there is no stored `candidate` activation state.
 - Display-side meaning and grammar fields are snapshots from the learner-visible context at capture time and remain editable later.
 
 Suggested indexes:

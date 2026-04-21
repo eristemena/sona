@@ -61,6 +61,18 @@ interface SubmitReviewRatingResult {
   scheduledDays: number
 }
 
+interface UpdateReviewCardDetailsInput {
+  reviewCardId: string
+  meaning: string | null
+  grammarPattern: string | null
+  grammarDetails: string | null
+}
+
+interface UpdateReviewCardDetailsResult {
+  reviewCardId: string
+  updatedAt: number
+}
+
 interface KnownWordSeedPack {
   id: string
   label: string
@@ -101,6 +113,17 @@ interface MarkKnownWordResult {
   affectedReviewCardId: string | null
 }
 
+interface ClearKnownWordInput {
+  canonicalForm: string
+  reviewCardId?: string | null
+}
+
+interface ClearKnownWordResult {
+  canonicalForm: string
+  affectedReviewCardId: string | null
+  activationState: 'active' | 'deferred' | null
+}
+
 interface WordStudyStatus {
   canonicalForm: string
   eligibility: CaptureEligibility
@@ -116,9 +139,11 @@ interface WindowSona {
   review: {
     getQueue(limit?: number): Promise<ReviewQueueSnapshot>
     submitRating(input: SubmitReviewRatingInput): Promise<SubmitReviewRatingResult>
+    updateCardDetails(input: UpdateReviewCardDetailsInput): Promise<UpdateReviewCardDetailsResult>
     getKnownWordOnboardingStatus(): Promise<KnownWordOnboardingStatus>
     completeKnownWordOnboarding(input: CompleteKnownWordOnboardingInput): Promise<CompleteKnownWordOnboardingResult>
     markKnownWord(input: MarkKnownWordInput): Promise<MarkKnownWordResult>
+    clearKnownWord(input: ClearKnownWordInput): Promise<ClearKnownWordResult>
   }
 
   reading: {
@@ -132,13 +157,16 @@ interface WindowSona {
 
 ## Behavior Rules
 
-- `getQueue()` returns active cards where `due_at <= now`, ordered by ascending `due_at`, limited to 50 by default.
+- `getQueue()` returns active cards where `due_at <= now`, ordered by ascending `due_at`, with any requested limit clamped to the inclusive range `1..50` and defaulting to `50`.
 - `submitRating()` maps `again`, `hard`, `good`, `easy` to FSRS grades `1`, `2`, `3`, `4` and applies `ts-fsrs` `next()` using the current persisted card state.
 - `submitRating()` writes the updated scheduler state back to the same card row and appends an immutable review-history row.
+- `updateCardDetails()` lets the learner correct incomplete or outdated meaning and grammar fields without altering scheduler history.
 - `getKnownWordOnboardingStatus()` returns `shouldOnboard = true` only when no known words exist and the onboarding-complete setting is absent.
 - `completeKnownWordOnboarding()` bulk inserts selected seed words with `source = 'topik_seed'` and persists the onboarding-complete setting in one transaction.
 - `markKnownWord()` is idempotent for the same canonical form and may also move an existing review card into the `known` activation state.
+- `clearKnownWord()` removes the suppression row for the canonical form and may reactivate a corresponding review card to `active` or `deferred` without deleting review history.
 - `reading.getWordStudyStatus()` must report whether a word is eligible for capture, already represented by an active review card, already covered by known-word status, or currently deferred.
+- Repeated reading encounters of a canonical form already represented by a review card return `already-in-deck` rather than creating a second active card.
 
 ## Error Model
 

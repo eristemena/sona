@@ -1,6 +1,6 @@
 # Quickstart: Daily Vocabulary Review
 
-This feature is planned as Sona’s first full daily-review loop on top of reading-captured vocabulary. The validation path below covers known-word onboarding, queue retrieval, FSRS rating updates, card flip interaction, and reading-side suppression for already-known vocabulary.
+This feature is planned as Sona’s first full daily-review loop on top of reading-captured vocabulary. The validation path below covers known-word onboarding, queue retrieval, FSRS rating updates, card flip interaction, card-detail correction, and reading-side suppression for already-known vocabulary. User Story 1 remains independently valid without onboarding by testing with onboarding absent or already completed.
 
 ## 1. Prerequisites
 
@@ -47,7 +47,7 @@ npm run dev:desktop
 Manual checks:
 
 - Start from a fresh local database where `known_words` is empty and no `study.knownWords.onboardingComplete` setting exists.
-- Launch the app and confirm a full-screen onboarding step appears before normal review usage.
+- Launch the app and confirm a full-screen onboarding step is available as part of the Review shell without blocking access to already-due cards.
 - Select one bundled seed pack and complete onboarding.
 - Confirm the selected words are inserted into `known_words` with `source = 'topik_seed'`.
 - Relaunch the app and confirm onboarding does not reappear automatically.
@@ -110,11 +110,15 @@ Manual checks:
 - Open Review and confirm the resulting card shows the captured meaning and grammar details.
 - Inspect the card provenance and confirm it still links back to the source content and sentence context.
 - Add a word without richer lookup detail and confirm the card remains reviewable with editable fallback detail.
+- Edit the fallback meaning or grammar fields from Review and confirm the corrected details persist after restart.
 
 Expected automated coverage:
 
 - `tests/integration/reading-capture-review-card-details.test.ts`
 - `tests/integration/review-card-provenance.test.ts`
+- `tests/integration/review-card-missing-details.test.tsx`
+- `tests/integration/review-card-detail-edit.test.tsx`
+- `tests/integration/review-card-detail-edit-persistence.test.ts`
 
 ## 9. Validate Known-Word Suppression In Reading
 
@@ -124,11 +128,14 @@ Manual checks:
 - Encounter the same word in the reading view.
 - Confirm the reading surface does not present it as a fresh add-to-deck candidate.
 - Confirm a word that is already an active review card also appears suppressed.
+- Clear known-word status for that canonical form and confirm the reading surface returns the word to normal eligibility while preserving prior review history.
 
 Expected automated coverage:
 
 - `tests/integration/known-word-reading-suppression.test.tsx`
 - `tests/integration/review-duplicate-or-known-suppression.test.ts`
+- `tests/integration/known-word-clear-status.test.ts`
+- `tests/integration/review-card-reactivation-from-known.test.ts`
 
 ## 10. Validate Offline And Restart Safety
 
@@ -150,3 +157,4 @@ Expected automated coverage:
 - Confirm at least 95% of due cards render a usable front and back from locally stored data while offline.
 - Confirm a 20-card session can be completed in under 6 minutes without optional detours.
 - Confirm at least 90% of words already seeded or marked known are no longer offered as new reading captures.
+- Capture these measurements in benchmark or manual validation records tied to the review quickstart before sign-off.

@@ -53,7 +53,7 @@ As a learner, I want the app to recognize words I already know so I am not repea
 
 ### Edge Cases
 
-- A learner adds the same Korean word from multiple reading sessions with slightly different meanings or grammar notes.
+- A learner adds the same Korean word from multiple reading sessions with slightly different meanings or grammar notes; the system suppresses a second active card and keeps the existing card authoritative until the learner explicitly edits its saved details.
 - A saved card has incomplete grammar details because the original reading annotation was partial or edited later.
 - The learner skips several study days and returns to a large backlog of due cards.
 - A word is marked as known after a card already exists in review, and the system must avoid duplicate prompts without losing past study history.
@@ -96,7 +96,7 @@ As a learner, I want the app to recognize words I already know so I am not repea
 - **FR-005**: System MUST schedule the next review time sooner after weaker recall ratings and later after stronger recall ratings.
 - **FR-006**: System MUST persist vocabulary cards, learner ratings, due status, and review history locally so daily review remains available offline.
 - **FR-007**: System MUST preserve source provenance for each card so the learner can inspect the reading context from which the card was created.
-- **FR-008**: System MUST let the learner mark a word or card as already known and use that status to suppress unnecessary add-to-deck prompts during reading.
+- **FR-008**: System MUST let the learner mark a word or card as already known, later clear that status, and use known-word state to suppress unnecessary add-to-deck prompts during reading.
 - **FR-009**: System MUST avoid prompting the learner to add a word that is already in the review deck or already recognized as known.
 - **FR-010**: System MUST keep daily review load bounded by allowing unfinished due cards to carry forward without requiring the learner to clear the entire backlog in one session.
 - **FR-011**: System MUST keep cards reviewable when saved meaning or grammar details are incomplete, while allowing the learner to inspect and correct those details.
@@ -123,5 +123,6 @@ As a learner, I want the app to recognize words I already know so I am not repea
 - The primary learner is a self-directed Korean learner using the desktop app for daily reading and review.
 - Reading sessions already provide a way for the learner to add vocabulary to a deck, and this feature builds the repeat-review loop on top of that captured vocabulary.
 - Known-word awareness may rely on learner-confirmed signals such as existing deck membership, explicit known-word marking, and prior study history rather than external vocabulary lists.
+- Repeated captures of the same canonical form are treated as already covered by the existing card and do not automatically create a second active review card.
 - Accounts, mandatory cloud sync, and network-required review behavior are out of scope for this feature.
 - If optional audio or pronunciation support exists for cards, it is additive and not required for completing vocabulary review.

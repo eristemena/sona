@@ -26,7 +26,7 @@ Fields:
 - `reps`: FSRS repetition count.
 - `lapses`: FSRS lapse count.
 - `lastReviewAt`: Nullable timestamp of the latest submitted rating.
-- `activationState`: `active`, `deferred`, `duplicate-blocked`, or `known` depending on learner load and later known-word actions.
+- `activationState`: `active`, `deferred`, `duplicate-blocked`, or `known` depending on learner load, duplicate suppression, and later known-word actions.
 - `createdAt`: Local creation timestamp.
 - `updatedAt`: Last mutation timestamp for scheduling or card-content edits.
 
@@ -34,6 +34,7 @@ Validation rules:
 - `canonicalForm` must be normalized and non-empty.
 - `surface` must remain the learner-facing Korean prompt even if `canonicalForm` is lemma-like.
 - `meaning` may be empty only when the capture happened without lookup detail; the card must still remain reviewable and editable.
+- Repeated captures of the same `canonicalForm` do not create another active card row; the existing card remains the editable learner-owned record.
 - `activationState = active` cards participate in due-card queries.
 - `activationState = known` cards are excluded from add-to-deck prompts and normal due-card sessions but keep their history.
 
@@ -43,10 +44,9 @@ Relationships:
 - Many `ReviewCard` rows may reference the same `sourceContentItemId` over time.
 
 State transitions:
-- `candidate -> active`
-- `candidate -> deferred`
 - `active -> known`
 - `deferred -> active`
+- `deferred -> known`
 - `known -> active` if the learner later removes known-word status
 
 ## ReviewEvent
@@ -93,6 +93,7 @@ Validation rules:
 Relationships:
 - A `KnownWordRecord` may suppress many later reading capture attempts for the same canonical form.
 - A `KnownWordRecord` may correspond to one or more `ReviewCard` rows marked `known`.
+- Removing a `KnownWordRecord` may reactivate a corresponding review card without deleting prior review history.
 
 ## KnownWordOnboardingState
 
@@ -107,6 +108,7 @@ Fields:
 Validation rules:
 - First launch is true only when `known_words` is empty and this flag is absent.
 - Once completed, the onboarding screen should not reappear automatically unless explicitly reset by a future learner action.
+- The onboarding flow must not block access to already-due cards in the independently shippable US1 slice.
 
 ## ReviewQueueSession
 

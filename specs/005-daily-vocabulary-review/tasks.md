@@ -22,13 +22,13 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T003 Create the daily-review migration and register it in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/004_daily_vocabulary_review_v1.sql and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/run-migrations.ts
+- [ ] T003 Create the daily-review migration and register it in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/005_daily_vocabulary_review_v1.sql and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/run-migrations.ts
 - [ ] T004 [P] Define shared review, known-word, and onboarding entities in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/review-card.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/known-word.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/index.ts
-- [ ] T005 [P] Define the typed review IPC contract and renderer window surface in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/content-review.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/window-sona.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/window.d.ts
-- [ ] T006 [P] Extend SQLite repositories for review queue, review history, known words, and onboarding state in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/settings-repository.ts
+- [ ] T005 [P] Define the typed review IPC contract and renderer window surface for queue, detail-edit, onboarding, and known-word restore flows in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/content-review.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/window-sona.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/window.d.ts
+- [ ] T006 [P] Extend SQLite repositories for review queue, review history, editable card details, known words, and onboarding state in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/settings-repository.ts
 - [ ] T007 [P] Add main-process review and known-word service skeletons in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/daily-review-service.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/known-word-service.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/known-word-onboarding-service.ts
 - [ ] T008 Implement review IPC registration and startup wiring in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/review-handlers.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/index.ts
-- [ ] T009 Implement the preload bridge for review methods and reading eligibility checks in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/reading-session-service.ts
+- [ ] T009 Implement the preload bridge for review methods, card-detail repair, known-word restore, and reading eligibility checks in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/reading-session-service.ts
 
 **Checkpoint**: Foundation ready. The app can migrate the review schema, persist known-word and review state locally, and expose a typed review bridge to the renderer.
 
@@ -70,6 +70,7 @@
 
 - [ ] T020 [P] [US2] Add integration coverage for captured card details and provenance in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/reading-capture-review-card-details.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-card-provenance.test.ts
 - [ ] T021 [P] [US2] Add integration coverage for incomplete card-detail fallback rendering in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-card-missing-details.test.tsx
+- [ ] T039 [P] [US2] Add integration coverage for card-detail editing and persistence in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-card-detail-edit.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-card-detail-edit-persistence.test.ts
 
 ### Implementation for User Story 2
 
@@ -77,6 +78,7 @@
 - [ ] T023 [US2] Capture lookup-derived meaning, grammar, and provenance snapshots during add-to-deck in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/review-card-service.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/reading-session-service.ts
 - [ ] T024 [P] [US2] Render card back details and provenance inspection UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/review/review-card-back.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/review/review-screen.tsx
 - [ ] T025 [US2] Keep the reading add-to-deck flow aligned with richer review-card payloads in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-word-lookup.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/reading/word-lookup-popup.tsx
+- [ ] T040 [US2] Implement learner-editable card-detail updates across the review service, IPC surface, and renderer form in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/daily-review-service.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/review-handlers.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/review/review-card-back.tsx
 - [ ] T026 [US2] Add manual reading-to-review provenance validation notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/005-daily-vocabulary-review/quickstart.md
 
 **Checkpoint**: User Stories 1 and 2 should now work together, with reading-captured words appearing in Review as provenance-preserving flashcards.
@@ -93,15 +95,18 @@
 
 - [ ] T027 [P] [US3] Add onboarding coverage for first launch and idempotent completion in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/known-word-onboarding-first-launch.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/known-word-onboarding-idempotent.test.ts
 - [ ] T028 [P] [US3] Add suppression coverage for known and already-in-deck words in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/known-word-reading-suppression.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-duplicate-or-known-suppression.test.ts
+- [ ] T041 [P] [US3] Add restore-known coverage for clearing suppression and reactivating cards in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/known-word-clear-status.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-card-reactivation-from-known.test.ts
 
 ### Implementation for User Story 3
 
 - [ ] T029 [US3] Implement known-word persistence and onboarding-complete setting helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/settings-repository.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/known-word.ts
 - [ ] T030 [P] [US3] Implement bundled seed-pack loading and onboarding services in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/known-word-service.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/known-word-onboarding-service.ts
-- [ ] T031 [US3] Wire onboarding, mark-known, and study-status endpoints through /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/review-handlers.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/window-sona.ts
+- [ ] T031 [US3] Wire onboarding, mark-known, clear-known, and study-status endpoints through /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/review-handlers.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/window-sona.ts
 - [ ] T032 [P] [US3] Build the full-screen known-word onboarding flow in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/review/known-word-onboarding.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-known-word-onboarding.ts
-- [ ] T033 [US3] Integrate onboarding gating and known-word actions into the review shell in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/review/review-screen.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/main-content-placeholder.tsx
+- [ ] T033 [US3] Integrate an optional onboarding entry point and known-word actions into the review shell without blocking already-due cards in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/review/review-screen.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/shell/main-content-placeholder.tsx
 - [ ] T034 [US3] Implement reading-side suppression checks for known or already-in-deck vocabulary in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/reading-session-service.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-word-lookup.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/reading/word-lookup-popup.tsx
+- [ ] T042 [US3] Implement known-word clearing and card reactivation flows in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/known-word-service.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/daily-review-service.ts
+- [ ] T043 [US3] Expose clear-known actions in the review shell and reading-side status UI in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/review/review-screen.tsx, /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-word-lookup.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/reading/word-lookup-popup.tsx
 - [ ] T035 [US3] Add manual onboarding and known-word suppression validation notes to /Volumes/xpro/erisristemena/made-by-ai/sona/specs/005-daily-vocabulary-review/quickstart.md
 
 **Checkpoint**: All three user stories should now be independently testable, with local onboarding and suppression preventing unnecessary review capture prompts.
@@ -115,6 +120,7 @@
 - [ ] T036 [P] Add offline and restart regression coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-offline-continuity.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-restart-persistence.test.ts
 - [ ] T037 [P] Add bounded-backlog and recovery coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-backlog-recovery.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-queue-limit-and-order.test.ts
 - [ ] T038 Run the full daily-review quickstart validation path and capture final copy or fallback fixes in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/005-daily-vocabulary-review/quickstart.md
+- [ ] T044 [P] Add explicit success-criteria timing and throughput measurement coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/benchmark/review-session-first-answer.benchmark.test.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/tests/benchmark/review-session-throughput.benchmark.test.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/specs/005-daily-vocabulary-review/quickstart.md
 
 ---
 
@@ -129,7 +135,7 @@
 
 ### User Story Dependencies
 
-- **User Story 1 (P1)**: Starts after Foundational. This is the MVP slice and has no dependency on the reading-capture detail work or known-word onboarding.
+- **User Story 1 (P1)**: Starts after Foundational. This is the MVP slice and has no dependency on the reading-capture detail work or known-word onboarding because already-due cards remain accessible even before US3 lands.
 - **User Story 2 (P2)**: Starts after Foundational and builds on the existing reading add-to-deck pipeline while remaining independently testable through provenance-rich review cards.
 - **User Story 3 (P3)**: Starts after Foundational and reuses the Review and reading surfaces while remaining independently testable through onboarding and suppression flows.
 
@@ -146,9 +152,9 @@
 - T002 can run in parallel with T001 after the asset location is agreed.
 - T004-T007 can run in parallel after T003 begins, as long as file ownership does not overlap.
 - Within US1, T010-T012 and T016 can run in parallel across contract, integration, and renderer-hook files.
-- Within US2, T020-T021 and T024 can run in parallel across tests and renderer card-detail files.
-- Within US3, T027-T028, T030, and T032 can run in parallel across tests, onboarding services, and renderer onboarding files.
-- T036 and T037 can run in parallel during polish.
+- Within US2, T020-T021, T024, and T039 can run in parallel across tests and renderer card-detail files.
+- Within US3, T027-T028, T030, T032, and T041 can run in parallel across tests, onboarding services, and renderer onboarding files.
+- T036, T037, and T044 can run in parallel during polish.
 
 ---
 
@@ -171,10 +177,12 @@ Task: "Build the review screen, flip card, and four-button rating grid in apps/r
 # Launch User Story 2 tests together:
 Task: "Add integration coverage for captured card details and provenance in tests/integration/reading-capture-review-card-details.test.ts and tests/integration/review-card-provenance.test.ts"
 Task: "Add integration coverage for incomplete card-detail fallback rendering in tests/integration/review-card-missing-details.test.tsx"
+Task: "Add integration coverage for card-detail editing and persistence in tests/integration/review-card-detail-edit.test.tsx and tests/integration/review-card-detail-edit-persistence.test.ts"
 
 # Launch User Story 2 implementation work together:
 Task: "Render card back details and provenance inspection UI in apps/renderer/components/review/review-card-back.tsx and apps/renderer/components/review/review-screen.tsx"
 Task: "Keep the reading add-to-deck flow aligned with richer review-card payloads in apps/renderer/lib/use-word-lookup.ts and apps/renderer/components/reading/word-lookup-popup.tsx"
+Task: "Implement learner-editable card-detail updates across the review service, IPC surface, and renderer form in apps/desktop/src/main/content/daily-review-service.ts, apps/desktop/src/main/ipc/review-handlers.ts, apps/desktop/src/preload/index.ts, and apps/renderer/components/review/review-card-back.tsx"
 ```
 
 ## Parallel Example: User Story 3
@@ -183,10 +191,12 @@ Task: "Keep the reading add-to-deck flow aligned with richer review-card payload
 # Launch User Story 3 tests together:
 Task: "Add onboarding coverage for first launch and idempotent completion in tests/integration/known-word-onboarding-first-launch.test.tsx and tests/integration/known-word-onboarding-idempotent.test.ts"
 Task: "Add suppression coverage for known and already-in-deck words in tests/integration/known-word-reading-suppression.test.tsx and tests/integration/review-duplicate-or-known-suppression.test.ts"
+Task: "Add restore-known coverage for clearing suppression and reactivating cards in tests/integration/known-word-clear-status.test.ts and tests/integration/review-card-reactivation-from-known.test.ts"
 
 # Launch User Story 3 implementation work together:
 Task: "Implement bundled seed-pack loading and onboarding services in apps/desktop/src/main/content/known-word-service.ts and apps/desktop/src/main/content/known-word-onboarding-service.ts"
 Task: "Build the full-screen known-word onboarding flow in apps/renderer/components/review/known-word-onboarding.tsx and apps/renderer/lib/use-known-word-onboarding.ts"
+Task: "Implement known-word clearing and card reactivation flows in packages/data/src/sqlite/content-library-repository.ts, apps/desktop/src/main/content/known-word-service.ts, and apps/desktop/src/main/content/daily-review-service.ts"
 ```
 
 ---
@@ -229,5 +239,5 @@ Task: "Build the full-screen known-word onboarding flow in apps/renderer/compone
 - `[P]` tasks operate on different files and can run in parallel.
 - `[US1]` through `[US3]` map tasks directly to the three user stories in spec.md.
 - User Story 1 is the recommended MVP slice.
-- Persistence, scheduler updates, onboarding state, and suppression logic require tests before implementation.
+- Persistence, scheduler updates, learner-editable card repairs, onboarding state, and suppression logic require tests before implementation.
 - The feature remains local-first because onboarding, queue retrieval, and rating submission run entirely on local assets and SQLite state.
