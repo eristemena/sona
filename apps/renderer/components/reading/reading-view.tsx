@@ -118,28 +118,35 @@ export function ReadingView({
   const isAudioUnavailable = (audioAsset?.state === 'unavailable' || audioAsset?.state === 'failed') && isAudioConfigured
 
   return (
-    <section aria-label="Reading view" className="panel-enter flex min-h-0 flex-1 flex-col">
+    <section
+      aria-label="Reading view"
+      className="panel-enter flex min-h-0 flex-1 flex-col"
+    >
       <header className="grid h-13 shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-(--border) bg-(--bg-base) px-4 md:px-6">
         <Button
           aria-label="Back to library"
           className="h-9 w-9 rounded-md px-0"
           onClick={() => {
-            closeSession()
-            onBack()
+            closeSession();
+            onBack();
           }}
           variant="ghost"
         >
           <ArrowLeft aria-hidden="true" className="h-5 w-5" />
         </Button>
 
-        <h2 className="truncate text-center text-[16px] font-semibold text-(--text-primary)">{itemTitle}</h2>
+        <h2 className="truncate text-center text-[16px] font-semibold text-(--text-primary)">
+          {itemTitle}
+        </h2>
 
         <div className="flex justify-end">
           {difficultyBadge ? (
             <span className="rounded-sm border border-(--border) px-2 py-1 text-[11px] font-medium text-(--text-primary)">
               {difficultyBadge}
             </span>
-          ) : <span className="h-7 w-10" aria-hidden="true" />}
+          ) : (
+            <span className="h-7 w-10" aria-hidden="true" />
+          )}
         </div>
       </header>
 
@@ -151,14 +158,20 @@ export function ReadingView({
             </div>
           ) : null}
 
-          {isLoadingSession ? <p className="text-sm text-(--text-secondary)">Loading reading content...</p> : null}
+          {isLoadingSession ? (
+            <p className="text-sm text-(--text-secondary)">
+              Loading reading content...
+            </p>
+          ) : null}
           {!isLoadingSession && displayBlocks.length === 0 ? (
-            <div className="text-sm text-(--text-secondary)">No reading content is available yet.</div>
+            <div className="text-sm text-(--text-secondary)">
+              No reading content is available yet.
+            </div>
           ) : null}
 
           <div className="space-y-6">
             {displayBlocks.map((block) => {
-              const isActive = block.id === activeBlock?.id
+              const isActive = block.id === activeBlock?.id;
 
               return (
                 <section
@@ -166,16 +179,18 @@ export function ReadingView({
                   key={block.id}
                   onClick={() => {
                     if (!isActive) {
-                      selectBlock(block.id, { persist: true })
+                      selectBlock(block.id, { persist: true });
                     }
                   }}
                 >
                   <ReadingBlockText
                     block={block}
-                    highlightedTokenIndex={isActive ? highlightedTokenIndex : null}
+                    highlightedTokenIndex={
+                      isActive ? highlightedTokenIndex : null
+                    }
                     onTokenClick={({ anchorElement, token, tokenIndex }) => {
                       if (!isActive) {
-                        selectBlock(block.id, { persist: true })
+                        selectBlock(block.id, { persist: true });
                       }
 
                       void wordLookup.openLookup({
@@ -184,12 +199,16 @@ export function ReadingView({
                         sentenceContext: block.korean,
                         token,
                         tokenIndex,
-                      })
+                      });
                     }}
                   />
-                  {block.romanization ? <p className="mt-2 text-[15px] italic leading-normal text-(--text-secondary)">{block.romanization}</p> : null}
+                  {block.romanization ? (
+                    <p className="mt-2 text-[15px] italic leading-normal text-(--text-secondary)">
+                      {block.romanization}
+                    </p>
+                  ) : null}
                 </section>
-              )
+              );
             })}
           </div>
         </div>
@@ -203,44 +222,55 @@ export function ReadingView({
           isConfigured={isAudioConfigured}
           isUnavailable={isAudioUnavailable}
           onPause={() => {
-            pause()
-            persistProgress({ playbackState: 'paused' })
+            pause();
+            persistProgress({ playbackState: "paused" });
           }}
           onPlay={() => {
-            void play()
+            void play();
           }}
           onRateChange={(playbackRate) => {
-            updateProgress({ playbackRate }, { persist: true })
+            updateProgress({ playbackRate }, { persist: true });
           }}
           onReplay={() => {
-            replay()
-            persistProgress({ playbackState: 'playing', currentTimeMs: 0 })
+            replay();
+            persistProgress({ playbackState: "playing", currentTimeMs: 0 });
           }}
           onRetry={refreshActiveBlockAudio}
           onSeek={(currentTimeMs) => {
-            seek(currentTimeMs)
-            persistProgress({ currentTimeMs, highlightedTokenIndex })
+            seek(currentTimeMs);
+            persistProgress({ currentTimeMs, highlightedTokenIndex });
           }}
           playbackRate={progress.playbackRate}
           playbackState={progress.playbackState}
         />
       ) : null}
 
-      <audio ref={audioRef} preload="metadata" src={audioAsset?.state === 'ready' ? playableAudioSrc ?? undefined : undefined} />
+      <audio
+        ref={audioRef}
+        preload="metadata"
+        src={
+          audioAsset?.state === "ready"
+            ? (playableAudioSrc ?? undefined)
+            : undefined
+        }
+      />
       <WordLookupPopup
         addToDeckResult={wordLookup.addToDeckResult}
         isAddingToDeck={wordLookup.isAddingToDeck}
+        isClearingKnown={wordLookup.isClearingKnown}
         isLoadingGrammar={wordLookup.isLoadingGrammar}
         isLoadingLookup={wordLookup.isLoadingLookup}
         isOpen={wordLookup.isOpen}
         lookupResult={wordLookup.result}
+        studyStatus={wordLookup.studyStatus}
         onAddToDeck={wordLookup.addToDeck}
+        onClearKnownStatus={wordLookup.clearKnownStatus}
         onDismiss={wordLookup.dismissLookup}
         onRequestGrammarExplanation={wordLookup.requestGrammarExplanation}
         target={wordLookup.target}
       />
     </section>
-  )
+  );
 }
 
 function ReadingBlockText({

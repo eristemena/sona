@@ -11,3 +11,5 @@ export * from "./reading-audio.js";
 export * from "./annotation-cache.js";
 export * from "./review-card.js";
 export * from "./review-pacing.js";
+export * from "./known-word.js";
+export * from "./known-word-seeds.js";

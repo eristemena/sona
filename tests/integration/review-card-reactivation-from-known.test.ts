@@ -4,8 +4,9 @@ import path from 'node:path'
 
 import { afterEach, describe, expect, it } from 'vitest'
 
+import { DailyReviewService } from '../../apps/desktop/src/main/content/daily-review-service.js'
+import { KnownWordService } from '../../apps/desktop/src/main/content/known-word-service.js'
 import { ReviewCardService } from '../../apps/desktop/src/main/content/review-card-service.js'
-import { hashSentenceContext } from '../../apps/desktop/src/main/content/annotation-cache-service.js'
 import { createSqliteConnection } from '../../packages/data/src/sqlite/connection.js'
 import { SqliteContentLibraryRepository } from '../../packages/data/src/sqlite/content-library-repository.js'
 import { runShellMigrations } from '../../packages/data/src/sqlite/migrations/run-migrations.js'
@@ -19,18 +20,17 @@ afterEach(() => {
   }
 })
 
-describe('review card provenance retrieval integration', () => {
-  it('retrieves saved review-card provenance after the reading capture is written', () => {
-    const directory = mkdtempSync(path.join(tmpdir(), 'sona-review-card-provenance-'))
+describe('review card reactivation from known', () => {
+  it('reactivates a known review card back into the due queue when known-word status is cleared', () => {
+    const directory = mkdtempSync(path.join(tmpdir(), 'sona-review-reactivation-'))
     tempDirectories.push(directory)
 
-    const databasePath = path.join(directory, 'sona.db')
-    const database = createSqliteConnection({ databasePath })
+    const database = createSqliteConnection({ databasePath: path.join(directory, 'sona.db') })
     runShellMigrations(database)
     const repository = new SqliteContentLibraryRepository(database)
 
-    const createdAt = 1_714_100_500_000
-    const sourceLocator = 'article://review-card-provenance'
+    const createdAt = 1_714_102_000_000
+    const sourceLocator = 'article://review-reactivation'
     const sentenceContext = '오늘도 천천히 읽어요'
     const contentItemId = buildContentItemId({ sourceType: 'article', sourceLocator, createdAt })
     const blockId = buildContentBlockId({
@@ -43,14 +43,14 @@ describe('review card provenance retrieval integration', () => {
     repository.saveContent({
       item: {
         id: contentItemId,
-        title: 'Review provenance retrieval',
+        title: 'Review reactivation',
         sourceType: 'article',
         difficulty: 2,
         difficultyLabel: toDifficultyBadge(2),
         provenanceLabel: 'Article paste',
         sourceLocator,
-        provenanceDetail: 'Used for later review provenance checks.',
-        searchText: normalizeSearchText('Review provenance retrieval 오늘도 천천히 읽어요'),
+        provenanceDetail: 'Used for known-word reactivation checks.',
+        searchText: normalizeSearchText('Review reactivation 오늘도 천천히 읽어요'),
         duplicateCheckText: normalizeSearchText(sentenceContext),
         createdAt,
       },
@@ -86,42 +86,59 @@ describe('review card provenance retrieval integration', () => {
       },
     })
 
-    const service = new ReviewCardService({
+    const reviewCardService = new ReviewCardService({
       repository,
-      now: () => createdAt + 750,
+      now: () => createdAt + 400,
       activeNewCardLimit: 3,
     })
+    const knownWordService = new KnownWordService({
+      repository,
+      now: () => createdAt + 900,
+      activeReviewCardLimit: 3,
+    })
+    const dailyReviewService = new DailyReviewService({
+      repository,
+      now: () => createdAt + 2_000,
+    })
 
-    const addResult = service.addToDeck({
+    const addResult = reviewCardService.addToDeck({
       blockId,
-      token: "천천히",
-      canonicalForm: "천천히",
+      token: '천천히',
+      canonicalForm: '천천히',
       sentenceContext,
-      sentenceTranslation: "Even today, I read slowly.",
-    });
+    })
 
-    expect(addResult.disposition).toBe('created')
-    expect(addResult.reviewCardId).toBeTruthy()
+    expect(dailyReviewService.getQueue()).toMatchObject({
+      dueCount: 1,
+      cards: [{ front: { id: addResult.reviewCardId } }],
+    })
+
+    knownWordService.markKnownWord({
+      canonicalForm: '천천히',
+      surface: '천천히',
+      source: 'manual',
+      reviewCardId: addResult.reviewCardId,
+    })
+
+    expect(repository.getReviewCard(addResult.reviewCardId!)?.activationState).toBe('known')
+    expect(dailyReviewService.getQueue()).toMatchObject({ dueCount: 0, cards: [] })
+
+    const clearResult = knownWordService.clearKnownWord({
+      canonicalForm: '천천히',
+      reviewCardId: addResult.reviewCardId,
+    })
+
+    expect(clearResult).toMatchObject({
+      canonicalForm: '천천히',
+      affectedReviewCardId: addResult.reviewCardId,
+      activationState: 'active',
+    })
+    expect(repository.getReviewCard(addResult.reviewCardId!)?.activationState).toBe('active')
+    expect(dailyReviewService.getQueue()).toMatchObject({
+      dueCount: 1,
+      cards: [{ front: { id: addResult.reviewCardId } }],
+    })
 
     database.close()
-
-    const reopenedDatabase = createSqliteConnection({ databasePath })
-    const reopenedRepository = new SqliteContentLibraryRepository(reopenedDatabase)
-    const persistedCard = reopenedRepository.getReviewCard(addResult.reviewCardId!)
-
-    expect(persistedCard).toMatchObject({
-      id: addResult.reviewCardId,
-      canonicalForm: "천천히",
-      surface: "천천히",
-      sourceBlockId: blockId,
-      sourceContentItemId: contentItemId,
-      sentenceContext,
-      sentenceTranslation: "Even today, I read slowly.",
-      sentenceContextHash: hashSentenceContext(sentenceContext),
-      fsrsState: "New",
-      activationState: "active",
-    });
-
-    reopenedDatabase.close()
   })
 })

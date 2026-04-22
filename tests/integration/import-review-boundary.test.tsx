@@ -124,12 +124,16 @@ describe('import-to-study-to-review boundary', () => {
 
     await user.click(within(detailPane).getByRole('button', { name: 'Open' }))
     const readingView = await screen.findByRole('region', { name: 'Reading view' })
-    expect(within(readingView).getByText('지금 뭐 해?')).toBeInTheDocument()
+    expect(
+      within(readingView).getByRole("button", { name: "지금" }),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /review/i }))
 
-    expect(await screen.findByRole('heading', { name: 'Spaced repetition will anchor here.' })).toBeInTheDocument()
-    expect(screen.getByText(/focused space for review sessions/i)).toBeInTheDocument()
+    expect(
+      await screen.findByRole("heading", { name: "Daily review" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/nothing is due right now/i)).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /library/i }))
     const returnedResults = await screen.findByRole('region', { name: 'Content Library results' })

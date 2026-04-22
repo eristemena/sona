@@ -8,6 +8,9 @@
       "types": "./dist/content/index.d.ts",
       "import": "./dist/content/index.js"
     },
+    "./content/known-word-seeds/*": {
+      "default": "./dist/content/known-word-seeds/*.json"
+    },
     "./content/*": {
       "types": "./dist/content/*.d.ts",
       "import": "./dist/content/*.js"

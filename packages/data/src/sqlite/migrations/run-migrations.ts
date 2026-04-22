@@ -13,6 +13,7 @@ const SUPPORTED_MIGRATION_PREFIXES = [
   "shell",
   "content_library",
   "sync_reading_audio",
+  "daily_vocabulary_review",
 ] as const;
 
 function resolveMigrationDirectory(): string {

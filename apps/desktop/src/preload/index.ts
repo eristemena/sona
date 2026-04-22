@@ -28,6 +28,14 @@ import type {
   WordLookupInput,
 } from "@sona/domain/contracts/content-reading";
 import { READING_CHANNELS } from "@sona/domain/contracts/content-reading";
+import type {
+  ClearKnownWordInput,
+  CompleteKnownWordOnboardingInput,
+  MarkKnownWordInput,
+  SubmitReviewRatingInput,
+  UpdateReviewCardDetailsInput,
+} from "@sona/domain/contracts/content-review";
+import { REVIEW_CHANNELS } from "@sona/domain/contracts/content-review";
 
 const CHANNELS = {
   getBootstrapState: "sona:shell:get-bootstrap-state",
@@ -42,6 +50,7 @@ const CHANNELS = {
   themeChanged: "sona:settings:theme-changed",
   ...CONTENT_CHANNELS,
   ...READING_CHANNELS,
+  ...REVIEW_CHANNELS,
 } as const;
 
 interface PreloadBridge {
@@ -249,6 +258,12 @@ export function createWindowSonaApi(
           WindowSona["reading"]["addToDeck"]
         >;
       },
+      getWordStudyStatus(input: { canonicalForm: string; surface: string }) {
+        return preloadIpc.invoke(
+          CHANNELS.getWordStudyStatus,
+          input,
+        ) as ReturnType<WindowSona["reading"]["getWordStudyStatus"]>;
+      },
       saveReadingProgress(input: SaveReadingProgressInput) {
         return preloadIpc.invoke(
           CHANNELS.saveReadingProgress,
@@ -260,6 +275,45 @@ export function createWindowSonaApi(
           CHANNELS.flushExposureLog,
           input,
         ) as ReturnType<WindowSona["reading"]["flushExposureLog"]>;
+      },
+    },
+    review: {
+      getQueue(limit?: number) {
+        return preloadIpc.invoke(CHANNELS.getQueue, limit) as ReturnType<
+          WindowSona["review"]["getQueue"]
+        >;
+      },
+      submitRating(input: SubmitReviewRatingInput) {
+        return preloadIpc.invoke(CHANNELS.submitRating, input) as ReturnType<
+          WindowSona["review"]["submitRating"]
+        >;
+      },
+      updateCardDetails(input: UpdateReviewCardDetailsInput) {
+        return preloadIpc.invoke(
+          CHANNELS.updateCardDetails,
+          input,
+        ) as ReturnType<WindowSona["review"]["updateCardDetails"]>;
+      },
+      getKnownWordOnboardingStatus() {
+        return preloadIpc.invoke(
+          CHANNELS.getKnownWordOnboardingStatus,
+        ) as ReturnType<WindowSona["review"]["getKnownWordOnboardingStatus"]>;
+      },
+      completeKnownWordOnboarding(input: CompleteKnownWordOnboardingInput) {
+        return preloadIpc.invoke(
+          CHANNELS.completeKnownWordOnboarding,
+          input,
+        ) as ReturnType<WindowSona["review"]["completeKnownWordOnboarding"]>;
+      },
+      markKnownWord(input: MarkKnownWordInput) {
+        return preloadIpc.invoke(CHANNELS.markKnownWord, input) as ReturnType<
+          WindowSona["review"]["markKnownWord"]
+        >;
+      },
+      clearKnownWord(input: ClearKnownWordInput) {
+        return preloadIpc.invoke(CHANNELS.clearKnownWord, input) as ReturnType<
+          WindowSona["review"]["clearKnownWord"]
+        >;
       },
     },
   };

@@ -1,0 +1,23 @@
+{
+  "id": "topik-ii-core",
+  "label": "Core intermediate vocabulary",
+  "description": "Open-licensed frequency-based words for learners who want to suppress common intermediate vocabulary.",
+  "words": [
+    { "canonicalForm": "경험", "surface": "경험" },
+    { "canonicalForm": "결정", "surface": "결정" },
+    { "canonicalForm": "문화", "surface": "문화" },
+    { "canonicalForm": "사회", "surface": "사회" },
+    { "canonicalForm": "경제", "surface": "경제" },
+    { "canonicalForm": "환경", "surface": "환경" },
+    { "canonicalForm": "관리", "surface": "관리" },
+    { "canonicalForm": "관계", "surface": "관계" },
+    { "canonicalForm": "계획", "surface": "계획" },
+    { "canonicalForm": "기회", "surface": "기회" },
+    { "canonicalForm": "발전", "surface": "발전" },
+    { "canonicalForm": "생산", "surface": "생산" },
+    { "canonicalForm": "선택", "surface": "선택" },
+    { "canonicalForm": "연습", "surface": "연습" },
+    { "canonicalForm": "이해", "surface": "이해" },
+    { "canonicalForm": "준비", "surface": "준비" }
+  ]
+}

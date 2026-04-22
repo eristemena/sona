@@ -1,0 +1,23 @@
+{
+  "id": "topik-i-core",
+  "label": "Core beginner vocabulary",
+  "description": "Open-licensed frequency-based starter words for learners who already know common beginner Korean.",
+  "words": [
+    { "canonicalForm": "가다", "surface": "가다" },
+    { "canonicalForm": "오다", "surface": "오다" },
+    { "canonicalForm": "먹다", "surface": "먹다" },
+    { "canonicalForm": "마시다", "surface": "마시다" },
+    { "canonicalForm": "보다", "surface": "보다" },
+    { "canonicalForm": "하다", "surface": "하다" },
+    { "canonicalForm": "있다", "surface": "있다" },
+    { "canonicalForm": "없다", "surface": "없다" },
+    { "canonicalForm": "좋다", "surface": "좋다" },
+    { "canonicalForm": "사람", "surface": "사람" },
+    { "canonicalForm": "시간", "surface": "시간" },
+    { "canonicalForm": "오늘", "surface": "오늘" },
+    { "canonicalForm": "내일", "surface": "내일" },
+    { "canonicalForm": "학교", "surface": "학교" },
+    { "canonicalForm": "친구", "surface": "친구" },
+    { "canonicalForm": "집", "surface": "집" }
+  ]
+}

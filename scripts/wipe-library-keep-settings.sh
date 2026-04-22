@@ -20,37 +20,72 @@ if ! command -v sqlite3 >/dev/null 2>&1; then
   exit 1
 fi
 
-user_data_dir="${SONA_USER_DATA_DIR:-$HOME/Library/Application Support/sona}"
-database_path="$user_data_dir/sona.db"
-audio_cache_dir="$user_data_dir/reading-audio-cache"
+if [[ -n "${SONA_USER_DATA_DIR:-}" ]]; then
+  user_data_dirs=("$SONA_USER_DATA_DIR")
+else
+  user_data_dirs=(
+    "$HOME/Library/Application Support/sona"
+    "$HOME/Library/Application Support/@sona/desktop"
+  )
+fi
 
-if [[ ! -f "$database_path" && ! -d "$audio_cache_dir" ]]; then
-  echo "Nothing to wipe. No database or audio cache found in $user_data_dir"
+wipe_tables=(
+  review_events
+  known_words
+  review_cards
+  exposure_log
+  reading_progress
+  annotations
+  block_audio_assets
+  generation_requests
+  content_source_records
+  content_blocks
+  content_library_items
+  study_candidate_provenance
+  corpus_segments
+)
+
+found_wipe_target=false
+
+for user_data_dir in "${user_data_dirs[@]}"; do
+  database_path="$user_data_dir/sona.db"
+  audio_cache_dir="$user_data_dir/reading-audio-cache"
+
+  if [[ ! -f "$database_path" && ! -d "$audio_cache_dir" ]]; then
+    continue
+  fi
+
+  found_wipe_target=true
+
+  if [[ -f "$database_path" ]]; then
+    sql_statements=("PRAGMA foreign_keys = OFF;")
+
+    for table_name in "${wipe_tables[@]}"; do
+      if [[ -n "$(sqlite3 "$database_path" "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = '$table_name';")" ]]; then
+        sql_statements+=("DELETE FROM $table_name;")
+      fi
+    done
+
+    sql_statements+=(
+      "PRAGMA wal_checkpoint(TRUNCATE);"
+      "VACUUM;"
+      "PRAGMA foreign_keys = ON;"
+    )
+
+    printf '%s\n' "${sql_statements[@]}" | sqlite3 "$database_path" >/dev/null
+    echo "Wiped library data from $database_path"
+  else
+    echo "Database not found at $database_path. Skipping table cleanup."
+  fi
+
+  rm -rf "$audio_cache_dir"
+  echo "Removed cached reading audio from $audio_cache_dir"
+done
+
+if [[ "$found_wipe_target" == false ]]; then
+  echo "Nothing to wipe. No database or audio cache found in:"
+  for user_data_dir in "${user_data_dirs[@]}"; do
+    echo "  $user_data_dir"
+  done
   exit 0
 fi
-
-if [[ -f "$database_path" ]]; then
-  sqlite3 "$database_path" <<'SQL'
-PRAGMA foreign_keys = OFF;
-DELETE FROM review_cards;
-DELETE FROM exposure_log;
-DELETE FROM reading_progress;
-DELETE FROM annotations;
-DELETE FROM block_audio_assets;
-DELETE FROM generation_requests;
-DELETE FROM content_source_records;
-DELETE FROM content_blocks;
-DELETE FROM content_library_items;
-DELETE FROM study_candidate_provenance;
-DELETE FROM corpus_segments;
-PRAGMA wal_checkpoint(TRUNCATE);
-VACUUM;
-PRAGMA foreign_keys = ON;
-SQL
-  echo "Wiped library data from $database_path"
-else
-  echo "Database not found at $database_path. Skipping table cleanup."
-fi
-
-rm -rf "$audio_cache_dir"
-echo "Removed cached reading audio from $audio_cache_dir"

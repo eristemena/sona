@@ -26,6 +26,21 @@ import type {
   WordLookupInput,
   WordLookupResult,
 } from "./content-reading.js";
+import type {
+  ClearKnownWordInput,
+  ClearKnownWordResult,
+  CompleteKnownWordOnboardingInput,
+  CompleteKnownWordOnboardingResult,
+  KnownWordOnboardingStatus,
+  MarkKnownWordInput,
+  MarkKnownWordResult,
+  ReviewQueueSnapshot,
+  SubmitReviewRatingInput,
+  SubmitReviewRatingResult,
+  UpdateReviewCardDetailsInput,
+  UpdateReviewCardDetailsResult,
+  WordStudyStatus,
+} from "./content-review.js";
 
 export type { NavigationDestinationId, ResolvedTheme, ThemePreferenceMode }
 
@@ -93,8 +108,27 @@ export interface WindowSona {
     lookupWord(input: WordLookupInput): Promise<WordLookupResult>;
     explainGrammar(input: GrammarExplanationInput): Promise<WordLookupResult>;
     addToDeck(input: AddToDeckInput): Promise<AddToDeckResult>;
+    getWordStudyStatus(input: {
+      canonicalForm: string;
+      surface: string;
+    }): Promise<WordStudyStatus>;
     saveReadingProgress(input: SaveReadingProgressInput): Promise<void>;
     flushExposureLog(input: ExposureLogInput): Promise<ExposureLogResult>;
+  };
+  review: {
+    getQueue(limit?: number): Promise<ReviewQueueSnapshot>;
+    submitRating(
+      input: SubmitReviewRatingInput,
+    ): Promise<SubmitReviewRatingResult>;
+    updateCardDetails(
+      input: UpdateReviewCardDetailsInput,
+    ): Promise<UpdateReviewCardDetailsResult>;
+    getKnownWordOnboardingStatus(): Promise<KnownWordOnboardingStatus>;
+    completeKnownWordOnboarding(
+      input: CompleteKnownWordOnboardingInput,
+    ): Promise<CompleteKnownWordOnboardingResult>;
+    markKnownWord(input: MarkKnownWordInput): Promise<MarkKnownWordResult>;
+    clearKnownWord(input: ClearKnownWordInput): Promise<ClearKnownWordResult>;
   };
 }
 

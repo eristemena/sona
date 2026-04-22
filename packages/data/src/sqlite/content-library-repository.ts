@@ -13,15 +13,18 @@ import {
   type DuplicateCheckResult,
   type ExposureLogEntry,
   type GenerationRequest,
+  type KnownWordRecord,
   type LibraryFilter,
   type PersistedReadingAudioAsset,
   type ReadingAudioAsset,
   type ReadingBlock,
+  type ReviewEventRecord,
   type ReadingSessionSnapshot,
   type ReviewCardActivationState,
   type ReviewCardRecord,
   type RequiredDifficultyLevel,
   type SaveReadingProgressInput,
+  type UpdateReviewCardDetailsInput,
   type Token,
   type WordTiming,
 } from "@sona/domain/content";
@@ -119,6 +122,12 @@ interface ReviewCardRow {
   id: string;
   canonical_form: string;
   surface: string;
+  meaning: string | null;
+  grammar_pattern: string | null;
+  grammar_details: string | null;
+  romanization: string | null;
+  sentence_context: string | null;
+  sentence_translation: string | null;
   source_block_id: string;
   source_content_item_id: string;
   sentence_context_hash: string;
@@ -133,6 +142,16 @@ interface ReviewCardRow {
   last_review_at: number | null;
   activation_state: ReviewCardRecord["activationState"];
   created_at: number;
+  updated_at: number;
+}
+
+interface KnownWordRow {
+  canonical_form: string;
+  surface: string;
+  source: KnownWordRecord["source"];
+  source_detail: string | null;
+  created_at: number;
+  updated_at: number;
 }
 
 export interface SaveContentDraft {
@@ -715,6 +734,12 @@ export class SqliteContentLibraryRepository {
             id,
             canonical_form,
             surface,
+            meaning,
+            grammar_pattern,
+            grammar_details,
+            romanization,
+            sentence_context,
+            sentence_translation,
             source_block_id,
             source_content_item_id,
             sentence_context_hash,
@@ -728,11 +753,18 @@ export class SqliteContentLibraryRepository {
             lapses,
             last_review_at,
             activation_state,
-            created_at
+            created_at,
+            updated_at
           ) VALUES (
             @id,
             @canonical_form,
             @surface,
+            @meaning,
+            @grammar_pattern,
+            @grammar_details,
+            @romanization,
+            @sentence_context,
+            @sentence_translation,
             @source_block_id,
             @source_content_item_id,
             @sentence_context_hash,
@@ -746,7 +778,8 @@ export class SqliteContentLibraryRepository {
             @lapses,
             @last_review_at,
             @activation_state,
-            @created_at
+            @created_at,
+            @updated_at
           )
         `,
       )
@@ -754,6 +787,12 @@ export class SqliteContentLibraryRepository {
         id: card.id,
         canonical_form: card.canonicalForm,
         surface: card.surface,
+        meaning: card.meaning,
+        grammar_pattern: card.grammarPattern,
+        grammar_details: card.grammarDetails,
+        romanization: card.romanization,
+        sentence_context: card.sentenceContext,
+        sentence_translation: card.sentenceTranslation,
         source_block_id: card.sourceBlockId,
         source_content_item_id: card.sourceContentItemId,
         sentence_context_hash: card.sentenceContextHash,
@@ -768,6 +807,50 @@ export class SqliteContentLibraryRepository {
         last_review_at: card.lastReviewAt,
         activation_state: card.activationState,
         created_at: card.createdAt,
+        updated_at: card.updatedAt,
+      });
+  }
+
+  saveReviewEvent(event: ReviewEventRecord): void {
+    this.database
+      .prepare(
+        `
+        INSERT INTO review_events (
+          id,
+          review_card_id,
+          rating,
+          fsrs_grade,
+          reviewed_at,
+          previous_state,
+          next_state,
+          previous_due_at,
+          next_due_at,
+          scheduled_days
+        ) VALUES (
+          @id,
+          @review_card_id,
+          @rating,
+          @fsrs_grade,
+          @reviewed_at,
+          @previous_state,
+          @next_state,
+          @previous_due_at,
+          @next_due_at,
+          @scheduled_days
+        )
+      `,
+      )
+      .run({
+        id: event.id,
+        review_card_id: event.reviewCardId,
+        rating: event.rating,
+        fsrs_grade: event.fsrsGrade,
+        reviewed_at: event.reviewedAt,
+        previous_state: event.previousState,
+        next_state: event.nextState,
+        previous_due_at: event.previousDueAt,
+        next_due_at: event.nextDueAt,
+        scheduled_days: event.scheduledDays,
       });
   }
 
@@ -779,6 +862,12 @@ export class SqliteContentLibraryRepository {
             id,
             canonical_form,
             surface,
+            meaning,
+            grammar_pattern,
+            grammar_details,
+            romanization,
+            sentence_context,
+            sentence_translation,
             source_block_id,
             source_content_item_id,
             sentence_context_hash,
@@ -792,7 +881,8 @@ export class SqliteContentLibraryRepository {
             lapses,
             last_review_at,
             activation_state,
-            created_at
+            created_at,
+            updated_at
           FROM review_cards
           WHERE canonical_form = ?
             AND activation_state = 'active'
@@ -813,6 +903,12 @@ export class SqliteContentLibraryRepository {
             id,
             canonical_form,
             surface,
+            meaning,
+            grammar_pattern,
+            grammar_details,
+            romanization,
+            sentence_context,
+            sentence_translation,
             source_block_id,
             source_content_item_id,
             sentence_context_hash,
@@ -826,7 +922,8 @@ export class SqliteContentLibraryRepository {
             lapses,
             last_review_at,
             activation_state,
-            created_at
+            created_at,
+            updated_at
           FROM review_cards
           WHERE id = ?
           LIMIT 1
@@ -891,6 +988,229 @@ export class SqliteContentLibraryRepository {
     );
 
     return transaction(entries);
+  }
+
+  countDueReviewCards(now: number): number {
+    const row = this.database
+      .prepare(
+        `
+        SELECT COUNT(*) AS total
+        FROM review_cards
+        WHERE activation_state = 'active'
+          AND due_at <= ?
+      `,
+      )
+      .get(now) as { total: number };
+
+    return row.total;
+  }
+
+  listDueReviewCards(now: number, limit: number): ReviewCardRecord[] {
+    const rows = this.database
+      .prepare(
+        `
+        SELECT
+          id,
+          canonical_form,
+          surface,
+          meaning,
+          grammar_pattern,
+          grammar_details,
+          romanization,
+          sentence_context,
+          sentence_translation,
+          source_block_id,
+          source_content_item_id,
+          sentence_context_hash,
+          fsrs_state,
+          due_at,
+          stability,
+          difficulty,
+          elapsed_days,
+          scheduled_days,
+          reps,
+          lapses,
+          last_review_at,
+          activation_state,
+          created_at,
+          updated_at
+        FROM review_cards
+        WHERE activation_state = 'active'
+          AND due_at <= ?
+        ORDER BY due_at ASC
+        LIMIT ?
+      `,
+      )
+      .all(now, limit) as ReviewCardRow[];
+
+    return rows.map(mapReviewCardRow);
+  }
+
+  updateReviewCardDetails(
+    input: UpdateReviewCardDetailsInput,
+    updatedAt: number,
+  ): void {
+    this.database
+      .prepare(
+        `
+        UPDATE review_cards
+        SET meaning = @meaning,
+            grammar_pattern = @grammar_pattern,
+            grammar_details = @grammar_details,
+            updated_at = @updated_at
+        WHERE id = @id
+      `,
+      )
+      .run({
+        id: input.reviewCardId,
+        meaning: input.meaning,
+        grammar_pattern: input.grammarPattern,
+        grammar_details: input.grammarDetails,
+        updated_at: updatedAt,
+      });
+  }
+
+  getKnownWord(canonicalForm: string): KnownWordRecord | null {
+    const row = this.database
+      .prepare(
+        `
+        SELECT canonical_form, surface, source, source_detail, created_at, updated_at
+        FROM known_words
+        WHERE canonical_form = ?
+        LIMIT 1
+      `,
+      )
+      .get(canonicalForm) as KnownWordRow | undefined;
+
+    return row ? mapKnownWordRow(row) : null;
+  }
+
+  countKnownWords(): number {
+    const row = this.database
+      .prepare("SELECT COUNT(*) AS total FROM known_words")
+      .get() as { total: number };
+    return row.total;
+  }
+
+  saveKnownWord(record: KnownWordRecord): void {
+    this.database
+      .prepare(
+        `
+        INSERT INTO known_words (
+          canonical_form,
+          surface,
+          source,
+          source_detail,
+          created_at,
+          updated_at
+        ) VALUES (
+          @canonical_form,
+          @surface,
+          @source,
+          @source_detail,
+          @created_at,
+          @updated_at
+        )
+        ON CONFLICT(canonical_form) DO UPDATE SET
+          surface = excluded.surface,
+          source = excluded.source,
+          source_detail = excluded.source_detail,
+          updated_at = excluded.updated_at
+      `,
+      )
+      .run({
+        canonical_form: record.canonicalForm,
+        surface: record.surface,
+        source: record.source,
+        source_detail: record.sourceDetail,
+        created_at: record.createdAt,
+        updated_at: record.updatedAt,
+      });
+  }
+
+  deleteKnownWord(canonicalForm: string): void {
+    this.database
+      .prepare("DELETE FROM known_words WHERE canonical_form = ?")
+      .run(canonicalForm);
+  }
+
+  findReviewCardByCanonical(
+    canonicalForm: string,
+    activationStates?: ReviewCardActivationState[],
+  ): ReviewCardRecord | null {
+    const states =
+      activationStates && activationStates.length > 0 ? activationStates : null;
+    const stateClause = states
+      ? `AND activation_state IN (${states.map(() => "?").join(", ")})`
+      : "";
+    const row = this.database
+      .prepare(
+        `
+        SELECT
+          id,
+          canonical_form,
+          surface,
+          meaning,
+          grammar_pattern,
+          grammar_details,
+          romanization,
+          sentence_context,
+          sentence_translation,
+          source_block_id,
+          source_content_item_id,
+          sentence_context_hash,
+          fsrs_state,
+          due_at,
+          stability,
+          difficulty,
+          elapsed_days,
+          scheduled_days,
+          reps,
+          lapses,
+          last_review_at,
+          activation_state,
+          created_at,
+          updated_at
+        FROM review_cards
+        WHERE canonical_form = ?
+          ${stateClause}
+        ORDER BY created_at DESC
+        LIMIT 1
+      `,
+      )
+      .get(canonicalForm, ...(states ?? [])) as ReviewCardRow | undefined;
+
+    return row ? mapReviewCardRow(row) : null;
+  }
+
+  setReviewCardActivationState(
+    reviewCardId: string,
+    activationState: ReviewCardActivationState,
+    updatedAt: number,
+  ): void {
+    this.database
+      .prepare(
+        `
+        UPDATE review_cards
+        SET activation_state = @activation_state,
+            updated_at = @updated_at
+        WHERE id = @id
+      `,
+      )
+      .run({
+        id: reviewCardId,
+        activation_state: activationState,
+        updated_at: updatedAt,
+      });
+  }
+
+  applyReviewUpdate(card: ReviewCardRecord, event: ReviewEventRecord): void {
+    const transaction = this.database.transaction(() => {
+      this.saveReviewCard(card);
+      this.saveReviewEvent(event);
+    });
+
+    transaction();
   }
 
   findDuplicateCandidates(duplicateCheckText: string): DuplicateCheckResult {
@@ -1289,6 +1609,12 @@ function mapReviewCardRow(row: ReviewCardRow): ReviewCardRecord {
     id: row.id,
     canonicalForm: row.canonical_form,
     surface: row.surface,
+    meaning: row.meaning,
+    grammarPattern: row.grammar_pattern,
+    grammarDetails: row.grammar_details,
+    romanization: row.romanization,
+    sentenceContext: row.sentence_context,
+    sentenceTranslation: row.sentence_translation,
     sourceBlockId: row.source_block_id,
     sourceContentItemId: row.source_content_item_id,
     sentenceContextHash: row.sentence_context_hash,
@@ -1303,5 +1629,17 @@ function mapReviewCardRow(row: ReviewCardRow): ReviewCardRecord {
     lastReviewAt: row.last_review_at,
     activationState: row.activation_state,
     createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function mapKnownWordRow(row: KnownWordRow): KnownWordRecord {
+  return {
+    canonicalForm: row.canonical_form,
+    surface: row.surface,
+    source: row.source,
+    sourceDetail: row.source_detail,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
   };
 }

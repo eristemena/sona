@@ -1,4 +1,4 @@
-import type Database from 'better-sqlite3'
+import type Database from "better-sqlite3";
 
 import {
   normalizeReadingAudioPreferenceRecord,
@@ -13,14 +13,22 @@ import {
   resolveThemePreference,
   THEME_PREFERENCE_SETTING_KEY,
   type ThemePreferenceMode,
-} from '@sona/domain/settings/theme-preference'
+} from "@sona/domain/settings/theme-preference";
 
 const OPENAI_API_KEY_SETTING_KEY = "integrations.openaiApiKey";
+export const KNOWN_WORD_ONBOARDING_SETTING_KEY =
+  "study.knownWords.onboardingComplete";
 
 interface SettingRow {
-  key: string
-  value_json: string
-  updated_at: string
+  key: string;
+  value_json: string;
+  updated_at: string;
+}
+
+export interface KnownWordOnboardingSettingRecord {
+  completed: true;
+  completedAt: number;
+  selectedSeedPack: string;
 }
 
 export class SqliteSettingsRepository {
@@ -176,6 +184,25 @@ export class SqliteSettingsRepository {
     });
   }
 
+  getKnownWordOnboardingRecord(): KnownWordOnboardingSettingRecord | null {
+    const existing = this.getSetting(KNOWN_WORD_ONBOARDING_SETTING_KEY);
+    if (!existing) {
+      return null;
+    }
+
+    return normalizeKnownWordOnboardingSettingRecord(
+      JSON.parse(existing.value_json),
+    );
+  }
+
+  setKnownWordOnboardingRecord(record: KnownWordOnboardingSettingRecord) {
+    this.setJsonSetting(KNOWN_WORD_ONBOARDING_SETTING_KEY, record);
+  }
+
+  clearKnownWordOnboardingRecord() {
+    this.deleteSetting(KNOWN_WORD_ONBOARDING_SETTING_KEY);
+  }
+
   private getSetting(key: string): SettingRow | undefined {
     return this.database
       .prepare("SELECT key, value_json, updated_at FROM settings WHERE key = ?")
@@ -184,6 +211,26 @@ export class SqliteSettingsRepository {
 
   private deleteSetting(key: string) {
     this.database.prepare("DELETE FROM settings WHERE key = ?").run(key);
+  }
+
+  private setJsonSetting(key: string, value: unknown) {
+    const now = new Date().toISOString();
+    const payload = JSON.stringify(value);
+    this.database
+      .prepare(
+        `
+        INSERT INTO settings (key, value_json, updated_at)
+        VALUES (@key, @value_json, @updated_at)
+        ON CONFLICT(key) DO UPDATE SET
+          value_json = excluded.value_json,
+          updated_at = excluded.updated_at
+      `,
+      )
+      .run({
+        key,
+        value_json: payload,
+        updated_at: now,
+      });
   }
 }
 
@@ -207,4 +254,29 @@ function normalizeApiKeySettingRecord(
     (value as { apiKey?: unknown }).apiKey as string | null,
   );
   return normalizedApiKey ? { apiKey: normalizedApiKey } : null;
+}
+
+function normalizeKnownWordOnboardingSettingRecord(
+  value: unknown,
+): KnownWordOnboardingSettingRecord | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const record = value as Partial<KnownWordOnboardingSettingRecord>;
+  if (
+    record.completed !== true ||
+    typeof record.completedAt !== "number" ||
+    !Number.isFinite(record.completedAt) ||
+    typeof record.selectedSeedPack !== "string" ||
+    record.selectedSeedPack.trim().length === 0
+  ) {
+    return null;
+  }
+
+  return {
+    completed: true,
+    completedAt: record.completedAt,
+    selectedSeedPack: record.selectedSeedPack.trim(),
+  };
 }

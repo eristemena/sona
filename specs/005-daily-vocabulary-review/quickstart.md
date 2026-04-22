@@ -107,10 +107,11 @@ Expected automated coverage:
 Manual checks:
 
 - Add a word from the reading view with available lookup detail.
-- Open Review and confirm the resulting card shows the captured meaning and grammar details.
-- Inspect the card provenance and confirm it still links back to the source content and sentence context.
-- Add a word without richer lookup detail and confirm the card remains reviewable with editable fallback detail.
-- Edit the fallback meaning or grammar fields from Review and confirm the corrected details persist after restart.
+- Open Review and confirm the resulting card shows the captured meaning and grammar details from the reading lookup snapshot, including the saved sentence translation when present.
+- Inspect the `Captured from reading` panel and confirm it preserves the source sentence context from the originating reading block.
+- Add a word without richer lookup detail and confirm the card remains reviewable with the fallback message `No saved meaning yet. Add one so this card stays useful offline.`
+- Choose `Edit details`, save corrected meaning or grammar fields, and confirm the updated card stays flipped, refreshes in place, and still shows its provenance panel.
+- Restart the app and confirm the corrected detail fields persist on the same review card.
 
 Expected automated coverage:
 
@@ -128,6 +129,8 @@ Manual checks:
 - Encounter the same word in the reading view.
 - Confirm the reading surface does not present it as a fresh add-to-deck candidate.
 - Confirm a word that is already an active review card also appears suppressed.
+- Use `Clear known status` from the reading popup and confirm the word returns to normal capture eligibility without reopening the reading session.
+- Mark a due review card as known from the revealed answer side, confirm it leaves the queue, then use `Undo known word` from the review banner and confirm the same card returns to the review session.
 - Clear known-word status for that canonical form and confirm the reading surface returns the word to normal eligibility while preserving prior review history.
 
 Expected automated coverage:

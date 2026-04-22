@@ -16,7 +16,17 @@ describe('window.sona reading preload contract', () => {
     await api.reading.ensureBlockAudio('block-1')
     await api.reading.lookupWord({ blockId: 'block-1', token: '안녕하세요', tokenIndex: 0, sentenceContext: '안녕하세요.' })
     await api.reading.explainGrammar({ blockId: 'block-1', token: '안녕하세요', tokenIndex: 0, sentenceContext: '안녕하세요.' })
-    await api.reading.addToDeck({ blockId: 'block-1', token: '안녕하세요', canonicalForm: '안녕하세요', sentenceContext: '안녕하세요.' })
+    await api.reading.addToDeck({
+      blockId: "block-1",
+      token: "안녕하세요",
+      canonicalForm: "안녕하세요",
+      sentenceContext: "안녕하세요.",
+      meaning: "hello in this greeting",
+      grammarPattern: "Greeting formula",
+      grammarDetails: "Neutral register.",
+      romanization: "annyeonghaseyo",
+      sentenceTranslation: "Hello.",
+    });
     await api.reading.saveReadingProgress({
       contentItemId: 'item-1',
       activeBlockId: 'block-1',
@@ -41,12 +51,21 @@ describe('window.sona reading preload contract', () => {
       tokenIndex: 0,
       sentenceContext: '안녕하세요.',
     })
-    expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(5, 'sona:reading:add-to-deck', {
-      blockId: 'block-1',
-      token: '안녕하세요',
-      canonicalForm: '안녕하세요',
-      sentenceContext: '안녕하세요.',
-    })
+    expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
+      5,
+      "sona:reading:add-to-deck",
+      {
+        blockId: "block-1",
+        token: "안녕하세요",
+        canonicalForm: "안녕하세요",
+        sentenceContext: "안녕하세요.",
+        meaning: "hello in this greeting",
+        grammarPattern: "Greeting formula",
+        grammarDetails: "Neutral register.",
+        romanization: "annyeonghaseyo",
+        sentenceTranslation: "Hello.",
+      },
+    );
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(6, 'sona:reading:save-progress', {
       contentItemId: 'item-1',
       activeBlockId: 'block-1',
