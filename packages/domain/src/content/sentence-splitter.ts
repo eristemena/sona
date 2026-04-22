@@ -15,25 +15,54 @@ export function normalizeArticleText(text: string): string {
 }
 
 export function splitKoreanArticleSentences(text: string): string[] {
-  const normalized = normalizeArticleText(text)
+  const normalized = normalizeArticleText(text);
   if (!normalized) {
-    return []
+    return [];
   }
 
   const paragraphs = normalized
     .split(/\n{2,}/)
     .map((paragraph) => paragraph.trim())
-    .filter(Boolean)
+    .filter(Boolean);
 
   const sentences = paragraphs.flatMap((paragraph) => {
-    const collapsed = paragraph.replace(/\n+/g, ' ').trim()
+    const preservedLines = splitPreservedLines(paragraph);
+    if (preservedLines) {
+      return preservedLines;
+    }
+
+    const collapsed = paragraph.replace(/\n+/g, " ").trim();
     const fragments = collapsed
       .split(/(?<=[.!?。！？])\s+/u)
       .map((fragment) => fragment.trim())
-      .filter(Boolean)
+      .filter(Boolean);
 
-    return fragments.length > 0 ? fragments : [collapsed]
-  })
+    return fragments.length > 0 ? fragments : [collapsed];
+  });
 
-  return sentences.filter(hasUsableKoreanArticleText)
+  return sentences.filter((sentence) => sentence.trim().length > 0);
+}
+
+function splitPreservedLines(paragraph: string): string[] | null {
+  if (!paragraph.includes("\n")) {
+    return null;
+  }
+
+  const lines = paragraph
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (lines.length < 2) {
+    return null;
+  }
+
+  const containsKorean = lines.some(hasUsableKoreanArticleText);
+  const looksLikeVerse = lines.every((line) => line.length <= 120);
+
+  if (!containsKorean || !looksLikeVerse) {
+    return null;
+  }
+
+  return lines;
 }

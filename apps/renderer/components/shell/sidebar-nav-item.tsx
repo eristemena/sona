@@ -1,30 +1,44 @@
-'use client'
+"use client";
 
-import type { KeyboardEvent } from 'react'
-import type { Ref } from 'react'
+import type { KeyboardEvent } from "react";
+import type { Ref } from "react";
 
-import type { NavigationDestination, NavigationDestinationId } from '@sona/domain/contracts/shell-bootstrap'
+import type {
+  NavigationDestination,
+  NavigationDestinationId,
+} from "@sona/domain/contracts/shell-bootstrap";
 
-import { cn } from '../../lib/utils'
+import { cn } from "../../lib/utils";
 
 interface SidebarNavItemProps {
-  destination: NavigationDestination
-  active: boolean
-  onSelect: (destinationId: NavigationDestinationId) => void
-  onArrowNavigate: (direction: 'next' | 'previous') => void
-  buttonRef?: Ref<HTMLButtonElement>
+  destination: NavigationDestination;
+  active: boolean;
+  reviewDueCount: number;
+  onSelect: (destinationId: NavigationDestinationId) => void;
+  onArrowNavigate: (direction: "next" | "previous") => void;
+  buttonRef?: Ref<HTMLButtonElement>;
 }
 
-export function SidebarNavItem({ destination, active, onSelect, onArrowNavigate, buttonRef }: SidebarNavItemProps) {
+export function SidebarNavItem({
+  destination,
+  active,
+  reviewDueCount,
+  onSelect,
+  onArrowNavigate,
+  buttonRef,
+}: SidebarNavItemProps) {
+  const shouldShowReviewBadge =
+    destination.id === "review" && reviewDueCount > 0;
+
   function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
-    if (event.key === 'ArrowDown') {
-      event.preventDefault()
-      onArrowNavigate('next')
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      onArrowNavigate("next");
     }
 
-    if (event.key === 'ArrowUp') {
-      event.preventDefault()
-      onArrowNavigate('previous')
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      onArrowNavigate("previous");
     }
   }
 
@@ -43,9 +57,11 @@ export function SidebarNavItem({ destination, active, onSelect, onArrowNavigate,
       type="button"
     >
       <span>{destination.label}</span>
-      <span className="text-[11px] text-(--text-muted) group-hover:text-(--text-secondary)">
-        0{destination.order}
-      </span>
+      {shouldShowReviewBadge ? (
+        <span className="inline-flex min-w-7 items-center justify-center rounded-md bg-(--accent-subtle) px-2 py-1 text-[11px] font-medium text-(--accent)">
+          {reviewDueCount}
+        </span>
+      ) : null}
     </button>
   );
 }

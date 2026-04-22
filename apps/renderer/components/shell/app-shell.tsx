@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from "react";
 
 import { useActiveDestination } from '../../lib/use-active-destination'
 import { useShellBootstrap } from '../../lib/use-shell-bootstrap'
@@ -10,10 +10,45 @@ import { SidebarNav } from './sidebar-nav'
 export function AppShell() {
   const { ready, state } = useShellBootstrap()
   const { activeDestination, setActiveDestination } = useActiveDestination()
+  const [reviewDueCount, setReviewDueCount] = useState(0);
 
   useEffect(() => {
     setActiveDestination(state.navigation[0]?.id ?? 'dashboard')
   }, [setActiveDestination, state.navigation])
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadReviewDueCount() {
+      if (
+        !ready ||
+        typeof window === "undefined" ||
+        typeof window.sona?.review === "undefined"
+      ) {
+        if (active) {
+          setReviewDueCount(0);
+        }
+        return;
+      }
+
+      try {
+        const snapshot = await window.sona.review.getQueue(1);
+        if (active) {
+          setReviewDueCount(snapshot.dueCount);
+        }
+      } catch {
+        if (active) {
+          setReviewDueCount(0);
+        }
+      }
+    }
+
+    void loadReviewDueCount();
+
+    return () => {
+      active = false;
+    };
+  }, [activeDestination, ready]);
 
   if (!ready) {
     return (
@@ -33,6 +68,7 @@ export function AppShell() {
         activeDestination={activeDestination}
         appName={state.appName}
         navigation={state.navigation}
+        reviewDueCount={reviewDueCount}
         onSelect={setActiveDestination}
       />
       <MainContentPlaceholder

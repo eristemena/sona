@@ -15,9 +15,10 @@ describe('sidebar keyboard navigation integration', () => {
         activeDestination="dashboard"
         appName="Sona"
         navigation={DEFAULT_NAVIGATION_DESTINATIONS}
+        reviewDueCount={0}
         onSelect={onSelect}
       />,
-    )
+    );
 
     const dashboardButton = screen.getByRole('button', { name: /dashboard/i })
     const libraryButton = screen.getByRole('button', { name: /library/i })
@@ -37,9 +38,10 @@ describe('sidebar keyboard navigation integration', () => {
         activeDestination="dashboard"
         appName="Sona"
         navigation={DEFAULT_NAVIGATION_DESTINATIONS}
+        reviewDueCount={0}
         onSelect={onSelect}
       />,
-    )
+    );
 
     const dashboardButton = screen.getByRole('button', { name: /dashboard/i })
     const settingsButton = screen.getByRole('button', { name: /settings/i })

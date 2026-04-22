@@ -21,6 +21,10 @@ export function splitKoreanArticleSentences(text) {
         .map((paragraph) => paragraph.trim())
         .filter(Boolean);
     const sentences = paragraphs.flatMap((paragraph) => {
+        const preservedLines = splitPreservedLines(paragraph);
+        if (preservedLines) {
+            return preservedLines;
+        }
         const collapsed = paragraph.replace(/\n+/g, ' ').trim();
         const fragments = collapsed
             .split(/(?<=[.!?。！？])\s+/u)
@@ -28,5 +32,23 @@ export function splitKoreanArticleSentences(text) {
             .filter(Boolean);
         return fragments.length > 0 ? fragments : [collapsed];
     });
-    return sentences.filter(hasUsableKoreanArticleText);
+    return sentences.filter((sentence) => sentence.trim().length > 0);
+}
+function splitPreservedLines(paragraph) {
+    if (!paragraph.includes('\n')) {
+        return null;
+    }
+    const lines = paragraph
+        .split(/\n+/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+    if (lines.length < 2) {
+        return null;
+    }
+    const containsKorean = lines.some(hasUsableKoreanArticleText);
+    const looksLikeVerse = lines.every((line) => line.length <= 120);
+    if (!containsKorean || !looksLikeVerse) {
+        return null;
+    }
+    return lines;
 }

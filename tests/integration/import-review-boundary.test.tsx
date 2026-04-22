@@ -105,8 +105,29 @@ describe('import-to-study-to-review boundary', () => {
         lookupWord: vi.fn(),
         explainGrammar: vi.fn(),
         addToDeck: vi.fn(),
+        getWordStudyStatus: vi.fn(),
         saveReadingProgress: vi.fn(async () => undefined),
         flushExposureLog: vi.fn(async () => ({ written: 0 })),
+      },
+      review: {
+        getQueue: vi.fn(async () => ({
+          generatedAt: 1_716_760_000_000,
+          dueCount: 0,
+          sessionLimit: 50,
+          cards: [],
+        })),
+        submitRating: vi.fn(),
+        updateCardDetails: vi.fn(),
+        getKnownWordOnboardingStatus: vi.fn(async () => ({
+          shouldShow: false,
+          availableSeedPacks: [],
+          completedAt: null,
+          selectedSeedPackId: null,
+          knownWordCount: 0,
+        })),
+        completeKnownWordOnboarding: vi.fn(),
+        markKnownWord: vi.fn(),
+        clearKnownWord: vi.fn(),
       },
     } as unknown as WindowSona;
 

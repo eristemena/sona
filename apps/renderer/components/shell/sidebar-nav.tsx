@@ -1,32 +1,47 @@
-'use client'
+"use client";
 
-import { Sparkles } from 'lucide-react'
-import { useRef } from 'react'
+import { Sparkles } from "lucide-react";
+import { useRef } from "react";
 
-import type { NavigationDestination, NavigationDestinationId } from '@sona/domain/contracts/shell-bootstrap'
+import type {
+  NavigationDestination,
+  NavigationDestinationId,
+} from "@sona/domain/contracts/shell-bootstrap";
 
-import { getNextNavigationDestination } from '../../lib/navigation'
-import { SidebarNavItem } from './sidebar-nav-item'
+import { getNextNavigationDestination } from "../../lib/navigation";
+import { SidebarNavItem } from "./sidebar-nav-item";
 
 interface SidebarNavProps {
-  activeDestination: NavigationDestinationId
-  appName: string
-  navigation: NavigationDestination[]
-  onSelect: (destinationId: NavigationDestinationId) => void
+  activeDestination: NavigationDestinationId;
+  appName: string;
+  navigation: NavigationDestination[];
+  reviewDueCount: number;
+  onSelect: (destinationId: NavigationDestinationId) => void;
 }
 
-export function SidebarNav({ activeDestination, appName, navigation, onSelect }: SidebarNavProps) {
-  const itemRefs = useRef<Record<NavigationDestinationId, HTMLButtonElement | null>>({
+export function SidebarNav({
+  activeDestination,
+  appName,
+  navigation,
+  reviewDueCount,
+  onSelect,
+}: SidebarNavProps) {
+  const itemRefs = useRef<
+    Record<NavigationDestinationId, HTMLButtonElement | null>
+  >({
     dashboard: null,
     library: null,
     review: null,
     settings: null,
-  })
+  });
 
-  function handleArrowNavigate(direction: 'next' | 'previous') {
-    const nextDestination = getNextNavigationDestination(activeDestination, direction)
-    onSelect(nextDestination)
-    itemRefs.current[nextDestination]?.focus()
+  function handleArrowNavigate(direction: "next" | "previous") {
+    const nextDestination = getNextNavigationDestination(
+      activeDestination,
+      direction,
+    );
+    onSelect(nextDestination);
+    itemRefs.current[nextDestination]?.focus();
   }
 
   return (
@@ -39,9 +54,6 @@ export function SidebarNav({ activeDestination, appName, navigation, onSelect }:
           <Sparkles className="h-4 w-4" />
         </div>
         <div>
-          <p className="text-xs uppercase tracking-[0.24em] text-(--text-muted)">
-            Study Shell
-          </p>
           <p className="text-[17px] font-semibold text-(--text-primary)">
             {appName}
           </p>
@@ -59,6 +71,7 @@ export function SidebarNav({ activeDestination, appName, navigation, onSelect }:
             key={destination.id}
             onArrowNavigate={handleArrowNavigate}
             onSelect={onSelect}
+            reviewDueCount={reviewDueCount}
           />
         ))}
       </nav>
