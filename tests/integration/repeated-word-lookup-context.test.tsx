@@ -88,6 +88,10 @@ describe('repeated word lookup context integration', () => {
         explainGrammar: vi.fn(async () => {
           throw new Error('not used')
         }),
+        getWordStudyStatus: vi.fn(async () => ({
+          eligibility: 'eligible' as const,
+          reviewCardId: null,
+        })),
         addToDeck: vi.fn(),
         saveReadingProgress: vi.fn(async () => undefined),
         flushExposureLog: vi.fn(async () => ({ written: 0 })),

@@ -11,7 +11,7 @@
 
 **Purpose**: Add shared review-feature wiring and bundled local assets needed by all stories.
 
-- [ ] T001 Add daily-review export wiring and seed-asset packaging in /Volumes/xpro/erisristemena/made-by-ai/sona/package.json, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/package.json, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/index.ts
+- [X] T001 Add daily-review export wiring and seed-asset packaging in /Volumes/xpro/erisristemena/made-by-ai/sona/package.json, /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/package.json, and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/index.ts
 - [X] T002 [P] Add the bundled known-word seed asset set in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/known-word-seeds/topik-i-core.json and /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/known-word-seeds/topik-ii-core.json
 
 ---
@@ -95,7 +95,7 @@
 
 - [X] T027 [P] [US3] Add onboarding coverage for first launch and idempotent completion in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/known-word-onboarding-first-launch.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/known-word-onboarding-idempotent.test.ts
 - [X] T028 [P] [US3] Add suppression coverage for known and already-in-deck words in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/known-word-reading-suppression.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-duplicate-or-known-suppression.test.ts
-- [ ] T041 [P] [US3] Add restore-known coverage for clearing suppression and reactivating cards in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/known-word-clear-status.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-card-reactivation-from-known.test.ts
+- [X] T041 [P] [US3] Add restore-known coverage for clearing suppression and reactivating cards in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/known-word-clear-status.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-card-reactivation-from-known.test.ts
 
 ### Implementation for User Story 3
 
@@ -117,10 +117,10 @@
 
 **Purpose**: Finalize offline safety, restart continuity, and overall validation for the full review loop.
 
-- [ ] T036 [P] Add offline and restart regression coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-offline-continuity.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-restart-persistence.test.ts
-- [ ] T037 [P] Add bounded-backlog and recovery coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-backlog-recovery.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-queue-limit-and-order.test.ts
-- [ ] T038 Run the full daily-review quickstart validation path and capture final copy or fallback fixes in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/005-daily-vocabulary-review/quickstart.md
-- [ ] T044 [P] Add explicit success-criteria timing and throughput measurement coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/benchmark/review-session-first-answer.benchmark.test.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/tests/benchmark/review-session-throughput.benchmark.test.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/specs/005-daily-vocabulary-review/quickstart.md
+- [X] T036 [P] Add offline and restart regression coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-offline-continuity.test.tsx and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-restart-persistence.test.ts
+- [X] T037 [P] Add bounded-backlog and recovery coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-backlog-recovery.test.ts and /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/review-queue-limit-and-order.test.ts
+- [X] T038 Run the full daily-review quickstart validation path and capture final copy or fallback fixes in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/005-daily-vocabulary-review/quickstart.md
+- [X] T044 [P] Add explicit success-criteria timing and throughput measurement coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/benchmark/review-session-first-answer.benchmark.test.ts, /Volumes/xpro/erisristemena/made-by-ai/sona/tests/benchmark/review-session-throughput.benchmark.test.ts, and /Volumes/xpro/erisristemena/made-by-ai/sona/specs/005-daily-vocabulary-review/quickstart.md
 
 ---
 

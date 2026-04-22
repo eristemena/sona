@@ -1,3 +1,4 @@
+import { performance } from 'node:perf_hooks'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -19,32 +20,32 @@ afterEach(() => {
 })
 
 function createRepository() {
-  const directory = mkdtempSync(path.join(tmpdir(), 'sona-review-queue-'))
+  const directory = mkdtempSync(path.join(tmpdir(), 'sona-review-first-answer-benchmark-'))
   tempDirectories.push(directory)
 
   const database = createSqliteConnection({ databasePath: path.join(directory, 'sona.db') })
   runShellMigrations(database)
-  return new SqliteContentLibraryRepository(database)
+  return { database, repository: new SqliteContentLibraryRepository(database) }
 }
 
-function createReviewCardFixture(index: number, now: number, overrides: Partial<ReviewCardRecord> = {}): ReviewCardRecord {
+function createReviewCardFixture(index: number, now: number): ReviewCardRecord {
   return {
     id: `card-${index + 1}`,
     canonicalForm: `단어 ${index + 1}`,
     surface: `단어 ${index + 1}`,
-    meaning: null,
+    meaning: `meaning ${index + 1}`,
     grammarPattern: null,
     grammarDetails: null,
     romanization: null,
-    sentenceContext: null,
+    sentenceContext: `단어 ${index + 1} 예문`,
     sentenceTranslation: null,
     sourceBlockId: `block-${index + 1}`,
-    sourceContentItemId: 'item-1',
+    sourceContentItemId: `item-${index + 1}`,
     sentenceContextHash: `ctx-${index + 1}`,
     fsrsState: 'Review',
-    dueAt: now - (55 - index) * 1000,
+    dueAt: now - (20 - index) * 1000,
     stability: 2.5,
-    difficulty: 4.5,
+    difficulty: 4.3,
     elapsedDays: 2,
     scheduledDays: 2,
     reps: 2,
@@ -53,7 +54,6 @@ function createReviewCardFixture(index: number, now: number, overrides: Partial<
     activationState: 'active',
     createdAt: now - (index + 1) * 1000,
     updatedAt: now - (index + 1) * 1000,
-    ...overrides,
   }
 }
 
@@ -64,14 +64,14 @@ function seedReviewSource(repository: SqliteContentLibraryRepository, index: num
   repository.saveContent({
     item: {
       id: contentItemId,
-      title: `Review seed item ${index + 1}`,
+      title: `Review benchmark item ${index + 1}`,
       sourceType: 'article',
       difficulty: 1,
       difficultyLabel: 'Beginner',
       provenanceLabel: 'Article paste',
-      sourceLocator: `seed://review-item-${index + 1}`,
-      provenanceDetail: 'Seeded for queue ordering coverage.',
-      searchText: `review seed item ${index + 1}`,
+      sourceLocator: `seed://review-benchmark-${index + 1}`,
+      provenanceDetail: 'Seeded for review first-answer benchmark coverage.',
+      searchText: `review benchmark item ${index + 1}`,
       duplicateCheckText: `단어 ${index + 1}`,
       createdAt: now - (index + 1) * 1000,
     },
@@ -95,8 +95,8 @@ function seedReviewSource(repository: SqliteContentLibraryRepository, index: num
       originMode: 'article-paste',
       filePath: null,
       url: null,
-      sessionId: `seed-review-queue-${index + 1}`,
-      displaySource: 'Seeded for queue ordering coverage.',
+      sessionId: `seed-review-benchmark-${index + 1}`,
+      displaySource: 'Seeded for review first-answer benchmark coverage.',
       requestedDifficulty: 1,
       validatedDifficulty: 1,
       capturedAt: now - (index + 1) * 1000,
@@ -104,47 +104,31 @@ function seedReviewSource(repository: SqliteContentLibraryRepository, index: num
   })
 }
 
-describe('review queue limit and order', () => {
-  it('loads the oldest due active cards first and clamps the queue size to fifty', () => {
-    const now = 1_716_520_000_000
-    const repository = createRepository()
+describe('review session first answer benchmark', () => {
+  it('keeps the first due-card answer path under the 30-second acceptance budget', () => {
+    const now = 1_716_730_000_000
+    const { database, repository } = createRepository()
 
-    for (let index = 0; index < 55; index += 1) {
+    for (let index = 0; index < 20; index += 1) {
       seedReviewSource(repository, index, now)
       repository.saveReviewCard(createReviewCardFixture(index, now))
     }
 
     const service = new DailyReviewService({ repository, now: () => now })
-    const queue = service.getQueue(999)
 
-    expect(queue.dueCount).toBe(55)
-    expect(queue.sessionLimit).toBe(50)
-    expect(queue.cards).toHaveLength(50)
-    expect(queue.cards[0]?.front.id).toBe('card-1')
-    expect(queue.cards[1]?.front.id).toBe('card-2')
-    expect(queue.cards.at(-1)?.front.id).toBe('card-50')
-  })
-
-  it('counts only active due cards and excludes future, deferred, and known work from the backlog', () => {
-    const now = 1_716_520_000_000
-    const repository = createRepository()
-
-    for (let index = 0; index < 6; index += 1) {
-      seedReviewSource(repository, index, now)
-    }
-
-    repository.saveReviewCard(createReviewCardFixture(0, now))
-    repository.saveReviewCard(createReviewCardFixture(1, now))
-    repository.saveReviewCard(createReviewCardFixture(2, now, { dueAt: now + 60_000 }))
-    repository.saveReviewCard(createReviewCardFixture(3, now, { activationState: 'deferred' }))
-    repository.saveReviewCard(createReviewCardFixture(4, now, { activationState: 'known' }))
-    repository.saveReviewCard(createReviewCardFixture(5, now, { activationState: 'duplicate-blocked' }))
-
-    const service = new DailyReviewService({ repository, now: () => now })
+    const startedAt = performance.now()
     const queue = service.getQueue()
+    const firstCardId = queue.cards[0]?.front.id
+    if (!firstCardId) {
+      throw new Error('Expected at least one due review card for the first-answer benchmark.')
+    }
+    const result = service.submitRating({ reviewCardId: firstCardId, rating: 'good' })
+    const elapsedMs = performance.now() - startedAt
 
-    expect(queue.dueCount).toBe(2)
-    expect(queue.cards).toHaveLength(2)
-    expect(queue.cards.map((card) => card.front.id)).toEqual(['card-1', 'card-2'])
+    expect(queue.cards).toHaveLength(20)
+    expect(result.reviewCardId).toBe(firstCardId)
+    expect(elapsedMs).toBeLessThan(30_000)
+
+    database.close()
   })
 })

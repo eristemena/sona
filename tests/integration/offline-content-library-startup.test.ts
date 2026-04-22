@@ -99,7 +99,7 @@ describe('offline content-library startup', () => {
       "reading_progress",
       "review_cards",
     ]);
-    expect(appliedVersions.map((row) => row.version)).toEqual([1, 2, 3]);
+    expect(appliedVersions.map((row) => row.version)).toEqual([1, 2, 3, 4, 5]);
 
     migratedDatabase.close()
   })

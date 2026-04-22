@@ -16,6 +16,12 @@ This feature is planned as Sona’s first full daily-review loop on top of readi
 npm install
 ```
 
+If the local Node.js runtime changes and SQLite-backed tests fail with a `better-sqlite3` module-version mismatch, rebuild the native module before continuing:
+
+```bash
+npm rebuild better-sqlite3
+```
+
 ## 3. Core Validation Commands
 
 Run the automated suite:
@@ -161,3 +167,8 @@ Expected automated coverage:
 - Confirm a 20-card session can be completed in under 6 minutes without optional detours.
 - Confirm at least 90% of words already seeded or marked known are no longer offered as new reading captures.
 - Capture these measurements in benchmark or manual validation records tied to the review quickstart before sign-off.
+
+Expected automated coverage:
+
+- `tests/benchmark/review-session-first-answer.benchmark.test.ts`
+- `tests/benchmark/review-session-throughput.benchmark.test.ts`

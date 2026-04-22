@@ -98,6 +98,10 @@ function installReadingWindowSona() {
         cacheState: 'miss' as const,
         modelId: null,
       })),
+      getWordStudyStatus: vi.fn(async () => ({
+        eligibility: 'eligible' as const,
+        reviewCardId: null,
+      })),
       addToDeck,
       saveReadingProgress: vi.fn(async () => undefined),
       flushExposureLog: vi.fn(async () => ({ written: 0 })),
@@ -151,12 +155,14 @@ describe('reading fallback review continuity integration', () => {
     expect(screen.getByText('Lookup unavailable · Offline')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Add to deck +' }))
-    expect(addToDeck).toHaveBeenCalledWith({
-      blockId: 'block-1',
-      token: '천천히',
-      canonicalForm: '천천히',
-      sentenceContext: '오늘도 천천히 읽어요',
-    })
+    expect(addToDeck).toHaveBeenCalledWith(
+      expect.objectContaining({
+        blockId: 'block-1',
+        token: '천천히',
+        canonicalForm: '천천히',
+        sentenceContext: '오늘도 천천히 읽어요',
+      }),
+    )
     expect(await screen.findByText('Added 천천히 to your review deck with source context preserved.')).toBeInTheDocument()
 
     audio.currentTime = 0.95

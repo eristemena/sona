@@ -58,11 +58,42 @@ describe('content library delete integration', () => {
       content: {
         listLibraryItems: vi.fn(async () => state.currentItems),
         getContentBlocks: vi.fn(async () => []),
+        browseSubtitleFile: vi.fn(),
         importSrt: vi.fn(),
         createArticleFromPaste: vi.fn(),
         createArticleFromUrl: vi.fn(),
         generatePracticeSentences: vi.fn(),
         deleteContent,
+      },
+      reading: {
+        getReadingSession: vi.fn(),
+        ensureBlockAudio: vi.fn(),
+        lookupWord: vi.fn(),
+        explainGrammar: vi.fn(),
+        addToDeck: vi.fn(),
+        getWordStudyStatus: vi.fn(),
+        saveReadingProgress: vi.fn(),
+        flushExposureLog: vi.fn(),
+      },
+      review: {
+        getQueue: vi.fn(async () => ({
+          generatedAt: 1_716_750_000_000,
+          dueCount: 0,
+          sessionLimit: 50,
+          cards: [],
+        })),
+        submitRating: vi.fn(),
+        updateCardDetails: vi.fn(),
+        getKnownWordOnboardingStatus: vi.fn(async () => ({
+          shouldShow: false,
+          availableSeedPacks: [],
+          completedAt: null,
+          selectedSeedPackId: null,
+          knownWordCount: 0,
+        })),
+        completeKnownWordOnboarding: vi.fn(),
+        markKnownWord: vi.fn(),
+        clearKnownWord: vi.fn(),
       },
     } as unknown as WindowSona
   })
@@ -106,9 +137,7 @@ describe('content library delete integration', () => {
 
     await user.click(screen.getByRole('button', { name: /review/i }))
 
-    expect(await screen.findByRole('heading', { name: 'Spaced repetition will anchor here.' })).toBeInTheDocument()
-    expect(
-      screen.getByText(/The shell is reserving a calm, focused space for review sessions/i),
-    ).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Daily review' })).toBeInTheDocument()
+    expect(screen.getByText('Nothing is due right now.')).toBeInTheDocument()
   })
 })

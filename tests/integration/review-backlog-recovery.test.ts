@@ -8,7 +8,7 @@ import { DailyReviewService } from '../../apps/desktop/src/main/content/daily-re
 import { createSqliteConnection } from '../../packages/data/src/sqlite/connection.js'
 import { SqliteContentLibraryRepository } from '../../packages/data/src/sqlite/content-library-repository.js'
 import { runShellMigrations } from '../../packages/data/src/sqlite/migrations/run-migrations.js'
-import type { ReviewCardRecord } from '../../packages/domain/src/content/review-card.js'
+import type { ReviewCardActivationState, ReviewCardRecord } from '../../packages/domain/src/content/review-card.js'
 
 const tempDirectories: string[] = []
 
@@ -19,7 +19,7 @@ afterEach(() => {
 })
 
 function createRepository() {
-  const directory = mkdtempSync(path.join(tmpdir(), 'sona-review-queue-'))
+  const directory = mkdtempSync(path.join(tmpdir(), 'sona-review-backlog-'))
   tempDirectories.push(directory)
 
   const database = createSqliteConnection({ databasePath: path.join(directory, 'sona.db') })
@@ -27,7 +27,11 @@ function createRepository() {
   return new SqliteContentLibraryRepository(database)
 }
 
-function createReviewCardFixture(index: number, now: number, overrides: Partial<ReviewCardRecord> = {}): ReviewCardRecord {
+function createReviewCardFixture(
+  index: number,
+  now: number,
+  overrides: Partial<ReviewCardRecord> = {},
+): ReviewCardRecord {
   return {
     id: `card-${index + 1}`,
     canonicalForm: `단어 ${index + 1}`,
@@ -39,10 +43,10 @@ function createReviewCardFixture(index: number, now: number, overrides: Partial<
     sentenceContext: null,
     sentenceTranslation: null,
     sourceBlockId: `block-${index + 1}`,
-    sourceContentItemId: 'item-1',
+    sourceContentItemId: `item-${index + 1}`,
     sentenceContextHash: `ctx-${index + 1}`,
     fsrsState: 'Review',
-    dueAt: now - (55 - index) * 1000,
+    dueAt: now - (80 - index) * 1000,
     stability: 2.5,
     difficulty: 4.5,
     elapsedDays: 2,
@@ -64,14 +68,14 @@ function seedReviewSource(repository: SqliteContentLibraryRepository, index: num
   repository.saveContent({
     item: {
       id: contentItemId,
-      title: `Review seed item ${index + 1}`,
+      title: `Review backlog item ${index + 1}`,
       sourceType: 'article',
       difficulty: 1,
       difficultyLabel: 'Beginner',
       provenanceLabel: 'Article paste',
-      sourceLocator: `seed://review-item-${index + 1}`,
-      provenanceDetail: 'Seeded for queue ordering coverage.',
-      searchText: `review seed item ${index + 1}`,
+      sourceLocator: `seed://review-backlog-${index + 1}`,
+      provenanceDetail: 'Seeded for backlog recovery coverage.',
+      searchText: `review backlog item ${index + 1}`,
       duplicateCheckText: `단어 ${index + 1}`,
       createdAt: now - (index + 1) * 1000,
     },
@@ -95,8 +99,8 @@ function seedReviewSource(repository: SqliteContentLibraryRepository, index: num
       originMode: 'article-paste',
       filePath: null,
       url: null,
-      sessionId: `seed-review-queue-${index + 1}`,
-      displaySource: 'Seeded for queue ordering coverage.',
+      sessionId: `seed-review-backlog-${index + 1}`,
+      displaySource: 'Seeded for backlog recovery coverage.',
       requestedDifficulty: 1,
       validatedDifficulty: 1,
       capturedAt: now - (index + 1) * 1000,
@@ -104,47 +108,33 @@ function seedReviewSource(repository: SqliteContentLibraryRepository, index: num
   })
 }
 
-describe('review queue limit and order', () => {
-  it('loads the oldest due active cards first and clamps the queue size to fifty', () => {
-    const now = 1_716_520_000_000
+describe('review backlog recovery', () => {
+  it('surfaces the remaining overdue cards in the next bounded session after part of a larger backlog is reviewed', () => {
+    const now = 1_716_720_000_000
     const repository = createRepository()
 
-    for (let index = 0; index < 55; index += 1) {
+    for (let index = 0; index < 80; index += 1) {
       seedReviewSource(repository, index, now)
       repository.saveReviewCard(createReviewCardFixture(index, now))
     }
 
     const service = new DailyReviewService({ repository, now: () => now })
-    const queue = service.getQueue(999)
+    const firstQueue = service.getQueue()
 
-    expect(queue.dueCount).toBe(55)
-    expect(queue.sessionLimit).toBe(50)
-    expect(queue.cards).toHaveLength(50)
-    expect(queue.cards[0]?.front.id).toBe('card-1')
-    expect(queue.cards[1]?.front.id).toBe('card-2')
-    expect(queue.cards.at(-1)?.front.id).toBe('card-50')
-  })
+    expect(firstQueue.dueCount).toBe(80)
+    expect(firstQueue.cards).toHaveLength(50)
+    expect(firstQueue.cards[0]?.front.id).toBe('card-1')
+    expect(firstQueue.cards.at(-1)?.front.id).toBe('card-50')
 
-  it('counts only active due cards and excludes future, deferred, and known work from the backlog', () => {
-    const now = 1_716_520_000_000
-    const repository = createRepository()
-
-    for (let index = 0; index < 6; index += 1) {
-      seedReviewSource(repository, index, now)
+    for (let index = 0; index < 30; index += 1) {
+      service.submitRating({ reviewCardId: `card-${index + 1}`, rating: 'good' })
     }
 
-    repository.saveReviewCard(createReviewCardFixture(0, now))
-    repository.saveReviewCard(createReviewCardFixture(1, now))
-    repository.saveReviewCard(createReviewCardFixture(2, now, { dueAt: now + 60_000 }))
-    repository.saveReviewCard(createReviewCardFixture(3, now, { activationState: 'deferred' }))
-    repository.saveReviewCard(createReviewCardFixture(4, now, { activationState: 'known' }))
-    repository.saveReviewCard(createReviewCardFixture(5, now, { activationState: 'duplicate-blocked' }))
+    const recoveryQueue = service.getQueue()
 
-    const service = new DailyReviewService({ repository, now: () => now })
-    const queue = service.getQueue()
-
-    expect(queue.dueCount).toBe(2)
-    expect(queue.cards).toHaveLength(2)
-    expect(queue.cards.map((card) => card.front.id)).toEqual(['card-1', 'card-2'])
+    expect(recoveryQueue.dueCount).toBe(50)
+    expect(recoveryQueue.cards).toHaveLength(50)
+    expect(recoveryQueue.cards[0]?.front.id).toBe('card-31')
+    expect(recoveryQueue.cards.at(-1)?.front.id).toBe('card-80')
   })
 })
