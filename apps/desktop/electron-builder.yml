@@ -32,6 +32,14 @@ files:
     to: node_modules/file-uri-to-path
     filter:
       - '**/*'
+  - from: node_modules/srt-parser-2
+    to: node_modules/srt-parser-2
+    filter:
+      - '**/*'
+  - from: node_modules/ts-fsrs
+    to: node_modules/ts-fsrs
+    filter:
+      - '**/*'
   - '!**/*.map'
 asarUnpack:
   - node_modules/better-sqlite3/**

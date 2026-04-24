@@ -93,42 +93,75 @@ export function ReviewCardBack({ card, isMarkingKnown, isSavingDetails, onMarkKn
   return (
     <div className="space-y-4 rounded-[1.25rem] border border-(--border) bg-[color-mix(in_srgb,var(--accent)_8%,transparent)] p-4 panel-enter">
       <div>
-        <p className="text-xs uppercase tracking-[0.22em] text-(--text-muted)">Meaning</p>
-        <p className="mt-2 text-[17px] leading-7 text-(--text-primary)">{card.back.meaning ?? 'No saved meaning yet. Add one so this card stays useful offline.'}</p>
+        <p className="text-xs uppercase tracking-[0.22em] text-(--text-muted)">
+          Meaning
+        </p>
+        <p className="mt-2 text-[17px] leading-7 text-(--text-primary)">
+          {card.back.meaning ??
+            "No saved meaning yet. Add one so this card stays useful offline."}
+        </p>
+        {card.back.romanization ? (
+          <p className="mt-2 text-sm italic text-(--text-secondary)">
+            {card.back.romanization}
+          </p>
+        ) : null}
       </div>
 
       {card.back.grammarPattern ? (
         <div>
-          <p className="text-xs uppercase tracking-[0.22em] text-(--text-muted)">Pattern</p>
-          <p className="mt-2 text-sm text-(--text-secondary)">{card.back.grammarPattern}</p>
+          <p className="text-xs uppercase tracking-[0.22em] text-(--text-muted)">
+            Pattern
+          </p>
+          <p className="mt-2 text-sm text-(--text-secondary)">
+            {card.back.grammarPattern}
+          </p>
         </div>
       ) : null}
 
       {card.back.grammarDetails ? (
         <div>
-          <p className="text-xs uppercase tracking-[0.22em] text-(--text-muted)">Grammar details</p>
-          <p className="mt-2 text-sm leading-6 text-(--text-secondary)">{card.back.grammarDetails}</p>
+          <p className="text-xs uppercase tracking-[0.22em] text-(--text-muted)">
+            Grammar details
+          </p>
+          <p className="mt-2 text-sm leading-6 text-(--text-secondary)">
+            {card.back.grammarDetails}
+          </p>
         </div>
       ) : null}
 
-      <div className="rounded-[1rem] border border-[color:color-mix(in_srgb,var(--border)_70%,transparent)] bg-[color-mix(in_srgb,var(--bg-surface)_86%,transparent)] p-4">
-        <p className="text-xs uppercase tracking-[0.22em] text-(--text-muted)">Captured from reading</p>
-        <p className="mt-3 text-sm leading-7 text-(--text-primary)">{card.back.sentenceContext ?? 'Source sentence is unavailable.'}</p>
+      <div className="rounded-2xl border border-[color-mix(in_srgb,var(--border)_70%,transparent)] bg-[color-mix(in_srgb,var(--bg-surface)_86%,transparent)] p-4">
+        <p className="text-xs uppercase tracking-[0.22em] text-(--text-muted)">
+          Captured from reading
+        </p>
+        <p className="mt-3 text-sm leading-7 text-(--text-primary)">
+          {card.back.sentenceContext ?? "Source sentence is unavailable."}
+        </p>
         {card.back.sentenceTranslation ? (
-          <p className="mt-2 text-sm italic leading-6 text-(--text-secondary)">{card.back.sentenceTranslation}</p>
+          <p className="mt-2 text-sm italic leading-6 text-(--text-secondary)">
+            {card.back.sentenceTranslation}
+          </p>
         ) : null}
       </div>
 
       <div className="flex justify-end gap-3">
-        <Button disabled={isMarkingKnown} onClick={() => void onMarkKnown()} type="button" variant="ghost">
-          {isMarkingKnown ? 'Saving known word…' : 'Mark known'}
+        <Button
+          disabled={isMarkingKnown}
+          onClick={() => void onMarkKnown()}
+          type="button"
+          variant="ghost"
+        >
+          {isMarkingKnown ? "Saving known word…" : "Mark known"}
         </Button>
-        <Button onClick={() => setIsEditing(true)} type="button" variant="secondary">
+        <Button
+          onClick={() => setIsEditing(true)}
+          type="button"
+          variant="secondary"
+        >
           Edit details
         </Button>
       </div>
     </div>
-  )
+  );
 }
 
 function normalizeField(value: string): string | null {

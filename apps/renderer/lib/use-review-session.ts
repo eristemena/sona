@@ -23,6 +23,9 @@ export function useReviewSession(limit = 50) {
   const [isSavingDetails, setIsSavingDetails] = useState(false)
   const [isUpdatingKnownWord, setIsUpdatingKnownWord] = useState(false)
   const [submissionMessage, setSubmissionMessage] = useState<string | null>(null)
+  const [sessionStartDueCount, setSessionStartDueCount] = useState<
+    number | null
+  >(null);
   const [undoKnownWord, setUndoKnownWord] = useState<{
     canonicalForm: string
     reviewCardId: string
@@ -36,8 +39,29 @@ export function useReviewSession(limit = 50) {
     preserveFlipAfterRefreshRef.current = false
   }, [snapshot?.generatedAt])
 
+  useEffect(() => {
+    if (snapshot && sessionStartDueCount === null) {
+      setSessionStartDueCount(snapshot.dueCount);
+    }
+  }, [sessionStartDueCount, snapshot]);
+
   const cards = snapshot?.cards ?? []
-  const currentCard: ReviewQueueCard | null = cards[currentIndex] ?? null
+  const sessionCardTotal = Math.min(
+    sessionStartDueCount ?? 0,
+    snapshot?.sessionLimit ?? limit,
+  );
+  const cardsCompleted =
+    sessionStartDueCount === null || !snapshot
+      ? 0
+      : Math.min(
+          sessionCardTotal,
+          Math.max(0, sessionStartDueCount - snapshot.dueCount),
+        );
+  const hasCompletedSession =
+    sessionCardTotal > 0 && cardsCompleted >= sessionCardTotal;
+  const currentCard: ReviewQueueCard | null = hasCompletedSession
+    ? null
+    : (cards[currentIndex] ?? null);
 
   async function submitRating(rating: ReviewRating) {
     if (!currentCard) {
@@ -175,6 +199,9 @@ export function useReviewSession(limit = 50) {
     currentCard,
     currentIndex,
     cardsRemaining: cards.length,
+    cardsCompleted,
+    sessionCardTotal,
+    hasCompletedSession,
     isLoading,
     errorMessage,
     isFlipped,
@@ -189,5 +216,5 @@ export function useReviewSession(limit = 50) {
     submitRating,
     undoMarkKnownWord,
     refresh,
-  }
+  };
 }
