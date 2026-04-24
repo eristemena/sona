@@ -49,7 +49,7 @@ The learner can configure the settings that affect optional AI-assisted features
 
 **Acceptance Scenarios**:
 
-1. **Given** the learner wants to enable optional provider-backed features, **When** they enter or update an API key in settings, **Then** the key is saved locally and remains editable later.
+1. **Given** the learner wants to enable optional provider-backed features, **When** they enter or update an OpenRouter API key in settings, **Then** the key is saved locally and remains editable later.
 2. **Given** one or more TTS voices are available, **When** the learner selects a preferred voice, **Then** the selection is saved and used as the default voice preference for future listening flows.
 3. **Given** the learner changes their daily study goal, **When** they save the new value, **Then** the updated goal is reflected in the app’s progress and pacing surfaces.
 
@@ -67,7 +67,7 @@ The learner can configure the settings that affect optional AI-assisted features
 ### Local Data & Privacy
 
 - The feature reads and updates locally stored learner progress, recent activity summaries, content-library records, resume position, and study preferences.
-- The feature stores API key, preferred TTS voice, and daily study goal on the learner’s device.
+- The feature stores an OpenRouter API key, preferred TTS voice, and daily study goal on the learner’s device.
 - Optional provider-backed capabilities may use the network later when the learner explicitly invokes them, but the dashboard, library browsing, filtering, resume actions, and settings management remain usable without network access.
 
 ### Source Material & Provenance
@@ -98,10 +98,10 @@ The learner can configure the settings that affect optional AI-assisted features
 - **FR-004**: System MUST present a content library showing all learner-imported and learner-approved generated content saved in the app.
 - **FR-005**: System MUST allow the learner to search the content library by text-based metadata and narrow the library by content type.
 - **FR-006**: System MUST preserve clear source-type labeling for library items so imported and generated content remain distinguishable.
-- **FR-007**: System MUST provide a settings screen where the learner can create, update, and clear a locally stored API key used for optional provider-backed features.
+- **FR-007**: System MUST provide a settings screen where the learner can create, update, and clear a locally stored OpenRouter API key used for optional provider-backed features.
 - **FR-008**: System MUST provide a settings screen where the learner can choose a preferred TTS voice when voice options are available and keep the preference editable later.
 - **FR-009**: System MUST allow the learner to set and update a daily study goal that the app uses for goal and progress displays.
-- **FR-010**: System MUST persist home-screen inputs, library state needed for navigation, and learner settings locally so they remain available across app restarts.
+- **FR-010**: System MUST persist dashboard source data, reading resume context, and learner settings locally so they remain available across app restarts.
 - **FR-011**: System MUST remain usable offline for dashboard viewing, library browsing, searching, filtering, and settings management.
 - **FR-012**: System MUST show appropriate empty states when no review items, resumable reading session, library results, or voice options are available.
 

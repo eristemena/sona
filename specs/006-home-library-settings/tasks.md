@@ -42,6 +42,7 @@
 - [ ] T007 [P] [US1] Add preload contract coverage for `shell.getHomeDashboard()` in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/window-sona-home-library-settings-contract.test.ts
 - [ ] T008 [P] [US1] Add dashboard summary and empty-state integration coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/home-dashboard-summary.test.tsx
 - [ ] T009 [P] [US1] Add resume-reading and streak aggregation integration coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/home-dashboard-resume-reading.test.tsx
+- [ ] T009a [P] [US1] Add integration coverage for review-session completion writing one `study_sessions` row in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/study-session-writeback.test.ts
 
 ### Implementation for User Story 1
 
@@ -49,6 +50,7 @@
 - [ ] T011 [US1] Implement dashboard query and study-session writeback repository methods in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts
 - [ ] T012 [P] [US1] Add dashboard snapshot types in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/home-dashboard.ts
 - [ ] T013 [US1] Implement home dashboard assembly and review-session completion reporting in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/daily-review-service.ts
+- [ ] T013a [US1] Wire review-session completion metrics into dashboard reporting writes in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/review-handlers.ts
 - [ ] T014 [US1] Extend shell IPC handlers for dashboard summary loading in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/shell-handlers.ts
 - [ ] T015 [US1] Register the dashboard-capable shell wiring in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/index.ts
 - [ ] T016 [P] [US1] Create dashboard data and navigation hooks in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-home-dashboard.ts
@@ -70,6 +72,7 @@
 
 - [ ] T020 [P] [US2] Add integration coverage for client-side library search, filter, and sort behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-client-side-querying.test.tsx
 - [ ] T021 [P] [US2] Add integration coverage for library empty states and dialog accessibility in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/library-import-dialog-a11y.test.tsx
+- [ ] T021a [P] [US2] Add integration coverage for source-type labeling and provenance visibility in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-provenance-labels.test.tsx
 - [ ] T022 [P] [US2] Add integration coverage for subtitle and pasted-article import submissions in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/library-import-dialog-submit.test.tsx
 
 ### Implementation for User Story 2
