@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Active feature plan: [specs/005-daily-vocabulary-review/plan.md](../specs/005-daily-vocabulary-review/plan.md)
+Active feature plan: [specs/006-home-library-settings/plan.md](../specs/006-home-library-settings/plan.md)
 Read this plan before implementing or revising anything for the active feature.
 <!-- SPECKIT END -->
 
