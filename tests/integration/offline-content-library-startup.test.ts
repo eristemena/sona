@@ -81,7 +81,7 @@ describe('offline content-library startup', () => {
 
     const tables = migratedDatabase
       .prepare(
-        "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('annotations', 'block_audio_assets', 'content_library_items', 'content_blocks', 'content_source_records', 'exposure_log', 'generation_requests', 'reading_progress', 'review_cards') ORDER BY name",
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('annotations', 'block_audio_assets', 'content_library_items', 'content_blocks', 'content_source_records', 'exposure_log', 'generation_requests', 'reading_progress', 'review_cards', 'study_sessions') ORDER BY name",
       )
       .all() as Array<{ name: string }>;
     const appliedVersions = migratedDatabase
@@ -98,8 +98,9 @@ describe('offline content-library startup', () => {
       "generation_requests",
       "reading_progress",
       "review_cards",
+      "study_sessions",
     ]);
-    expect(appliedVersions.map((row) => row.version)).toEqual([1, 2, 3, 4, 5]);
+    expect(appliedVersions.map((row) => row.version)).toEqual([1, 2, 3, 4, 5, 6]);
 
     migratedDatabase.close()
   })

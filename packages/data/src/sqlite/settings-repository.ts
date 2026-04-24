@@ -16,6 +16,7 @@ import {
 } from "@sona/domain/settings/theme-preference";
 
 const OPENAI_API_KEY_SETTING_KEY = "integrations.openaiApiKey";
+const DAILY_STUDY_GOAL_SETTING_KEY = 'study.dailyGoal'
 export const KNOWN_WORD_ONBOARDING_SETTING_KEY =
   "study.knownWords.onboardingComplete";
 
@@ -33,6 +34,18 @@ export interface KnownWordOnboardingSettingRecord {
 
 export class SqliteSettingsRepository {
   constructor(private readonly database: Database.Database) {}
+
+  getDailyStudyGoal(): number {
+    const existing = this.getSetting(DAILY_STUDY_GOAL_SETTING_KEY)
+    const parsed = existing ? normalizeDailyStudyGoalRecord(JSON.parse(existing.value_json)) : null
+
+    if (!existing || !parsed) {
+      this.setDailyStudyGoal(20)
+      return 20
+    }
+
+    return parsed.target
+  }
 
   getReadingAudioMode(): ReadingAudioMode {
     const existing = this.getSetting(READING_AUDIO_MODE_SETTING_KEY);
@@ -184,6 +197,14 @@ export class SqliteSettingsRepository {
     });
   }
 
+  setDailyStudyGoal(target: number) {
+    const normalizedTarget = normalizeDailyStudyGoal(target)
+    this.setJsonSetting(DAILY_STUDY_GOAL_SETTING_KEY, {
+      target: normalizedTarget,
+      updatedAt: Date.now(),
+    })
+  }
+
   getKnownWordOnboardingRecord(): KnownWordOnboardingSettingRecord | null {
     const existing = this.getSetting(KNOWN_WORD_ONBOARDING_SETTING_KEY);
     if (!existing) {
@@ -279,4 +300,33 @@ function normalizeKnownWordOnboardingSettingRecord(
     completedAt: record.completedAt,
     selectedSeedPack: record.selectedSeedPack.trim(),
   };
+}
+
+function normalizeDailyStudyGoal(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 20
+  }
+
+  return Math.max(1, Math.min(500, Math.trunc(value)))
+}
+
+function normalizeDailyStudyGoalRecord(
+  value: unknown,
+): { target: number; updatedAt: number } | null {
+  if (!value || typeof value !== 'object') {
+    return null
+  }
+
+  const record = value as { target?: unknown; updatedAt?: unknown }
+  if (typeof record.target !== 'number' || !Number.isFinite(record.target)) {
+    return null
+  }
+
+  const target = normalizeDailyStudyGoal(record.target)
+  const updatedAt =
+    typeof record.updatedAt === 'number' && Number.isFinite(record.updatedAt)
+      ? record.updatedAt
+      : Date.now()
+
+  return { target, updatedAt }
 }

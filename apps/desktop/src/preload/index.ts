@@ -2,10 +2,16 @@ import { contextBridge, ipcRenderer } from "electron";
 
 import type {
   ApiKeyStatus,
+  PreviewTtsVoiceInput,
+  PreviewTtsVoiceResult,
   ReadingAudioModeUpdateResult,
   ReadingAudioVoiceUpdateResult,
+  SaveStudyPreferencesInput,
+  SaveStudyPreferencesResult,
+  StudyPreferencesSnapshot,
   ThemePreferenceMode,
   ThemeUpdateResult,
+  ValidateOpenRouterKeyResult,
   WindowSona,
 } from "@sona/domain/contracts/window-sona";
 import type {
@@ -39,6 +45,7 @@ import { REVIEW_CHANNELS } from "@sona/domain/contracts/content-review";
 
 const CHANNELS = {
   getBootstrapState: "sona:shell:get-bootstrap-state",
+  getHomeDashboard: 'sona:shell:get-home-dashboard',
   getThemePreference: "sona:settings:get-theme-preference",
   setThemePreference: "sona:settings:set-theme-preference",
   getOpenAiApiKeyStatus: "sona:settings:get-openai-api-key-status",
@@ -47,6 +54,10 @@ const CHANNELS = {
   setReadingAudioMode: "sona:settings:set-reading-audio-mode",
   getReadingAudioVoice: "sona:settings:get-reading-audio-voice",
   setReadingAudioVoice: "sona:settings:set-reading-audio-voice",
+  getStudyPreferences: 'sona:settings:get-study-preferences',
+  saveStudyPreferences: 'sona:settings:save-study-preferences',
+  validateOpenRouterKey: 'sona:settings:validate-openrouter-key',
+  previewTtsVoice: 'sona:settings:preview-tts-voice',
   themeChanged: "sona:settings:theme-changed",
   ...CONTENT_CHANNELS,
   ...READING_CHANNELS,
@@ -83,6 +94,33 @@ function isNullableString(value: unknown): value is string | null {
   return value === null || typeof value === "string";
 }
 
+function isStudyPreferencesInput(value: unknown): value is SaveStudyPreferencesInput {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const candidate = value as Partial<SaveStudyPreferencesInput>
+
+  return (
+    isNullableString(candidate.openRouterApiKey ?? null) &&
+    typeof candidate.selectedVoice === 'string' &&
+    candidate.selectedVoice.trim().length > 0 &&
+    typeof candidate.dailyGoal === 'number' &&
+    Number.isInteger(candidate.dailyGoal) &&
+    candidate.dailyGoal > 0
+  )
+}
+
+function isPreviewTtsVoiceInput(value: unknown): value is PreviewTtsVoiceInput {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const candidate = value as Partial<PreviewTtsVoiceInput>
+
+  return typeof candidate.voice === 'string' && candidate.voice.trim().length > 0
+}
+
 function isReadingAudioMode(value: unknown): value is ReadingAudioMode {
   return value === "standard" || value === "learner-slow";
 }
@@ -104,6 +142,13 @@ export function createWindowSonaApi(
             ? T
             : never
         >;
+      },
+      getHomeDashboard() {
+        return preloadIpc.invoke(CHANNELS.getHomeDashboard) as Promise<
+          ReturnType<WindowSona['shell']['getHomeDashboard']> extends Promise<infer T>
+            ? T
+            : never
+        >
       },
     },
     settings: {
@@ -166,6 +211,36 @@ export function createWindowSonaApi(
           CHANNELS.setReadingAudioVoice,
           voice,
         ) as Promise<ReadingAudioVoiceUpdateResult>;
+      },
+      getStudyPreferences() {
+        return preloadIpc.invoke(
+          CHANNELS.getStudyPreferences,
+        ) as Promise<StudyPreferencesSnapshot>
+      },
+      saveStudyPreferences(input: SaveStudyPreferencesInput) {
+        if (!isStudyPreferencesInput(input)) {
+          return Promise.reject(new Error('Invalid study preferences payload.'))
+        }
+
+        return preloadIpc.invoke(
+          CHANNELS.saveStudyPreferences,
+          input,
+        ) as Promise<SaveStudyPreferencesResult>
+      },
+      validateOpenRouterKey() {
+        return preloadIpc.invoke(
+          CHANNELS.validateOpenRouterKey,
+        ) as Promise<ValidateOpenRouterKeyResult>
+      },
+      previewTtsVoice(input: PreviewTtsVoiceInput) {
+        if (!isPreviewTtsVoiceInput(input)) {
+          return Promise.reject(new Error('Invalid TTS preview request.'))
+        }
+
+        return preloadIpc.invoke(
+          CHANNELS.previewTtsVoice,
+          input,
+        ) as Promise<PreviewTtsVoiceResult>
       },
       subscribeThemeChanges(listener: (update: ThemeUpdateResult) => void) {
         const handler = (

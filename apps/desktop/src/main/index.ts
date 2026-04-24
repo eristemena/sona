@@ -62,6 +62,7 @@ async function bootstrapDesktopShell() {
   });
   const dailyReviewService = new DailyReviewService({
     repository: contentRepository,
+    settingsRepository,
   });
   const knownWordService = new KnownWordService({
     repository: contentRepository,
@@ -81,7 +82,7 @@ async function bootstrapDesktopShell() {
   const themePreference = settingsRepository.getThemePreferenceMode()
   nativeTheme.themeSource = themePreference
 
-  registerShellHandlers({ settingsRepository })
+  registerShellHandlers({ dailyReviewService, settingsRepository })
   registerSettingsHandlers({ settingsRepository, windows: () => BrowserWindow.getAllWindows() })
   registerContentHandlers({
     articleContentService,

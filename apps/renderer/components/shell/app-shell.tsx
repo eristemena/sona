@@ -10,11 +10,12 @@ import { SidebarNav } from './sidebar-nav'
 export function AppShell() {
   const { ready, state } = useShellBootstrap()
   const { activeDestination, setActiveDestination } = useActiveDestination()
-  const [reviewDueCount, setReviewDueCount] = useState(0);
+  const [reviewDueCount, setReviewDueCount] = useState(0)
+  const [pendingResumeContentItemId, setPendingResumeContentItemId] = useState<string | null>(null)
 
   useEffect(() => {
-    setActiveDestination(state.navigation[0]?.id ?? 'dashboard')
-  }, [setActiveDestination, state.navigation])
+    setActiveDestination(state.defaultDestination)
+  }, [setActiveDestination, state.defaultDestination])
 
   useEffect(() => {
     let active = true;
@@ -73,6 +74,13 @@ export function AppShell() {
       />
       <MainContentPlaceholder
         activeDestination={activeDestination}
+        onNavigate={setActiveDestination}
+        onResumeReading={(contentItemId) => {
+          setPendingResumeContentItemId(contentItemId)
+          setActiveDestination('library')
+        }}
+        pendingResumeContentItemId={pendingResumeContentItemId}
+        onResumeHandled={() => setPendingResumeContentItemId(null)}
         key={activeDestination}
       />
       <div className="grain-overlay" />

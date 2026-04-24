@@ -23,6 +23,7 @@ export function useReviewSession(limit = 50) {
   const [isSavingDetails, setIsSavingDetails] = useState(false)
   const [isUpdatingKnownWord, setIsUpdatingKnownWord] = useState(false)
   const [submissionMessage, setSubmissionMessage] = useState<string | null>(null)
+  const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null)
   const [sessionStartDueCount, setSessionStartDueCount] = useState<
     number | null
   >(null);
@@ -44,6 +45,12 @@ export function useReviewSession(limit = 50) {
       setSessionStartDueCount(snapshot.dueCount);
     }
   }, [sessionStartDueCount, snapshot]);
+
+  useEffect(() => {
+    if (snapshot && snapshot.dueCount > 0 && sessionStartedAt === null) {
+      setSessionStartedAt(Date.now())
+    }
+  }, [sessionStartedAt, snapshot])
 
   const cards = snapshot?.cards ?? []
   const sessionCardTotal = Math.min(
@@ -78,11 +85,28 @@ export function useReviewSession(limit = 50) {
     setSubmissionMessage(null)
 
     try {
+      const nextCardsCompleted = cardsCompleted + 1
+      const reachedSessionEnd =
+        sessionStartedAt !== null &&
+        sessionCardTotal > 0 &&
+        nextCardsCompleted >= sessionCardTotal
+
       const result = await reviewApi.submitRating({
         reviewCardId: currentCard.front.id,
         rating,
+        ...(reachedSessionEnd
+          ? {
+              sessionCompletion: {
+                startedAt: sessionStartedAt,
+                cardsReviewed: sessionCardTotal,
+              },
+            }
+          : {}),
       })
       await refresh()
+      if (reachedSessionEnd) {
+        setSessionStartedAt(null)
+      }
       setSubmissionMessage(`Saved ${rating}. Next review in ${result.scheduledDays} day${result.scheduledDays === 1 ? '' : 's'}.`)
     } catch {
       setSubmissionMessage('The rating could not be saved right now.')

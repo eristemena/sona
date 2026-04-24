@@ -14,6 +14,7 @@ const SUPPORTED_MIGRATION_PREFIXES = [
   "content_library",
   "sync_reading_audio",
   "daily_vocabulary_review",
+  'home_dashboard',
 ] as const;
 
 function resolveMigrationDirectory(): string {

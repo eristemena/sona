@@ -48,6 +48,10 @@ export interface ReviewQueueSnapshot {
 export interface SubmitReviewRatingInput {
   reviewCardId: string;
   rating: ReviewRating;
+  sessionCompletion?: {
+    startedAt: number;
+    cardsReviewed: number;
+  };
 }
 
 export interface SubmitReviewRatingResult {

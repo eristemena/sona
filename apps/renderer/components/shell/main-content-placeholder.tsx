@@ -3,6 +3,7 @@
 import type { NavigationDestinationId } from '@sona/domain/contracts/shell-bootstrap'
 
 import { ContentLibraryScreen } from "../library/content-library-screen";
+import { HomeDashboardScreen } from '../review/home-dashboard-screen'
 import { ReviewScreen } from "../review/review-screen";
 import { ThemeSettings } from '../settings/theme-settings'
 
@@ -38,12 +39,23 @@ const COPY: Record<
 
 interface MainContentPlaceholderProps {
   activeDestination: NavigationDestinationId
+  onNavigate: (destination: NavigationDestinationId) => void
+  onResumeReading: (contentItemId: string) => void
+  pendingResumeContentItemId: string | null
+  onResumeHandled: () => void
 }
 
-export function MainContentPlaceholder({ activeDestination }: MainContentPlaceholderProps) {
+export function MainContentPlaceholder({
+  activeDestination,
+  onNavigate,
+  onResumeReading,
+  pendingResumeContentItemId,
+  onResumeHandled,
+}: MainContentPlaceholderProps) {
   const copy = COPY[activeDestination]
   const isLibrary = activeDestination === "library";
   const isReview = activeDestination === "review";
+  const isDashboard = activeDestination === 'dashboard'
 
   return (
     <main
@@ -58,7 +70,7 @@ export function MainContentPlaceholder({ activeDestination }: MainContentPlaceho
             : "flex flex-1 flex-col rounded-[28px] border border-(--border) bg-(--bg-surface)/58 p-6 shadow-(--shadow-soft) backdrop-blur-2xl md:p-8"
         }
       >
-        {isLibrary || isReview ? null : (
+        {isLibrary || isReview || isDashboard ? null : (
           <header className="max-w-3xl space-y-4 border-b border-(--border) pb-8 panel-enter">
             <p className="text-xs uppercase tracking-[0.32em] text-(--text-muted)">
               {copy.eyebrow}
@@ -72,9 +84,20 @@ export function MainContentPlaceholder({ activeDestination }: MainContentPlaceho
           </header>
         )}
 
-        {isLibrary ? (
+        {isDashboard ? (
           <section className="panel-enter flex flex-1 flex-col">
-            <ContentLibraryScreen />
+            <HomeDashboardScreen
+              onContinueReading={onResumeReading}
+              onOpenLibrary={() => onNavigate('library')}
+              onStartReview={() => onNavigate('review')}
+            />
+          </section>
+        ) : isLibrary ? (
+          <section className="panel-enter flex flex-1 flex-col">
+            <ContentLibraryScreen
+              autoOpenContentItemId={pendingResumeContentItemId}
+              onAutoOpenHandled={onResumeHandled}
+            />
           </section>
         ) : isReview ? (
           <section className="panel-enter flex flex-1 flex-col">

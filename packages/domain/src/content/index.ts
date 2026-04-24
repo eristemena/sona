@@ -9,6 +9,7 @@ export * from "./sentence-splitter.js";
 export * from "./reading-session.js";
 export * from "./reading-audio.js";
 export * from "./annotation-cache.js";
+export * from './home-dashboard.js';
 export * from "./review-card.js";
 export * from "./review-pacing.js";
 export * from "./known-word.js";

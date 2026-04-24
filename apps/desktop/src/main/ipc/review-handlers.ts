@@ -1,5 +1,6 @@
 import { ipcMain } from 'electron'
 
+import type { SubmitReviewRatingInput } from '@sona/domain/content/review-card'
 import { REVIEW_CHANNELS } from '@sona/domain/contracts/content-review'
 
 import { DailyReviewService } from '../content/daily-review-service.js'
@@ -27,7 +28,7 @@ export function registerReviewHandlers(
   })
 
   runtime.ipcMain.handle(REVIEW_CHANNELS.submitRating, (_event, input) => {
-    return options.dailyReviewService.submitRating(input as never)
+    return options.dailyReviewService.submitRating(normalizeSubmitRatingInput(input))
   })
 
   runtime.ipcMain.handle(REVIEW_CHANNELS.updateCardDetails, (_event, input) => {
@@ -53,4 +54,37 @@ export function registerReviewHandlers(
   runtime.ipcMain.handle(REVIEW_CHANNELS.getWordStudyStatus, (_event, input) => {
     return options.knownWordService.getWordStudyStatus(input as never)
   })
+}
+
+function normalizeSubmitRatingInput(value: unknown): SubmitReviewRatingInput {
+  if (!value || typeof value !== 'object') {
+    throw new Error('Invalid review rating payload.')
+  }
+
+  const input = value as Partial<SubmitReviewRatingInput>
+  if (typeof input.reviewCardId !== 'string' || typeof input.rating !== 'string') {
+    throw new Error('Invalid review rating payload.')
+  }
+
+  const sessionCompletion = input.sessionCompletion
+  if (
+    sessionCompletion &&
+    (typeof sessionCompletion.startedAt !== 'number' ||
+      typeof sessionCompletion.cardsReviewed !== 'number')
+  ) {
+    throw new Error('Invalid review session completion payload.')
+  }
+
+  return {
+    reviewCardId: input.reviewCardId,
+    rating: input.rating,
+    ...(sessionCompletion
+      ? {
+          sessionCompletion: {
+            startedAt: sessionCompletion.startedAt,
+            cardsReviewed: sessionCompletion.cardsReviewed,
+          },
+        }
+      : {}),
+  }
 }

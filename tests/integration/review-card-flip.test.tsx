@@ -108,6 +108,11 @@ describe('review card flip', () => {
     expect(screen.getByText('Even today, I read slowly.')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /^Good/ }))
-    expect(submitRating).toHaveBeenCalledWith({ reviewCardId: 'card-1', rating: 'good' })
+    expect(submitRating).toHaveBeenCalledWith(
+      expect.objectContaining({
+        reviewCardId: 'card-1',
+        rating: 'good',
+      }),
+    )
   })
 })

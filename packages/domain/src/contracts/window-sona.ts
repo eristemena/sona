@@ -3,6 +3,7 @@ import type {
   ReadingAudioMode,
   ReadingAudioVoice,
 } from "../settings/reading-audio-preference.js";
+import type { HomeDashboardSnapshot } from '../content/home-dashboard.js'
 import type { ResolvedTheme, ThemePreferenceMode } from '../settings/theme-preference.js'
 import type {
   CreateArticleFromPasteInput,
@@ -61,9 +62,58 @@ export interface ReadingAudioVoiceUpdateResult {
   voice: ReadingAudioVoice;
 }
 
+export interface ProviderKeyStatus {
+  configured: boolean
+  lastValidatedAt: number | null
+  lastValidationState: 'idle' | 'success' | 'failed'
+}
+
+export interface ValidateOpenRouterKeyResult {
+  ok: boolean
+  checkedAt: number
+  message: string
+}
+
+export interface StudyPreferencesVoiceOption {
+  id: string
+  label: string
+  description: string
+}
+
+export interface StudyPreferencesSnapshot {
+  providerKeyStatus: ProviderKeyStatus
+  availableVoices: StudyPreferencesVoiceOption[]
+  selectedVoice: string
+  dailyGoal: number
+}
+
+export interface SaveStudyPreferencesInput {
+  openRouterApiKey: string | null
+  selectedVoice: string
+  dailyGoal: number
+}
+
+export interface SaveStudyPreferencesResult {
+  providerKeyStatus: ProviderKeyStatus
+  selectedVoice: string
+  dailyGoal: number
+}
+
+export interface PreviewTtsVoiceInput {
+  voice: string
+}
+
+export interface PreviewTtsVoiceResult {
+  ok: boolean
+  voice: string
+  sampleText: '안녕하세요, 소나입니다.'
+  message: string
+}
+
 export interface WindowSona {
   shell: {
     getBootstrapState(): Promise<ShellBootstrapState>;
+    getHomeDashboard(): Promise<HomeDashboardSnapshot>;
   };
   settings: {
     getThemePreference(): Promise<ThemePreferenceMode>;
@@ -78,6 +128,14 @@ export interface WindowSona {
     setReadingAudioVoice(
       voice: ReadingAudioVoice,
     ): Promise<ReadingAudioVoiceUpdateResult>;
+    getStudyPreferences(): Promise<StudyPreferencesSnapshot>;
+    saveStudyPreferences(
+      input: SaveStudyPreferencesInput,
+    ): Promise<SaveStudyPreferencesResult>;
+    validateOpenRouterKey(): Promise<ValidateOpenRouterKeyResult>;
+    previewTtsVoice(
+      input: PreviewTtsVoiceInput,
+    ): Promise<PreviewTtsVoiceResult>;
     subscribeThemeChanges(
       listener: (update: ThemeUpdateResult) => void,
     ): () => void;

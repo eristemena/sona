@@ -61,7 +61,7 @@ export function ReviewScreen() {
 
       <header className="flex items-center justify-between gap-4">
         <h1 className="text-[28px] font-bold leading-tight text-(--text-primary)">
-          Daily Review
+          Daily review
         </h1>
         <div className="rounded-full border border-(--border) bg-(--bg-elevated) px-3 py-1 text-sm font-medium text-(--text-primary)">
           {dueCount}
@@ -174,12 +174,10 @@ export function ReviewScreen() {
             onMarkKnown={markCurrentCardKnown}
             onSaveDetails={saveCardDetails}
           />
-          {isFlipped ? (
-            <ReviewRatingGrid
-              disabled={!isFlipped || isSubmitting}
-              onRate={(rating) => void submitRating(rating)}
-            />
-          ) : null}
+          <ReviewRatingGrid
+            disabled={!isFlipped || isSubmitting}
+            onRate={(rating) => void submitRating(rating)}
+          />
         </div>
       ) : null}
     </section>

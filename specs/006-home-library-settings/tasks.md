@@ -11,8 +11,8 @@
 
 **Purpose**: Add the shared dependencies and baseline UI primitive needed by multiple stories.
 
-- [ ] T001 Update renderer dependencies for `recharts`, `react-hook-form`, `zod`, `@hookform/resolvers`, and `@radix-ui/react-dialog` in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/package.json
-- [ ] T002 Create a shared accessible dialog primitive in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/ui/dialog.tsx
+- [X] T001 Update renderer dependencies for `recharts`, `react-hook-form`, `zod`, `@hookform/resolvers`, and `@radix-ui/react-dialog` in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/package.json
+- [X] T002 Create a shared accessible dialog primitive in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/ui/dialog.tsx
 
 ---
 
@@ -22,9 +22,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Update shared preload contracts for dashboard and study-preferences APIs in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/window-sona.ts
-- [ ] T004 [P] Extend shell bootstrap typing for the home destination payload expectations in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/shell-bootstrap.ts
-- [ ] T005 Wire the new shared shell and settings API surface through the preload bridge in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts
+- [X] T003 Update shared preload contracts for dashboard and study-preferences APIs in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/window-sona.ts
+- [X] T004 [P] Extend shell bootstrap typing for the home destination payload expectations in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/shell-bootstrap.ts
+- [X] T005 Wire the new shared shell and settings API surface through the preload bridge in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -39,24 +39,24 @@
 ### Tests for User Story 1 ⚠️
 
 - [ ] T006 [P] [US1] Add a schema contract for `study_sessions` and dashboard settings keys in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/shell-schema-contract.test.ts
-- [ ] T007 [P] [US1] Add preload contract coverage for `shell.getHomeDashboard()` in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/window-sona-home-library-settings-contract.test.ts
+- [X] T007 [P] [US1] Add preload contract coverage for `shell.getHomeDashboard()` in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/window-sona-home-library-settings-contract.test.ts
 - [ ] T008 [P] [US1] Add dashboard summary and empty-state integration coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/home-dashboard-summary.test.tsx
 - [ ] T009 [P] [US1] Add resume-reading and streak aggregation integration coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/home-dashboard-resume-reading.test.tsx
 - [ ] T009a [P] [US1] Add integration coverage for review-session completion writing one `study_sessions` row in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/study-session-writeback.test.ts
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Add the `study_sessions` migration in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/006_home_dashboard_v1.sql
-- [ ] T011 [US1] Implement dashboard query and study-session writeback repository methods in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts
-- [ ] T012 [P] [US1] Add dashboard snapshot types in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/home-dashboard.ts
-- [ ] T013 [US1] Implement home dashboard assembly and review-session completion reporting in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/daily-review-service.ts
-- [ ] T013a [US1] Wire review-session completion metrics into dashboard reporting writes in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/review-handlers.ts
-- [ ] T014 [US1] Extend shell IPC handlers for dashboard summary loading in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/shell-handlers.ts
-- [ ] T015 [US1] Register the dashboard-capable shell wiring in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/index.ts
-- [ ] T016 [P] [US1] Create dashboard data and navigation hooks in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-home-dashboard.ts
-- [ ] T017 [P] [US1] Create the weekly activity chart component in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/review/weekly-activity-chart.tsx
-- [ ] T018 [US1] Implement the home dashboard screen with due count, recent vocabulary, streak, and resume CTA in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/review/home-dashboard-screen.tsx
-- [ ] T019 [US1] Integrate the dashboard as the shell landing surface in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/page.tsx
+- [X] T010 [US1] Add the `study_sessions` migration in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/migrations/006_home_dashboard_v1.sql
+- [X] T011 [US1] Implement dashboard query and study-session writeback repository methods in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/content-library-repository.ts
+- [X] T012 [P] [US1] Add dashboard snapshot types in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/content/home-dashboard.ts
+- [X] T013 [US1] Implement home dashboard assembly and review-session completion reporting in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/content/daily-review-service.ts
+- [X] T013a [US1] Wire review-session completion metrics into dashboard reporting writes in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/review-handlers.ts
+- [X] T014 [US1] Extend shell IPC handlers for dashboard summary loading in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/shell-handlers.ts
+- [X] T015 [US1] Register the dashboard-capable shell wiring in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/index.ts
+- [X] T016 [P] [US1] Create dashboard data and navigation hooks in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-home-dashboard.ts
+- [X] T017 [P] [US1] Create the weekly activity chart component in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/review/weekly-activity-chart.tsx
+- [X] T018 [US1] Implement the home dashboard screen with due count, recent vocabulary, streak, and resume CTA in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/review/home-dashboard-screen.tsx
+- [X] T019 [US1] Integrate the dashboard as the shell landing surface in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/app/page.tsx
 
 **Checkpoint**: User Story 1 should now be fully functional and independently testable as the MVP dashboard flow.
 

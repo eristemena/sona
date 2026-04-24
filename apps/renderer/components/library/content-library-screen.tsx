@@ -1,7 +1,7 @@
 'use client'
 
 import { BookOpen, SearchX, X } from "lucide-react";
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { getContentLibraryEmptyState, getSourceTypeLabel, type ContentBlockSummary, type LibraryItemSummary } from '../../lib/content-library-filters'
 import { useContentLibrary } from '../../lib/use-content-library'
@@ -159,7 +159,15 @@ function ContentDetailPane({
   );
 }
 
-export function ContentLibraryScreen() {
+interface ContentLibraryScreenProps {
+  autoOpenContentItemId?: string | null
+  onAutoOpenHandled?: () => void
+}
+
+export function ContentLibraryScreen({
+  autoOpenContentItemId = null,
+  onAutoOpenHandled,
+}: ContentLibraryScreenProps = {}) {
   const {
     createArticleFromPaste,
     createArticleFromUrl,
@@ -183,6 +191,21 @@ export function ContentLibraryScreen() {
   const [pendingDelete, setPendingDelete] = useState<LibraryItemSummary | null>(null)
   const [openedItemId, setOpenedItemId] = useState<string | null>(null)
   const hasSelectedItem = selectedItem !== null;
+
+  useEffect(() => {
+    if (!autoOpenContentItemId) {
+      return
+    }
+
+    const matchingItem = items.find((item) => item.id === autoOpenContentItemId)
+    if (!matchingItem) {
+      return
+    }
+
+    selectItem(matchingItem.id)
+    setOpenedItemId(matchingItem.id)
+    onAutoOpenHandled?.()
+  }, [autoOpenContentItemId, items, onAutoOpenHandled, selectItem])
 
   const emptyState = useMemo(
     () => getContentLibraryEmptyState({ filter: queryState.filter, search: queryState.search }),

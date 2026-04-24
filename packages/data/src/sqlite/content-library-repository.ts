@@ -1,5 +1,6 @@
 import type Database from "better-sqlite3";
 import { localJsSegmenter } from "@sona/domain/tokenizer/local-js-segmenter";
+import type { HomeDashboardSnapshot } from '@sona/domain/content/home-dashboard'
 
 import {
   createDefaultReadingProgress,
@@ -152,6 +153,20 @@ interface KnownWordRow {
   source_detail: string | null;
   created_at: number;
   updated_at: number;
+}
+
+interface StudySessionRow {
+  study_date: string
+  cards_reviewed: number
+  minutes_studied: number
+}
+
+interface ResumeContextRow {
+  content_item_id: string
+  title: string
+  provenance_label: string
+  active_block_id: string | null
+  updated_at: number
 }
 
 export interface SaveContentDraft {
@@ -1005,6 +1020,151 @@ export class SqliteContentLibraryRepository {
     return row.total;
   }
 
+  getHomeDashboardSnapshot(input: {
+    now: number
+    dailyGoal: number
+  }): HomeDashboardSnapshot {
+    const generatedAt = input.now
+    const todayKey = toLocalDateKey(generatedAt)
+    const weeklyKeys = buildRollingDateKeys(todayKey, 7)
+    const weeklyRows = this.database
+      .prepare(
+        `
+          SELECT
+            study_date,
+            SUM(cards_reviewed) AS cards_reviewed,
+            SUM(minutes_studied) AS minutes_studied
+          FROM study_sessions
+          WHERE study_date BETWEEN ? AND ?
+          GROUP BY study_date
+          ORDER BY study_date ASC
+        `,
+      )
+      .all(weeklyKeys[0], weeklyKeys[weeklyKeys.length - 1]) as StudySessionRow[]
+    const weeklyByDate = new Map(weeklyRows.map((row) => [row.study_date, row]))
+
+    const recentVocabulary = this.database
+      .prepare(
+        `
+          SELECT id, surface, meaning, source_content_item_id, created_at
+          FROM review_cards
+          ORDER BY created_at DESC
+          LIMIT 5
+        `,
+      )
+      .all() as Array<{
+      id: string
+      surface: string
+      meaning: string | null
+      source_content_item_id: string
+      created_at: number
+    }>
+
+    const resumeRow = this.database
+      .prepare(
+        `
+          SELECT
+            reading_progress.content_item_id,
+            content_library_items.title,
+            content_library_items.provenance_label,
+            reading_progress.active_block_id,
+            reading_progress.updated_at
+          FROM reading_progress
+          INNER JOIN content_library_items
+            ON content_library_items.id = reading_progress.content_item_id
+          ORDER BY reading_progress.updated_at DESC
+          LIMIT 1
+        `,
+      )
+      .get() as ResumeContextRow | undefined
+
+    const streakRows = this.database
+      .prepare(
+        `
+          SELECT DISTINCT study_date
+          FROM study_sessions
+          WHERE cards_reviewed > 0
+          ORDER BY study_date DESC
+        `,
+      )
+      .all() as Array<{ study_date: string }>
+    const studyDays = new Set(streakRows.map((row) => row.study_date))
+
+    return {
+      generatedAt,
+      todayDueCount: this.countDueReviewCards(generatedAt),
+      streakDays: countStudyStreak(studyDays, todayKey),
+      dailyGoal: input.dailyGoal,
+      recentVocabulary: recentVocabulary.map((row) => ({
+        reviewCardId: row.id,
+        surface: row.surface,
+        meaning: row.meaning,
+        createdAt: row.created_at,
+        sourceContentItemId: row.source_content_item_id,
+      })),
+      weeklyActivity: weeklyKeys.map((date) => {
+        const row = weeklyByDate.get(date)
+
+        return {
+          date,
+          cardsReviewed: row?.cards_reviewed ?? 0,
+          minutesStudied: row?.minutes_studied ?? 0,
+          isToday: date === todayKey,
+        }
+      }),
+      resumeContext: resumeRow
+        ? {
+            contentItemId: resumeRow.content_item_id,
+            title: resumeRow.title,
+            provenanceLabel: resumeRow.provenance_label,
+            activeBlockId: resumeRow.active_block_id,
+            updatedAt: resumeRow.updated_at,
+          }
+        : null,
+    }
+  }
+
+  recordStudySession(input: {
+    id: string
+    startedAt: number
+    endedAt: number
+    cardsReviewed: number
+    minutesStudied: number
+    source: 'review-session'
+  }): void {
+    this.database
+      .prepare(
+        `
+          INSERT INTO study_sessions (
+            id,
+            started_at,
+            ended_at,
+            study_date,
+            cards_reviewed,
+            minutes_studied,
+            source
+          ) VALUES (
+            @id,
+            @started_at,
+            @ended_at,
+            @study_date,
+            @cards_reviewed,
+            @minutes_studied,
+            @source
+          )
+        `,
+      )
+      .run({
+        id: input.id,
+        started_at: input.startedAt,
+        ended_at: input.endedAt,
+        study_date: toLocalDateKey(input.endedAt),
+        cards_reviewed: Math.max(0, Math.trunc(input.cardsReviewed)),
+        minutes_studied: Math.max(0, Math.trunc(input.minutesStudied)),
+        source: input.source,
+      })
+  }
+
   listDueReviewCards(now: number, limit: number): ReviewCardRecord[] {
     const rows = this.database
       .prepare(
@@ -1642,4 +1802,72 @@ function mapKnownWordRow(row: KnownWordRow): KnownWordRecord {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
+}
+
+function toLocalDateKey(timestamp: number): string {
+  const date = new Date(timestamp)
+  const year = date.getFullYear()
+  const month = `${date.getMonth() + 1}`.padStart(2, '0')
+  const day = `${date.getDate()}`.padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
+function buildRollingDateKeys(todayKey: string, days: number): string[] {
+  const { year, month, day } = parseDateKey(todayKey)
+  const anchor = new Date(year, month - 1, day)
+  const keys: string[] = []
+
+  for (let offset = days - 1; offset >= 0; offset -= 1) {
+    const date = new Date(anchor)
+    date.setDate(anchor.getDate() - offset)
+    keys.push(toLocalDateKey(date.getTime()))
+  }
+
+  return keys
+}
+
+function countStudyStreak(studyDays: Set<string>, todayKey: string): number {
+  if (studyDays.size === 0) {
+    return 0
+  }
+
+  const { year, month, day } = parseDateKey(todayKey)
+  const today = new Date(year, month - 1, day)
+  const yesterday = new Date(today)
+  yesterday.setDate(today.getDate() - 1)
+
+  const anchor = studyDays.has(todayKey)
+    ? today
+    : studyDays.has(toLocalDateKey(yesterday.getTime()))
+      ? yesterday
+      : null
+
+  if (!anchor) {
+    return 0
+  }
+
+  let streakDays = 0
+  const cursor = new Date(anchor)
+
+  while (studyDays.has(toLocalDateKey(cursor.getTime()))) {
+    streakDays += 1
+    cursor.setDate(cursor.getDate() - 1)
+  }
+
+  return streakDays
+}
+
+function parseDateKey(dateKey: string): {
+  year: number
+  month: number
+  day: number
+} {
+  const [yearText = '1970', monthText = '01', dayText = '01'] = dateKey.split('-')
+
+  return {
+    year: Number(yearText),
+    month: Number(monthText),
+    day: Number(dayText),
+  }
 }

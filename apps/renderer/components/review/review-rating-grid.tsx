@@ -24,11 +24,12 @@ export function ReviewRatingGrid({ disabled = false, onRate }: ReviewRatingGridP
   return (
     <div
       aria-label="Recall rating"
-      className="grid grid-cols-4 gap-3"
+      className="grid grid-cols-2 gap-3 lg:grid-cols-4"
       role="group"
     >
       {RATING_BUTTONS.map((option) => (
         <Button
+          aria-label={`${option.labelEn} ${option.labelKo}`}
           className="h-14 rounded-[1.1rem] px-3 py-2 text-center"
           disabled={disabled}
           key={option.rating}

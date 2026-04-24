@@ -12,10 +12,13 @@ import type {
   UpdateReviewCardDetailsInput,
   UpdateReviewCardDetailsResult,
 } from '@sona/domain/content/review-card'
+import type { HomeDashboardSnapshot } from '@sona/domain/content/home-dashboard'
 import type { SqliteContentLibraryRepository } from '@sona/data/sqlite/content-library-repository'
+import type { SqliteSettingsRepository } from '@sona/data/sqlite/settings-repository'
 
 interface DailyReviewServiceOptions {
   repository: SqliteContentLibraryRepository
+  settingsRepository: SqliteSettingsRepository
   now?: () => number
 }
 
@@ -43,6 +46,13 @@ export class DailyReviewService {
       sessionLimit,
       cards,
     }
+  }
+
+  getHomeDashboard(): HomeDashboardSnapshot {
+    return this.options.repository.getHomeDashboardSnapshot({
+      now: this.now(),
+      dailyGoal: this.options.settingsRepository.getDailyStudyGoal(),
+    })
   }
 
   submitRating(input: SubmitReviewRatingInput): SubmitReviewRatingResult {
@@ -83,6 +93,20 @@ export class DailyReviewService {
       nextDueAt: updatedCard.dueAt,
       scheduledDays: updatedCard.scheduledDays,
     })
+
+    if (input.sessionCompletion && input.sessionCompletion.cardsReviewed > 0) {
+      this.options.repository.recordStudySession({
+        id: randomUUID(),
+        startedAt: input.sessionCompletion.startedAt,
+        endedAt: reviewedAt,
+        cardsReviewed: input.sessionCompletion.cardsReviewed,
+        minutesStudied: Math.max(
+          1,
+          Math.round((reviewedAt - input.sessionCompletion.startedAt) / 60000),
+        ),
+        source: 'review-session',
+      })
+    }
 
     return {
       reviewCardId: currentCard.id,

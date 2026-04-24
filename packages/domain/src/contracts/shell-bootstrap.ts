@@ -10,6 +10,7 @@ export interface NavigationDestination {
 
 export interface ShellBootstrapState {
   appName: 'Sona'
+  defaultDestination: NavigationDestinationId
   navigation: NavigationDestination[]
   themePreference: ThemePreferenceMode
   resolvedTheme: ResolvedTheme
@@ -24,6 +25,7 @@ export const DEFAULT_NAVIGATION_DESTINATIONS: NavigationDestination[] = [
 ]
 
 export function createShellBootstrapState(input: {
+  defaultDestination?: NavigationDestinationId
   navigation?: NavigationDestination[]
   systemTheme: SystemTheme
   themePreference: ThemePreferenceMode
@@ -35,6 +37,7 @@ export function createShellBootstrapState(input: {
 
   return {
     appName: 'Sona',
+    defaultDestination: input.defaultDestination ?? 'dashboard',
     navigation: input.navigation ?? DEFAULT_NAVIGATION_DESTINATIONS,
     themePreference: resolved.themePreference,
     resolvedTheme: resolved.resolvedTheme,

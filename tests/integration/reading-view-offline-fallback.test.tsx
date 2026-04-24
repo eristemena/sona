@@ -83,8 +83,10 @@ describe('reading view offline fallback integration', () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'Play audio' })).toBeDisabled()
     })
-    expect(screen.getByText('Audio unavailable')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Retry audio' })).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Audio unavailable')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Retry audio' })).toBeInTheDocument()
+    })
   })
 
   it('restores saved playback controls offline while keeping audio safely unavailable', async () => {
