@@ -8,11 +8,12 @@ import type {
 export class OpenRouterReadingAnnotationProviderUnavailableError extends Error {}
 
 interface OpenRouterRuntime {
-  fetch: typeof fetch
-  apiKey: string | null
-  endpoint: string
-  siteUrl?: string
-  appTitle?: string
+  fetch: typeof fetch;
+  apiKey?: string | null;
+  getApiKey?: () => string | null;
+  endpoint: string;
+  siteUrl?: string;
+  appTitle?: string;
 }
 
 interface OpenRouterResponse {
@@ -38,56 +39,67 @@ interface AnnotationPayload {
 }
 
 export class OpenRouterReadingAnnotationProvider implements ReadingAnnotationProviderAdapter {
-  readonly id = 'openrouter' as const
-  readonly modelId: string
+  readonly id = "openrouter" as const;
+  readonly modelId: string;
 
   constructor(
     private readonly runtime: OpenRouterRuntime = {
       fetch,
-      apiKey: process.env.OPENROUTER_API_KEY ?? null,
-      endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-      appTitle: 'Sona Desktop',
+      getApiKey: () => null,
+      endpoint: "https://openrouter.ai/api/v1/chat/completions",
+      appTitle: "Sona Desktop",
     },
-    modelId = 'openai/gpt-4o-mini',
+    modelId = "openai/gpt-4o-mini",
   ) {
-    this.modelId = modelId
+    this.modelId = modelId;
   }
 
-  async lookupWord(request: ReadingAnnotationLookupRequest): Promise<ReadingAnnotationResponse> {
+  async lookupWord(
+    request: ReadingAnnotationLookupRequest,
+  ): Promise<ReadingAnnotationResponse> {
     return this.request({
       request,
       includeGrammarExplanation: false,
-      schemaName: 'reading_word_lookup',
-    })
+      schemaName: "reading_word_lookup",
+    });
   }
 
-  async explainGrammar(request: ReadingGrammarExplanationRequest): Promise<ReadingAnnotationResponse> {
+  async explainGrammar(
+    request: ReadingGrammarExplanationRequest,
+  ): Promise<ReadingAnnotationResponse> {
     return this.request({
       request,
       includeGrammarExplanation: true,
-      schemaName: 'reading_grammar_explanation',
-    })
+      schemaName: "reading_grammar_explanation",
+    });
   }
 
   private async request(input: {
-    request: ReadingAnnotationLookupRequest | ReadingGrammarExplanationRequest
-    includeGrammarExplanation: boolean
-    schemaName: string
+    request: ReadingAnnotationLookupRequest | ReadingGrammarExplanationRequest;
+    includeGrammarExplanation: boolean;
+    schemaName: string;
   }): Promise<ReadingAnnotationResponse> {
-    if (!this.runtime.apiKey) {
-      throw new OpenRouterReadingAnnotationProviderUnavailableError('Word lookup is unavailable without an OpenRouter API key.')
+    const apiKey = this.getApiKey();
+
+    if (!apiKey) {
+      throw new OpenRouterReadingAnnotationProviderUnavailableError(
+        "Word lookup is unavailable without an OpenRouter API key.",
+      );
     }
 
-    let response: Response
+    let response: Response;
     try {
       response = await this.runtime.fetch(this.runtime.endpoint, {
-        method: 'POST',
-        headers: this.getHeaders(),
+        method: "POST",
+        headers: this.getHeaders(apiKey),
         body: JSON.stringify({
           model: this.modelId,
-          messages: buildMessages(input.request, input.includeGrammarExplanation),
+          messages: buildMessages(
+            input.request,
+            input.includeGrammarExplanation,
+          ),
           response_format: {
-            type: 'json_schema',
+            type: "json_schema",
             json_schema: {
               name: input.schemaName,
               strict: true,
@@ -95,32 +107,45 @@ export class OpenRouterReadingAnnotationProvider implements ReadingAnnotationPro
             },
           },
         }),
-      })
+      });
     } catch {
-      throw new OpenRouterReadingAnnotationProviderUnavailableError('Word lookup is unavailable right now. Continue reading and try again later.')
+      throw new OpenRouterReadingAnnotationProviderUnavailableError(
+        "Word lookup is unavailable right now. Continue reading and try again later.",
+      );
     }
 
-    const payload = (await response.json()) as OpenRouterResponse
+    const payload = (await response.json()) as OpenRouterResponse;
     if (!response.ok) {
       throw new OpenRouterReadingAnnotationProviderUnavailableError(
-        payload.error?.message?.trim() || 'Word lookup is unavailable right now. Continue reading and try again later.',
-      )
+        payload.error?.message?.trim() ||
+          "Word lookup is unavailable right now. Continue reading and try again later.",
+      );
     }
 
-    const content = extractMessageContent(payload)
+    const content = extractMessageContent(payload);
     if (!content) {
-      throw new OpenRouterReadingAnnotationProviderUnavailableError('Word lookup returned an empty response. Continue reading and try again later.')
+      throw new OpenRouterReadingAnnotationProviderUnavailableError(
+        "Word lookup returned an empty response. Continue reading and try again later.",
+      );
     }
 
-    const parsed = JSON.parse(content) as AnnotationPayload
-    const canonicalForm = normalizeField(input.request.canonicalForm, input.request.token)
-    const surface = normalizeField(parsed.surface, input.request.token)
-    const meaning = normalizeField(parsed.meaning, 'Unavailable offline')
-    const romanization = normalizeField(parsed.romanization, '')
-    const pattern = normalizeField(parsed.pattern, 'Unknown pattern')
-    const register = normalizeField(parsed.register, 'Unknown register')
-    const sentenceTranslation = normalizeField(parsed.sentence_translation ?? parsed.sentenceTranslation, 'A sentence-level translation is unavailable right now. Continue reading and try again later.')
-    const grammarExplanation = normalizeOptionalField(parsed.grammarExplanation)
+    const parsed = JSON.parse(content) as AnnotationPayload;
+    const canonicalForm = normalizeField(
+      input.request.canonicalForm,
+      input.request.token,
+    );
+    const surface = normalizeField(parsed.surface, input.request.token);
+    const meaning = normalizeField(parsed.meaning, "Unavailable offline");
+    const romanization = normalizeField(parsed.romanization, "");
+    const pattern = normalizeField(parsed.pattern, "Unknown pattern");
+    const register = normalizeField(parsed.register, "Unknown register");
+    const sentenceTranslation = normalizeField(
+      parsed.sentence_translation ?? parsed.sentenceTranslation,
+      "A sentence-level translation is unavailable right now. Continue reading and try again later.",
+    );
+    const grammarExplanation = normalizeOptionalField(
+      parsed.grammarExplanation,
+    );
 
     return {
       canonicalForm,
@@ -142,24 +167,32 @@ export class OpenRouterReadingAnnotationProvider implements ReadingAnnotationPro
         sentenceTranslation,
         grammarExplanation,
       }),
-    }
+    };
   }
 
-  private getHeaders(): Record<string, string> {
-    const headers: Record<string, string> = {
-      Authorization: `Bearer ${this.runtime.apiKey}`,
-      'Content-Type': 'application/json',
+  private getApiKey(): string | null {
+    if (typeof this.runtime.getApiKey === "function") {
+      return this.runtime.getApiKey();
     }
 
+    return this.runtime.apiKey ?? null;
+  }
+
+  private getHeaders(apiKey: string): Record<string, string> {
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    };
+
     if (this.runtime.siteUrl) {
-      headers['HTTP-Referer'] = this.runtime.siteUrl
+      headers["HTTP-Referer"] = this.runtime.siteUrl;
     }
 
     if (this.runtime.appTitle) {
-      headers['X-OpenRouter-Title'] = this.runtime.appTitle
+      headers["X-OpenRouter-Title"] = this.runtime.appTitle;
     }
 
-    return headers
+    return headers;
   }
 }
 

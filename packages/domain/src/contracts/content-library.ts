@@ -31,11 +31,6 @@ export const CONTENT_CHANNELS = {
   deleteContent: 'sona:content:delete-content',
 } as const
 
-export interface ListLibraryItemsInput {
-  filter?: LibraryFilter
-  search?: string
-}
-
 export interface ImportSrtInput {
   filePath?: string
   fileName?: string

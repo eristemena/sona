@@ -67,9 +67,9 @@ export function registerContentHandlers(
   const generatedContentService = options.generatedContentService ?? new GeneratedContentService()
   const srtImportService = options.srtImportService ?? new SrtImportService()
 
-  runtime.ipcMain.handle(CONTENT_CHANNELS.listLibraryItems, (_event, input) => {
-    return options.contentRepository.listLibraryItems((input ?? {}) as never)
-  })
+  runtime.ipcMain.handle(CONTENT_CHANNELS.listLibraryItems, () => {
+    return options.contentRepository.listLibraryItems();
+  });
 
   runtime.ipcMain.handle(CONTENT_CHANNELS.getContentBlocks, (_event, contentItemId: string) => {
     return options.contentRepository.getContentBlocks(contentItemId)

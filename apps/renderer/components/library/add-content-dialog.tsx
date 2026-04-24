@@ -11,6 +11,14 @@ import type {
 } from '@sona/domain/contracts/content-library'
 
 import { Button } from '../ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 
 type AddContentMode = 'subtitle' | 'article-paste' | 'article-scrape' | 'generated'
 
@@ -99,10 +107,6 @@ export function AddContentDialog({
     setErrorMessage(null)
     setDuplicateMessage(null)
   }, [mode])
-
-  if (!isOpen) {
-    return null
-  }
 
   async function submit(confirmDuplicate: boolean) {
     setIsSubmitting(true)
@@ -239,77 +243,113 @@ export function AddContentDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-20 flex items-center justify-center bg-[color-mix(in_srgb,var(--bg-base)_72%,transparent)] p-4 backdrop-blur-sm">
-      <div
-        aria-describedby="add-content-description"
-        aria-labelledby="add-content-title"
-        aria-modal="true"
-        className="w-full max-w-3xl rounded-[12px] border border-(--border) bg-(--bg-surface) p-6 shadow-[0_22px_48px_rgba(0,0,0,0.28)]"
-        role="dialog"
-      >
-        <p className="text-xs uppercase tracking-[0.3em] text-(--text-muted)">Add content</p>
-        <h2 className="mt-3 text-xl font-semibold text-(--text-primary)" id="add-content-title">
-          Save new Korean study material
-        </h2>
-        <p className="mt-3 text-sm leading-6 text-(--text-secondary)" id="add-content-description">
-          Import subtitles, paste article text, or scrape an article URL into the shared local library without creating review work automatically.
-        </p>
+    <Dialog
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          onClose();
+        }
+      }}
+      open={isOpen}
+    >
+      <DialogContent className="w-full max-w-3xl rounded-[12px] p-6">
+        <DialogHeader>
+          <p className="text-xs uppercase tracking-[0.3em] text-(--text-muted)">
+            Add content
+          </p>
+          <DialogTitle>Save new Korean study material</DialogTitle>
+          <DialogDescription>
+            Import subtitles, paste article text, or scrape an article URL into
+            the shared local library without creating review work automatically.
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4" role="tablist" aria-label="Content add modes">
+        <div
+          className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4"
+          role="tablist"
+          aria-label="Content add modes"
+        >
           {MODE_OPTIONS.map((option) => {
-            const active = option.id === mode
+            const active = option.id === mode;
 
             return (
               <button
                 aria-pressed={active}
                 className={[
-                  'rounded-[8px] border px-4 py-4 text-left transition-colors',
+                  "rounded-[8px] border px-4 py-4 text-left transition-colors",
                   active
-                    ? 'border-transparent bg-(--accent) text-white'
-                    : 'border-(--border) bg-(--bg-elevated) text-(--text-primary)',
-                ].join(' ')}
+                    ? "border-transparent bg-(--accent) text-white"
+                    : "border-(--border) bg-(--bg-elevated) text-(--text-primary)",
+                ].join(" ")}
                 key={option.id}
                 onClick={() => setMode(option.id)}
                 type="button"
               >
-                <span className="block text-sm font-semibold">{option.label}</span>
-                <span className={['mt-2 block text-xs leading-5', active ? 'text-white/85' : 'text-(--text-secondary)'].join(' ')}>{option.description}</span>
+                <span className="block text-sm font-semibold">
+                  {option.label}
+                </span>
+                <span
+                  className={[
+                    "mt-2 block text-xs leading-5",
+                    active ? "text-white/85" : "text-(--text-secondary)",
+                  ].join(" ")}
+                >
+                  {option.description}
+                </span>
               </button>
-            )
+            );
           })}
         </div>
 
         <div className="mt-6 grid gap-4">
-          {mode === 'subtitle' ? (
+          {mode === "subtitle" ? (
             <>
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-(--text-primary)">Subtitle file path</span>
+                <span className="text-sm font-medium text-(--text-primary)">
+                  Subtitle file path
+                </span>
                 <div className="flex gap-3">
                   <input
                     className="h-9 min-w-0 flex-1 rounded-[6px] border border-(--border) bg-(--bg-surface) px-3 text-sm text-(--text-primary) outline-none focus:ring-2 focus:ring-(--accent) focus:ring-offset-2 focus:ring-offset-(--bg-surface)"
                     onChange={(event) => {
-                      setSelectedFileContent(null)
-                      setSelectedFileName(null)
-                      setFilePath(event.target.value)
+                      setSelectedFileContent(null);
+                      setSelectedFileName(null);
+                      setFilePath(event.target.value);
                     }}
                     placeholder="Choose a local .srt file"
                     type="text"
                     value={filePath}
                   />
-                  <input accept=".srt" className="sr-only" id={subtitleInputId} onChange={handleFileSelection} ref={fileInputRef} type="file" />
-                  <Button onClick={() => fileInputRef.current?.click()} type="button" variant="secondary">
+                  <input
+                    accept=".srt"
+                    className="sr-only"
+                    id={subtitleInputId}
+                    onChange={handleFileSelection}
+                    ref={fileInputRef}
+                    type="file"
+                  />
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    type="button"
+                    variant="secondary"
+                  >
                     Browse...
                   </Button>
                 </div>
               </label>
 
-              {selectedFileName ? <p className="text-xs leading-5 text-(--text-secondary)">Selected file: {selectedFileName}</p> : null}
+              {selectedFileName ? (
+                <p className="text-xs leading-5 text-(--text-secondary)">
+                  Selected file: {selectedFileName}
+                </p>
+              ) : null}
             </>
           ) : null}
 
-          {mode === 'article-paste' ? (
+          {mode === "article-paste" ? (
             <label className="grid gap-2">
-              <span className="text-sm font-medium text-(--text-primary)">Article text</span>
+              <span className="text-sm font-medium text-(--text-primary)">
+                Article text
+              </span>
               <textarea
                 className="min-h-44 rounded-[8px] border border-(--border) bg-(--bg-surface) px-3 py-3 text-sm leading-6 text-(--text-primary) outline-none focus:ring-2 focus:ring-(--accent) focus:ring-offset-2 focus:ring-offset-(--bg-surface)"
                 onChange={(event) => setArticleText(event.target.value)}
@@ -319,9 +359,11 @@ export function AddContentDialog({
             </label>
           ) : null}
 
-          {mode === 'article-scrape' ? (
+          {mode === "article-scrape" ? (
             <label className="grid gap-2">
-              <span className="text-sm font-medium text-(--text-primary)">Article URL</span>
+              <span className="text-sm font-medium text-(--text-primary)">
+                Article URL
+              </span>
               <input
                 className="h-9 rounded-[6px] border border-(--border) bg-(--bg-surface) px-3 text-sm text-(--text-primary) outline-none focus:ring-2 focus:ring-(--accent) focus:ring-offset-2 focus:ring-offset-(--bg-surface)"
                 onChange={(event) => setArticleUrl(event.target.value)}
@@ -332,9 +374,11 @@ export function AddContentDialog({
             </label>
           ) : null}
 
-          {mode === 'generated' ? (
+          {mode === "generated" ? (
             <label className="grid gap-2">
-              <span className="text-sm font-medium text-(--text-primary)">Practice topic</span>
+              <span className="text-sm font-medium text-(--text-primary)">
+                Practice topic
+              </span>
               <input
                 className="h-9 rounded-[6px] border border-(--border) bg-(--bg-surface) px-3 text-sm text-(--text-primary) outline-none focus:ring-2 focus:ring-(--accent) focus:ring-offset-2 focus:ring-offset-(--bg-surface)"
                 onChange={(event) => setTopic(event.target.value)}
@@ -345,9 +389,11 @@ export function AddContentDialog({
             </label>
           ) : null}
 
-          {mode !== 'generated' ? (
+          {mode !== "generated" ? (
             <label className="grid gap-2">
-              <span className="text-sm font-medium text-(--text-primary)">Library title</span>
+              <span className="text-sm font-medium text-(--text-primary)">
+                Library title
+              </span>
               <input
                 className="h-9 rounded-[6px] border border-(--border) bg-(--bg-surface) px-3 text-sm text-(--text-primary) outline-none focus:ring-2 focus:ring-(--accent) focus:ring-offset-2 focus:ring-offset-(--bg-surface)"
                 onChange={(event) => setTitle(event.target.value)}
@@ -359,10 +405,14 @@ export function AddContentDialog({
           ) : null}
 
           <label className="grid gap-2">
-            <span className="text-sm font-medium text-(--text-primary)">Difficulty</span>
+            <span className="text-sm font-medium text-(--text-primary)">
+              Difficulty
+            </span>
             <select
               className="h-9 rounded-[6px] border border-(--border) bg-(--bg-surface) px-3 text-sm text-(--text-primary) outline-none focus:ring-2 focus:ring-(--accent) focus:ring-offset-2 focus:ring-offset-(--bg-surface)"
-              onChange={(event) => setDifficulty(Number(event.target.value) as 1 | 2 | 3)}
+              onChange={(event) =>
+                setDifficulty(Number(event.target.value) as 1 | 2 | 3)
+              }
               value={difficulty}
             >
               {DIFFICULTY_OPTIONS.map((option) => (
@@ -386,15 +436,19 @@ export function AddContentDialog({
           </div>
         ) : null}
 
-        <div className="mt-6 flex flex-wrap justify-end gap-3">
+        <DialogFooter className="mt-6">
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
-          <Button disabled={isSubmitting || !canSubmit()} onClick={() => void submit(pendingDuplicateConfirmation)} variant="primary">
+          <Button
+            disabled={isSubmitting || !canSubmit()}
+            onClick={() => void submit(pendingDuplicateConfirmation)}
+            variant="primary"
+          >
             {getPrimaryActionLabel()}
           </Button>
-        </div>
-      </div>
-    </div>
-  )
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }

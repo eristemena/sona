@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from "electron";
 
 import type {
   ApiKeyStatus,
+  ClearAnnotationCacheResult,
   PreviewTtsVoiceInput,
   PreviewTtsVoiceResult,
   ReadingAudioModeUpdateResult,
@@ -11,6 +12,7 @@ import type {
   StudyPreferencesSnapshot,
   ThemePreferenceMode,
   ThemeUpdateResult,
+  ValidateOpenAiKeyResult,
   ValidateOpenRouterKeyResult,
   WindowSona,
 } from "@sona/domain/contracts/window-sona";
@@ -23,7 +25,6 @@ import type {
   CreateArticleFromUrlInput,
   GeneratePracticeSentencesInput,
   ImportSrtInput,
-  ListLibraryItemsInput,
 } from "@sona/domain/contracts/content-library";
 import { CONTENT_CHANNELS } from "@sona/domain/contracts/content-library";
 import type {
@@ -45,19 +46,21 @@ import { REVIEW_CHANNELS } from "@sona/domain/contracts/content-review";
 
 const CHANNELS = {
   getBootstrapState: "sona:shell:get-bootstrap-state",
-  getHomeDashboard: 'sona:shell:get-home-dashboard',
+  getHomeDashboard: "sona:shell:get-home-dashboard",
   getThemePreference: "sona:settings:get-theme-preference",
   setThemePreference: "sona:settings:set-theme-preference",
   getOpenAiApiKeyStatus: "sona:settings:get-openai-api-key-status",
   setOpenAiApiKey: "sona:settings:set-openai-api-key",
+  validateOpenAiKey: "sona:settings:validate-openai-key",
   getReadingAudioMode: "sona:settings:get-reading-audio-mode",
   setReadingAudioMode: "sona:settings:set-reading-audio-mode",
   getReadingAudioVoice: "sona:settings:get-reading-audio-voice",
   setReadingAudioVoice: "sona:settings:set-reading-audio-voice",
-  getStudyPreferences: 'sona:settings:get-study-preferences',
-  saveStudyPreferences: 'sona:settings:save-study-preferences',
-  validateOpenRouterKey: 'sona:settings:validate-openrouter-key',
-  previewTtsVoice: 'sona:settings:preview-tts-voice',
+  getStudyPreferences: "sona:settings:get-study-preferences",
+  saveStudyPreferences: "sona:settings:save-study-preferences",
+  validateOpenRouterKey: "sona:settings:validate-openrouter-key",
+  previewTtsVoice: "sona:settings:preview-tts-voice",
+  clearAnnotationCache: "sona:settings:clear-annotation-cache",
   themeChanged: "sona:settings:theme-changed",
   ...CONTENT_CHANNELS,
   ...READING_CHANNELS,
@@ -102,13 +105,24 @@ function isStudyPreferencesInput(value: unknown): value is SaveStudyPreferencesI
   const candidate = value as Partial<SaveStudyPreferencesInput>
 
   return (
-    isNullableString(candidate.openRouterApiKey ?? null) &&
-    typeof candidate.selectedVoice === 'string' &&
+    (typeof candidate.openAiApiKey === "undefined" ||
+      isNullableString(candidate.openAiApiKey)) &&
+    (typeof candidate.openRouterApiKey === "undefined" ||
+      isNullableString(candidate.openRouterApiKey)) &&
+    typeof candidate.selectedVoice === "string" &&
     candidate.selectedVoice.trim().length > 0 &&
-    typeof candidate.dailyGoal === 'number' &&
+    typeof candidate.dailyGoal === "number" &&
     Number.isInteger(candidate.dailyGoal) &&
-    candidate.dailyGoal > 0
-  )
+    candidate.dailyGoal > 0 &&
+    typeof candidate.koreanLevel === "string" &&
+    candidate.koreanLevel.trim().length > 0 &&
+    typeof candidate.maxLlmCallsPerSession === "number" &&
+    Number.isInteger(candidate.maxLlmCallsPerSession) &&
+    candidate.maxLlmCallsPerSession > 0 &&
+    typeof candidate.annotationCacheDays === "number" &&
+    Number.isInteger(candidate.annotationCacheDays) &&
+    candidate.annotationCacheDays > 0
+  );
 }
 
 function isPreviewTtsVoiceInput(value: unknown): value is PreviewTtsVoiceInput {
@@ -126,7 +140,14 @@ function isReadingAudioMode(value: unknown): value is ReadingAudioMode {
 }
 
 function isReadingAudioVoice(value: unknown): value is ReadingAudioVoice {
-  return value === "alloy" || value === "coral" || value === "shimmer";
+  return (
+    value === "alloy" ||
+    value === "nova" ||
+    value === "shimmer" ||
+    value === "echo" ||
+    value === "fable" ||
+    value === "onyx"
+  );
 }
 
 export function createWindowSonaApi(
@@ -145,10 +166,12 @@ export function createWindowSonaApi(
       },
       getHomeDashboard() {
         return preloadIpc.invoke(CHANNELS.getHomeDashboard) as Promise<
-          ReturnType<WindowSona['shell']['getHomeDashboard']> extends Promise<infer T>
+          ReturnType<WindowSona["shell"]["getHomeDashboard"]> extends Promise<
+            infer T
+          >
             ? T
             : never
-        >
+        >;
       },
     },
     settings: {
@@ -181,6 +204,11 @@ export function createWindowSonaApi(
           CHANNELS.setOpenAiApiKey,
           apiKey,
         ) as Promise<ApiKeyStatus>;
+      },
+      validateOpenAiKey() {
+        return preloadIpc.invoke(
+          CHANNELS.validateOpenAiKey,
+        ) as Promise<ValidateOpenAiKeyResult>;
       },
       getReadingAudioMode() {
         return preloadIpc.invoke(
@@ -215,32 +243,39 @@ export function createWindowSonaApi(
       getStudyPreferences() {
         return preloadIpc.invoke(
           CHANNELS.getStudyPreferences,
-        ) as Promise<StudyPreferencesSnapshot>
+        ) as Promise<StudyPreferencesSnapshot>;
       },
       saveStudyPreferences(input: SaveStudyPreferencesInput) {
         if (!isStudyPreferencesInput(input)) {
-          return Promise.reject(new Error('Invalid study preferences payload.'))
+          return Promise.reject(
+            new Error("Invalid study preferences payload."),
+          );
         }
 
         return preloadIpc.invoke(
           CHANNELS.saveStudyPreferences,
           input,
-        ) as Promise<SaveStudyPreferencesResult>
+        ) as Promise<SaveStudyPreferencesResult>;
       },
       validateOpenRouterKey() {
         return preloadIpc.invoke(
           CHANNELS.validateOpenRouterKey,
-        ) as Promise<ValidateOpenRouterKeyResult>
+        ) as Promise<ValidateOpenRouterKeyResult>;
       },
       previewTtsVoice(input: PreviewTtsVoiceInput) {
         if (!isPreviewTtsVoiceInput(input)) {
-          return Promise.reject(new Error('Invalid TTS preview request.'))
+          return Promise.reject(new Error("Invalid TTS preview request."));
         }
 
         return preloadIpc.invoke(
           CHANNELS.previewTtsVoice,
           input,
-        ) as Promise<PreviewTtsVoiceResult>
+        ) as Promise<PreviewTtsVoiceResult>;
+      },
+      clearAnnotationCache() {
+        return preloadIpc.invoke(
+          CHANNELS.clearAnnotationCache,
+        ) as Promise<ClearAnnotationCacheResult>;
       },
       subscribeThemeChanges(listener: (update: ThemeUpdateResult) => void) {
         const handler = (
@@ -258,11 +293,10 @@ export function createWindowSonaApi(
       },
     },
     content: {
-      listLibraryItems(input?: ListLibraryItemsInput) {
-        return preloadIpc.invoke(
-          CHANNELS.listLibraryItems,
-          input,
-        ) as ReturnType<WindowSona["content"]["listLibraryItems"]>;
+      listLibraryItems() {
+        return preloadIpc.invoke(CHANNELS.listLibraryItems) as ReturnType<
+          WindowSona["content"]["listLibraryItems"]
+        >;
       },
       getContentBlocks(contentItemId: string) {
         return preloadIpc.invoke(

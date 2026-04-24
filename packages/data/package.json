@@ -16,6 +16,10 @@
       "types": "./dist/sqlite/*.d.ts",
       "import": "./dist/sqlite/*.js"
     },
+    "./sqlite/settings-repository": {
+      "types": "./src/sqlite/settings-repository.ts",
+      "import": "./dist/sqlite/settings-repository.js"
+    },
     "./*": {
       "types": "./dist/*.d.ts",
       "import": "./dist/*.js"

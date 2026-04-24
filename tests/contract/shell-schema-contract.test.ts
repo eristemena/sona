@@ -40,12 +40,17 @@ describe('shell schema contract', () => {
       .all() as Array<{ version: number; name: string }>
 
     expect(tableNames.map((row) => row.name)).toEqual(
-      expect.arrayContaining(['schema_migrations', 'settings']),
-    )
+      expect.arrayContaining([
+        "schema_migrations",
+        "settings",
+        "study_sessions",
+      ]),
+    );
     expect(appliedMigrations).toEqual(
       expect.arrayContaining([
         { version: 1, name: "001_shell_v1" },
         { version: 2, name: "002_content_library_v1" },
+        { version: 6, name: "006_home_dashboard_v1" },
       ]),
     );
   })
@@ -85,5 +90,103 @@ describe('shell schema contract', () => {
 
     expect(repository.hasOpenAiApiKey()).toBe(false);
     expect(repository.getOpenAiApiKey()).toBeNull();
+  });
+
+  it("stores and clears the integrations.openRouterApiKey setting through the repository", () => {
+    const database = createTestDatabase();
+    const repository = new SqliteSettingsRepository(database);
+
+    expect(repository.hasOpenRouterApiKey()).toBe(false);
+    expect(repository.getOpenRouterApiKey()).toBeNull();
+
+    repository.setOpenRouterApiKey("  sk-or-local  ");
+
+    expect(repository.hasOpenRouterApiKey()).toBe(true);
+    expect(repository.getOpenRouterApiKey()).toBe("sk-or-local");
+
+    repository.setOpenRouterApiKey(null);
+
+    expect(repository.hasOpenRouterApiKey()).toBe(false);
+    expect(repository.getOpenRouterApiKey()).toBeNull();
+  });
+
+  it("seeds and repairs the study.dailyGoal setting through the repository", () => {
+    const database = createTestDatabase();
+    const repository = new SqliteSettingsRepository(database);
+
+    expect(repository.getDailyStudyGoal()).toBe(20);
+
+    let storedSetting = database
+      .prepare("SELECT value_json FROM settings WHERE key = ?")
+      .get("study.dailyGoal") as { value_json: string };
+
+    expect(JSON.parse(storedSetting.value_json)).toEqual(
+      expect.objectContaining({ target: 20 }),
+    );
+
+    database
+      .prepare("UPDATE settings SET value_json = ? WHERE key = ?")
+      .run(JSON.stringify({ target: "nope" }), "study.dailyGoal");
+
+    expect(repository.getDailyStudyGoal()).toBe(20);
+
+    storedSetting = database
+      .prepare("SELECT value_json FROM settings WHERE key = ?")
+      .get("study.dailyGoal") as { value_json: string };
+
+    expect(JSON.parse(storedSetting.value_json)).toEqual(
+      expect.objectContaining({ target: 20 }),
+    );
+
+    repository.setDailyStudyGoal(37);
+    expect(repository.getDailyStudyGoal()).toBe(37);
+
+    storedSetting = database
+      .prepare("SELECT value_json FROM settings WHERE key = ?")
+      .get("study.dailyGoal") as { value_json: string };
+
+    expect(JSON.parse(storedSetting.value_json)).toEqual(
+      expect.objectContaining({ target: 37 }),
+    );
+  });
+
+  it("seeds and repairs the study.ttsVoice setting through the repository", () => {
+    const database = createTestDatabase();
+    const repository = new SqliteSettingsRepository(database);
+
+    expect(repository.getStudyTtsVoice()).toBe("alloy");
+
+    let storedSetting = database
+      .prepare("SELECT value_json FROM settings WHERE key = ?")
+      .get("study.ttsVoice") as { value_json: string };
+
+    expect(JSON.parse(storedSetting.value_json)).toEqual(
+      expect.objectContaining({ voice: "alloy" }),
+    );
+
+    database
+      .prepare("UPDATE settings SET value_json = ? WHERE key = ?")
+      .run(JSON.stringify({ voice: "robot" }), "study.ttsVoice");
+
+    expect(repository.getStudyTtsVoice()).toBe("alloy");
+
+    storedSetting = database
+      .prepare("SELECT value_json FROM settings WHERE key = ?")
+      .get("study.ttsVoice") as { value_json: string };
+
+    expect(JSON.parse(storedSetting.value_json)).toEqual(
+      expect.objectContaining({ voice: "alloy" }),
+    );
+
+    repository.setStudyTtsVoice("coral");
+    expect(repository.getStudyTtsVoice()).toBe("coral");
+
+    storedSetting = database
+      .prepare("SELECT value_json FROM settings WHERE key = ?")
+      .get("study.ttsVoice") as { value_json: string };
+
+    expect(JSON.parse(storedSetting.value_json)).toEqual(
+      expect.objectContaining({ voice: "coral" }),
+    );
   });
 })

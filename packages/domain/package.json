@@ -27,6 +27,10 @@
       "types": "./dist/settings/*.d.ts",
       "import": "./dist/settings/*.js"
     },
+    "./settings/study-preferences": {
+      "types": "./src/settings/study-preferences.ts",
+      "import": "./dist/settings/study-preferences.js"
+    },
     "./provenance/*": {
       "types": "./dist/provenance/*.d.ts",
       "import": "./dist/provenance/*.js"

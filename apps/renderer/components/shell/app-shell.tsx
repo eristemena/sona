@@ -64,7 +64,7 @@ export function AppShell() {
   }
 
   return (
-    <div className="relative flex min-h-dvh bg-transparent text-(--text-primary)">
+    <div className="relative flex h-dvh overflow-hidden bg-transparent text-(--text-primary)">
       <SidebarNav
         activeDestination={activeDestination}
         appName={state.appName}
@@ -76,8 +76,8 @@ export function AppShell() {
         activeDestination={activeDestination}
         onNavigate={setActiveDestination}
         onResumeReading={(contentItemId) => {
-          setPendingResumeContentItemId(contentItemId)
-          setActiveDestination('library')
+          setPendingResumeContentItemId(contentItemId);
+          setActiveDestination("library");
         }}
         pendingResumeContentItemId={pendingResumeContentItemId}
         onResumeHandled={() => setPendingResumeContentItemId(null)}

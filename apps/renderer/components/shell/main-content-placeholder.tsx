@@ -56,21 +56,20 @@ export function MainContentPlaceholder({
   const isLibrary = activeDestination === "library";
   const isReview = activeDestination === "review";
   const isDashboard = activeDestination === 'dashboard'
+  const isSettings = activeDestination === "settings";
+  const shellSurfaceClass =
+    isLibrary || isReview || isDashboard || isSettings
+      ? "flex w-full flex-col"
+      : "flex min-h-full flex-col rounded-[28px] border border-(--border) bg-(--bg-surface)/58 p-6 shadow-(--shadow-soft) backdrop-blur-2xl md:p-8";
 
   return (
     <main
-      className="stage-enter flex min-h-dvh flex-1 flex-col px-5 py-5 md:px-8 md:py-6"
+      className="stage-enter flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-y-auto px-5 py-5 md:px-8 md:py-6"
       id="main-content"
       tabIndex={-1}
     >
-      <div
-        className={
-          isLibrary
-            ? "flex flex-1 flex-col rounded-[28px] border border-(--border) bg-(--bg-surface)/58 p-5 shadow-(--shadow-soft) backdrop-blur-2xl md:p-6"
-            : "flex flex-1 flex-col rounded-[28px] border border-(--border) bg-(--bg-surface)/58 p-6 shadow-(--shadow-soft) backdrop-blur-2xl md:p-8"
-        }
-      >
-        {isLibrary || isReview || isDashboard ? null : (
+      <div className={shellSurfaceClass}>
+        {isLibrary || isReview || isDashboard || isSettings ? null : (
           <header className="max-w-3xl space-y-4 border-b border-(--border) pb-8 panel-enter">
             <p className="text-xs uppercase tracking-[0.32em] text-(--text-muted)">
               {copy.eyebrow}
@@ -85,23 +84,29 @@ export function MainContentPlaceholder({
         )}
 
         {isDashboard ? (
-          <section className="panel-enter flex flex-1 flex-col">
+          <section className="panel-enter mx-auto flex w-full max-w-[1120px] flex-col">
             <HomeDashboardScreen
               onContinueReading={onResumeReading}
-              onOpenLibrary={() => onNavigate('library')}
-              onStartReview={() => onNavigate('review')}
+              onOpenLibrary={() => onNavigate("library")}
+              onStartReview={() => onNavigate("review")}
             />
           </section>
         ) : isLibrary ? (
-          <section className="panel-enter flex flex-1 flex-col">
+          <section className="panel-enter flex w-full flex-col">
             <ContentLibraryScreen
               autoOpenContentItemId={pendingResumeContentItemId}
               onAutoOpenHandled={onResumeHandled}
             />
           </section>
         ) : isReview ? (
-          <section className="panel-enter flex flex-1 flex-col">
+          <section className="panel-enter mx-auto flex w-full max-w-[560px] flex-col">
             <ReviewScreen />
+          </section>
+        ) : isSettings ? (
+          <section className="panel-enter flex w-full">
+            <div className="mx-auto flex w-full max-w-160 flex-col pt-12">
+              <ThemeSettings />
+            </div>
           </section>
         ) : (
           <section className="panel-enter flex flex-1 items-center justify-center py-12">

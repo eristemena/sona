@@ -14,31 +14,43 @@ describe('window.sona home, library, and settings contract', () => {
 
     type HomeLibrarySettingsApi = {
       shell: {
-        getHomeDashboard: () => Promise<unknown>
-      }
+        getHomeDashboard: () => Promise<unknown>;
+      };
       settings: {
-        getStudyPreferences: () => Promise<unknown>
+        getStudyPreferences: () => Promise<unknown>;
         saveStudyPreferences: (input: {
-          openRouterApiKey: string | null
-          selectedVoice: string
-          dailyGoal: number
-        }) => Promise<unknown>
-        validateOpenRouterKey: () => Promise<unknown>
-        previewTtsVoice: (input: { voice: string }) => Promise<unknown>
-      }
-    }
+          openAiApiKey: string | null;
+          openRouterApiKey: string | null;
+          selectedVoice: string;
+          dailyGoal: number;
+          koreanLevel: string;
+          maxLlmCallsPerSession: number;
+          annotationCacheDays: number;
+        }) => Promise<unknown>;
+        validateOpenAiKey: () => Promise<unknown>;
+        validateOpenRouterKey: () => Promise<unknown>;
+        previewTtsVoice: (input: { voice: string }) => Promise<unknown>;
+        clearAnnotationCache: () => Promise<unknown>;
+      };
+    };
 
     const typedApi = api as HomeLibrarySettingsApi
 
     await typedApi.shell.getHomeDashboard()
     await typedApi.settings.getStudyPreferences()
     await typedApi.settings.saveStudyPreferences({
-      openRouterApiKey: 'sk-or-test',
-      selectedVoice: 'coral',
+      openAiApiKey: "sk-openai-test",
+      openRouterApiKey: "sk-or-test",
+      selectedVoice: "nova",
       dailyGoal: 20,
-    })
+      koreanLevel: "topik-i-core",
+      maxLlmCallsPerSession: 12,
+      annotationCacheDays: 14,
+    });
+    await typedApi.settings.validateOpenAiKey();
     await typedApi.settings.validateOpenRouterKey()
-    await typedApi.settings.previewTtsVoice({ voice: 'coral' })
+    await typedApi.settings.previewTtsVoice({ voice: "nova" });
+    await typedApi.settings.clearAnnotationCache();
 
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
       1,
@@ -50,22 +62,34 @@ describe('window.sona home, library, and settings contract', () => {
     )
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
       3,
-      'sona:settings:save-study-preferences',
+      "sona:settings:save-study-preferences",
       {
-        openRouterApiKey: 'sk-or-test',
-        selectedVoice: 'coral',
+        openAiApiKey: "sk-openai-test",
+        openRouterApiKey: "sk-or-test",
+        selectedVoice: "nova",
         dailyGoal: 20,
+        koreanLevel: "topik-i-core",
+        maxLlmCallsPerSession: 12,
+        annotationCacheDays: 14,
       },
-    )
+    );
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
       4,
-      'sona:settings:validate-openrouter-key',
-    )
+      "sona:settings:validate-openai-key",
+    );
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
       5,
-      'sona:settings:preview-tts-voice',
-      { voice: 'coral' },
-    )
+      "sona:settings:validate-openrouter-key",
+    );
+    expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
+      6,
+      "sona:settings:preview-tts-voice",
+      { voice: "nova" },
+    );
+    expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
+      7,
+      "sona:settings:clear-annotation-cache",
+    );
   })
 
   it('rejects invalid study-preferences payloads before invoking IPC', async () => {
@@ -74,27 +98,75 @@ describe('window.sona home, library, and settings contract', () => {
 
     await expect(
       api.settings.saveStudyPreferences({
+        openAiApiKey: "sk-openai-test",
         openRouterApiKey: {} as never,
-        selectedVoice: 'coral',
+        selectedVoice: "nova",
         dailyGoal: 20,
+        koreanLevel: "topik-i-core",
+        maxLlmCallsPerSession: 12,
+        annotationCacheDays: 14,
       }),
-    ).rejects.toThrow('Invalid study preferences payload.')
+    ).rejects.toThrow("Invalid study preferences payload.");
 
     await expect(
       api.settings.saveStudyPreferences({
-        openRouterApiKey: 'sk-or-test',
-        selectedVoice: '',
+        openAiApiKey: "sk-openai-test",
+        openRouterApiKey: "sk-or-test",
+        selectedVoice: "",
         dailyGoal: 20,
+        koreanLevel: "topik-i-core",
+        maxLlmCallsPerSession: 12,
+        annotationCacheDays: 14,
       }),
-    ).rejects.toThrow('Invalid study preferences payload.')
+    ).rejects.toThrow("Invalid study preferences payload.");
 
     await expect(
       api.settings.saveStudyPreferences({
-        openRouterApiKey: 'sk-or-test',
-        selectedVoice: 'coral',
+        openAiApiKey: "sk-openai-test",
+        openRouterApiKey: "sk-or-test",
+        selectedVoice: "nova",
         dailyGoal: 0,
+        koreanLevel: "topik-i-core",
+        maxLlmCallsPerSession: 12,
+        annotationCacheDays: 14,
       }),
-    ).rejects.toThrow('Invalid study preferences payload.')
+    ).rejects.toThrow("Invalid study preferences payload.");
+
+    await expect(
+      api.settings.saveStudyPreferences({
+        openAiApiKey: "sk-openai-test",
+        openRouterApiKey: "sk-or-test",
+        selectedVoice: "nova",
+        dailyGoal: 20,
+        koreanLevel: "",
+        maxLlmCallsPerSession: 12,
+        annotationCacheDays: 14,
+      }),
+    ).rejects.toThrow("Invalid study preferences payload.");
+
+    await expect(
+      api.settings.saveStudyPreferences({
+        openAiApiKey: "sk-openai-test",
+        openRouterApiKey: "sk-or-test",
+        selectedVoice: "nova",
+        dailyGoal: 20,
+        koreanLevel: "topik-i-core",
+        maxLlmCallsPerSession: 0,
+        annotationCacheDays: 14,
+      }),
+    ).rejects.toThrow("Invalid study preferences payload.");
+
+    await expect(
+      api.settings.saveStudyPreferences({
+        openAiApiKey: "sk-openai-test",
+        openRouterApiKey: "sk-or-test",
+        selectedVoice: "nova",
+        dailyGoal: 20,
+        koreanLevel: "topik-i-core",
+        maxLlmCallsPerSession: 12,
+        annotationCacheDays: 0,
+      }),
+    ).rejects.toThrow("Invalid study preferences payload.");
 
     await expect(
       api.settings.previewTtsVoice({ voice: '' }),

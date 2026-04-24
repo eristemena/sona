@@ -1,5 +1,11 @@
 export type ReadingAudioMode = 'standard' | 'learner-slow'
-export type ReadingAudioVoice = 'alloy' | 'coral' | 'shimmer'
+export type ReadingAudioVoice =
+  | "alloy"
+  | "nova"
+  | "shimmer"
+  | "echo"
+  | "fable"
+  | "onyx";
 
 export const READING_AUDIO_MODE_SETTING_KEY = 'reading.audioMode'
 export const READING_AUDIO_VOICE_SETTING_KEY = 'reading.audioVoice'
@@ -17,7 +23,14 @@ export function isReadingAudioMode(value: unknown): value is ReadingAudioMode {
 }
 
 export function isReadingAudioVoice(value: unknown): value is ReadingAudioVoice {
-  return value === 'alloy' || value === 'coral' || value === 'shimmer'
+  return (
+    value === "alloy" ||
+    value === "nova" ||
+    value === "shimmer" ||
+    value === "echo" ||
+    value === "fable" ||
+    value === "onyx"
+  );
 }
 
 export function normalizeReadingAudioPreferenceRecord(value: unknown): ReadingAudioPreferenceRecord | null {

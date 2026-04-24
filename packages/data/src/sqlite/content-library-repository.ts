@@ -32,7 +32,6 @@ import {
 import type {
   DeleteContentResult,
   DuplicateWarningResult,
-  ListLibraryItemsInput,
   SaveContentFailure,
   SaveContentResult,
   SaveContentSuccess,
@@ -180,27 +179,7 @@ export interface SaveContentDraft {
 export class SqliteContentLibraryRepository {
   constructor(private readonly database: Database.Database) {}
 
-  listLibraryItems(
-    input: ListLibraryItemsInput = {},
-  ): SaveContentSuccess["item"][] {
-    const clauses: string[] = [];
-    const params: Record<string, unknown> = {};
-
-    if (input.filter && input.filter !== "all") {
-      clauses.push("source_type = @filter");
-      params.filter = input.filter;
-    }
-
-    const normalizedSearch = input.search
-      ? normalizeSearchText(input.search)
-      : "";
-    if (normalizedSearch) {
-      clauses.push("search_text LIKE @search");
-      params.search = `%${normalizedSearch}%`;
-    }
-
-    const whereClause =
-      clauses.length > 0 ? `WHERE ${clauses.join(" AND ")}` : "";
+  listLibraryItems(): SaveContentSuccess["item"][] {
     const rows = this.database
       .prepare(
         `
@@ -216,11 +195,10 @@ export class SqliteContentLibraryRepository {
               SELECT COUNT(*) FROM content_blocks WHERE content_item_id = content_library_items.id
             ) AS block_count
           FROM content_library_items
-          ${whereClause}
           ORDER BY created_at DESC
         `,
       )
-      .all(params) as Array<ContentLibraryItemRow & { block_count: number }>;
+      .all() as Array<ContentLibraryItemRow & { block_count: number }>;
 
     return rows.map((row) => ({
       id: row.id,
@@ -741,6 +719,11 @@ export class SqliteContentLibraryRepository {
       });
   }
 
+  clearAnnotationCache(): number {
+    const result = this.database.prepare("DELETE FROM annotations").run();
+    return result.changes;
+  }
+
   saveReviewCard(card: ReviewCardRecord): void {
     this.database
       .prepare(
@@ -1021,12 +1004,12 @@ export class SqliteContentLibraryRepository {
   }
 
   getHomeDashboardSnapshot(input: {
-    now: number
-    dailyGoal: number
+    now: number;
+    dailyGoal: number;
   }): HomeDashboardSnapshot {
-    const generatedAt = input.now
-    const todayKey = toLocalDateKey(generatedAt)
-    const weeklyKeys = buildRollingDateKeys(todayKey, 7)
+    const generatedAt = input.now;
+    const todayKey = toLocalDateKey(generatedAt);
+    const weeklyKeys = buildRollingDateKeys(todayKey, 7);
     const weeklyRows = this.database
       .prepare(
         `
@@ -1040,8 +1023,13 @@ export class SqliteContentLibraryRepository {
           ORDER BY study_date ASC
         `,
       )
-      .all(weeklyKeys[0], weeklyKeys[weeklyKeys.length - 1]) as StudySessionRow[]
-    const weeklyByDate = new Map(weeklyRows.map((row) => [row.study_date, row]))
+      .all(
+        weeklyKeys[0],
+        weeklyKeys[weeklyKeys.length - 1],
+      ) as StudySessionRow[];
+    const weeklyByDate = new Map(
+      weeklyRows.map((row) => [row.study_date, row]),
+    );
 
     const recentVocabulary = this.database
       .prepare(
@@ -1053,12 +1041,12 @@ export class SqliteContentLibraryRepository {
         `,
       )
       .all() as Array<{
-      id: string
-      surface: string
-      meaning: string | null
-      source_content_item_id: string
-      created_at: number
-    }>
+      id: string;
+      surface: string;
+      meaning: string | null;
+      source_content_item_id: string;
+      created_at: number;
+    }>;
 
     const resumeRow = this.database
       .prepare(
@@ -1076,7 +1064,7 @@ export class SqliteContentLibraryRepository {
           LIMIT 1
         `,
       )
-      .get() as ResumeContextRow | undefined
+      .get() as ResumeContextRow | undefined;
 
     const streakRows = this.database
       .prepare(
@@ -1087,8 +1075,8 @@ export class SqliteContentLibraryRepository {
           ORDER BY study_date DESC
         `,
       )
-      .all() as Array<{ study_date: string }>
-    const studyDays = new Set(streakRows.map((row) => row.study_date))
+      .all() as Array<{ study_date: string }>;
+    const studyDays = new Set(streakRows.map((row) => row.study_date));
 
     return {
       generatedAt,
@@ -1103,14 +1091,14 @@ export class SqliteContentLibraryRepository {
         sourceContentItemId: row.source_content_item_id,
       })),
       weeklyActivity: weeklyKeys.map((date) => {
-        const row = weeklyByDate.get(date)
+        const row = weeklyByDate.get(date);
 
         return {
           date,
           cardsReviewed: row?.cards_reviewed ?? 0,
           minutesStudied: row?.minutes_studied ?? 0,
           isToday: date === todayKey,
-        }
+        };
       }),
       resumeContext: resumeRow
         ? {
@@ -1121,16 +1109,16 @@ export class SqliteContentLibraryRepository {
             updatedAt: resumeRow.updated_at,
           }
         : null,
-    }
+    };
   }
 
   recordStudySession(input: {
-    id: string
-    startedAt: number
-    endedAt: number
-    cardsReviewed: number
-    minutesStudied: number
-    source: 'review-session'
+    id: string;
+    startedAt: number;
+    endedAt: number;
+    cardsReviewed: number;
+    minutesStudied: number;
+    source: "review-session";
   }): void {
     this.database
       .prepare(
@@ -1162,7 +1150,7 @@ export class SqliteContentLibraryRepository {
         cards_reviewed: Math.max(0, Math.trunc(input.cardsReviewed)),
         minutes_studied: Math.max(0, Math.trunc(input.minutesStudied)),
         source: input.source,
-      })
+      });
   }
 
   listDueReviewCards(now: number, limit: number): ReviewCardRecord[] {

@@ -12,7 +12,7 @@ describe('window.sona content preload contract', () => {
     const { createWindowSonaApi } = await import('../../apps/desktop/src/preload/index.js')
     const api = createWindowSonaApi(electronMockState.ipcRenderer)
 
-    await api.content.listLibraryItems({ filter: 'all', search: 'sample' })
+    await api.content.listLibraryItems();
     await api.content.getContentBlocks('item-1')
     await api.content.browseSubtitleFile()
     await api.content.importSrt({ filePath: '/tmp/sample.srt', difficulty: 1 })
@@ -23,9 +23,8 @@ describe('window.sona content preload contract', () => {
 
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
       1,
-      'sona:content:list-library-items',
-      { filter: 'all', search: 'sample' },
-    )
+      "sona:content:list-library-items",
+    );
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(2, 'sona:content:get-content-blocks', 'item-1')
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(3, 'sona:content:browse-subtitle-file')
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(

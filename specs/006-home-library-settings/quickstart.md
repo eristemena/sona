@@ -61,7 +61,7 @@ Manual checks:
 Expected automated coverage:
 
 - `tests/integration/home-dashboard-summary.test.tsx`
-- `tests/integration/home-dashboard-empty-states.test.tsx`
+- `tests/integration/home-dashboard-resume-reading.test.ts`
 - `tests/contract/window-sona-home-library-settings-contract.test.ts`
 
 ## 5. Validate Resume Reading Entry Point
@@ -74,7 +74,7 @@ Manual checks:
 
 Expected automated coverage:
 
-- `tests/integration/home-dashboard-resume-reading.test.tsx`
+- `tests/integration/home-dashboard-resume-reading.test.ts`
 
 ## 6. Validate Library Initial Load And Client-Side Querying
 
@@ -89,7 +89,8 @@ Manual checks:
 Expected automated coverage:
 
 - `tests/integration/content-library-client-side-querying.test.tsx`
-- `tests/integration/content-library-empty-states.test.tsx`
+- `tests/integration/library-import-dialog-a11y.test.tsx`
+- `tests/integration/content-library-provenance-labels.test.tsx`
 
 ## 7. Validate Import Dialog
 
@@ -112,7 +113,7 @@ Manual checks:
 - Open settings and confirm theme controls remain intact.
 - Save an OpenRouter API key, a daily study goal, and a TTS voice selection.
 - Trigger the explicit key-validation action and confirm it calls the OpenRouter models endpoint and reports success only on HTTP 200.
-- Trigger the voice preview action and confirm the phrase `안녕하세요, 소나입니다.` is synthesized with the selected voice and plays immediately.
+- Trigger the voice preview action and confirm the phrase `안녕하세요, 소나입니다.` is echoed back with the selected voice and a readiness message.
 - Relaunch the app and confirm the saved daily goal, provider-key configured state, and selected voice persist.
 - Repeat the same flow offline and confirm settings can still be edited and saved, with validation and preview showing graceful failure messages rather than blocking the screen.
 
@@ -134,9 +135,16 @@ Manual checks:
 Expected automated coverage:
 
 - `tests/integration/study-session-writeback.test.ts`
-- `tests/integration/home-dashboard-streak-calculation.test.ts`
+- `tests/integration/home-dashboard-resume-reading.test.ts`
 
-## 10. Measure Success Criteria
+## 10. Current Validation Result
+
+- `npm test` passes for the full workspace, including offline startup, dashboard empty states, library empty states, settings persistence, provider validation, and voice-preview messaging.
+- `npm run typecheck` passes for all packages.
+- `npm run build` passes for domain, data, integrations, renderer, and desktop.
+- No account or mandatory network step is required for home, library, or settings flows. Network is only exercised by the explicit OpenRouter connection test.
+
+## 11. Measure Success Criteria
 
 - Confirm learners can identify today’s due count and next action within 10 seconds of app launch.
 - Confirm learners can start review or resume reading from the home screen in no more than 2 interactions.

@@ -72,10 +72,7 @@ describe('import-to-study-to-review boundary', () => {
         subscribeThemeChanges: vi.fn(() => () => undefined),
       },
       content: {
-        listLibraryItems: vi.fn(
-          async (input?: { filter?: string; search?: string }) =>
-            repository.listLibraryItems(input),
-        ),
+        listLibraryItems: vi.fn(async () => repository.listLibraryItems()),
         getContentBlocks: vi.fn(async (contentItemId: string) =>
           repository.getContentBlocks(contentItemId),
         ),
@@ -158,10 +155,20 @@ describe('import-to-study-to-review boundary', () => {
 
     await user.click(screen.getByRole('button', { name: /library/i }))
     const returnedResults = await screen.findByRole('region', { name: 'Content Library results' })
+    await user.click(
+      within(returnedResults).getByRole("button", {
+        name: "Open sample-drama",
+      }),
+    );
+    const returnedDetailPane = await screen.findByRole("region", {
+      name: "Selected content detail",
+    });
 
     await waitFor(() => {
       expect(within(returnedResults).getByText('sample-drama')).toBeInTheDocument()
-      expect(screen.getByText('지금 뭐 해?')).toBeInTheDocument()
+      expect(
+        within(returnedDetailPane).getByText("지금 뭐 해?"),
+      ).toBeInTheDocument();
     })
 
     database.close()

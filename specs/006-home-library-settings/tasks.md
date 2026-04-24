@@ -38,11 +38,11 @@
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T006 [P] [US1] Add a schema contract for `study_sessions` and dashboard settings keys in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/shell-schema-contract.test.ts
+- [X] T006 [P] [US1] Add a schema contract for `study_sessions` and dashboard settings keys in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/shell-schema-contract.test.ts
 - [X] T007 [P] [US1] Add preload contract coverage for `shell.getHomeDashboard()` in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/window-sona-home-library-settings-contract.test.ts
-- [ ] T008 [P] [US1] Add dashboard summary and empty-state integration coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/home-dashboard-summary.test.tsx
-- [ ] T009 [P] [US1] Add resume-reading and streak aggregation integration coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/home-dashboard-resume-reading.test.tsx
-- [ ] T009a [P] [US1] Add integration coverage for review-session completion writing one `study_sessions` row in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/study-session-writeback.test.ts
+- [X] T008 [P] [US1] Add dashboard summary and empty-state integration coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/home-dashboard-summary.test.tsx
+- [X] T009 [P] [US1] Add resume-reading and streak aggregation integration coverage in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/home-dashboard-resume-reading.test.tsx
+- [X] T009a [P] [US1] Add integration coverage for review-session completion writing one `study_sessions` row in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/study-session-writeback.test.ts
 
 ### Implementation for User Story 1
 
@@ -70,19 +70,19 @@
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T020 [P] [US2] Add integration coverage for client-side library search, filter, and sort behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-client-side-querying.test.tsx
-- [ ] T021 [P] [US2] Add integration coverage for library empty states and dialog accessibility in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/library-import-dialog-a11y.test.tsx
-- [ ] T021a [P] [US2] Add integration coverage for source-type labeling and provenance visibility in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-provenance-labels.test.tsx
-- [ ] T022 [P] [US2] Add integration coverage for subtitle and pasted-article import submissions in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/library-import-dialog-submit.test.tsx
+- [X] T020 [P] [US2] Add integration coverage for client-side library search, filter, and sort behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-client-side-querying.test.tsx
+- [X] T021 [P] [US2] Add integration coverage for library empty states and dialog accessibility in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/library-import-dialog-a11y.test.tsx
+- [X] T021a [P] [US2] Add integration coverage for source-type labeling and provenance visibility in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/content-library-provenance-labels.test.tsx
+- [X] T022 [P] [US2] Add integration coverage for subtitle and pasted-article import submissions in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/library-import-dialog-submit.test.tsx
 
 ### Implementation for User Story 2
 
-- [ ] T023 [US2] Simplify the content-library contract to support one initial catalog load in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/content-library.ts
-- [ ] T024 [US2] Update the content preload bridge for initial-load library usage in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts
-- [ ] T025 [US2] Rework library state to derive search, filter, and sort client-side after initial load in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-content-library.ts
-- [ ] T026 [P] [US2] Add explicit sort controls and result-state handling in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-toolbar.tsx
-- [ ] T027 [US2] Replace the current add-content overlay with the shared dialog primitive in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx
-- [ ] T028 [P] [US2] Update the library screen to use the client-side catalog model and new import dialog flow in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
+- [X] T023 [US2] Simplify the content-library contract to support one initial catalog load in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/contracts/content-library.ts
+- [X] T024 [US2] Update the content preload bridge for initial-load library usage in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/preload/index.ts
+- [X] T025 [US2] Rework library state to derive search, filter, and sort client-side after initial load in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-content-library.ts
+- [X] T026 [P] [US2] Add explicit sort controls and result-state handling in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-toolbar.tsx
+- [X] T027 [US2] Replace the current add-content overlay with the shared dialog primitive in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/add-content-dialog.tsx
+- [X] T028 [P] [US2] Update the library screen to use the client-side catalog model and new import dialog flow in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/library/content-library-screen.tsx
 
 **Checkpoint**: User Story 2 should now be independently functional for local content browsing and import management.
 
@@ -96,20 +96,20 @@
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T029 [P] [US3] Add settings repository and contract coverage for OpenRouter key, daily goal, and voice persistence in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/window-sona-home-library-settings-contract.test.ts
-- [ ] T030 [P] [US3] Add integration coverage for the study-preferences form flow in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/settings-study-preferences-form.test.tsx
-- [ ] T031 [P] [US3] Add integration coverage for OpenRouter key validation in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/settings-openrouter-validation.test.ts
-- [ ] T032 [P] [US3] Add integration coverage for TTS voice preview behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/settings-voice-preview.test.tsx
+- [X] T029 [P] [US3] Add settings repository and contract coverage for OpenRouter key, daily goal, and voice persistence in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/contract/window-sona-home-library-settings-contract.test.ts
+- [X] T030 [P] [US3] Add integration coverage for the study-preferences form flow in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/settings-study-preferences-form.test.tsx
+- [X] T031 [P] [US3] Add integration coverage for OpenRouter key validation in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/settings-openrouter-validation.test.ts
+- [X] T032 [P] [US3] Add integration coverage for TTS voice preview behavior in /Volumes/xpro/erisristemena/made-by-ai/sona/tests/integration/settings-voice-preview.test.tsx
 
 ### Implementation for User Story 3
 
-- [ ] T033 [US3] Extend settings persistence for OpenRouter API keys, daily goal, and voice preference in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/settings-repository.ts
-- [ ] T034 [P] [US3] Add study-preferences types and validation helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/settings/study-preferences.ts
-- [ ] T035 [US3] Implement OpenRouter key validation and fixed-phrase voice preview handling in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/settings-handlers.ts
-- [ ] T036 [P] [US3] Add provider-backed settings helpers for validation and preview in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/providers/openrouter-settings-service.ts
-- [ ] T037 [US3] Register the updated settings runtime dependencies in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/index.ts
-- [ ] T038 [P] [US3] Add a form-driven settings hook with `react-hook-form` and `zod` in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-study-preferences.ts
-- [ ] T039 [US3] Replace the current settings surface with the study-preferences form and explicit validation/preview actions in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/settings/theme-settings.tsx
+- [X] T033 [US3] Extend settings persistence for OpenRouter API keys, daily goal, and voice preference in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/data/src/sqlite/settings-repository.ts
+- [X] T034 [P] [US3] Add study-preferences types and validation helpers in /Volumes/xpro/erisristemena/made-by-ai/sona/packages/domain/src/settings/study-preferences.ts
+- [X] T035 [US3] Implement OpenRouter key validation and fixed-phrase voice preview handling in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/ipc/settings-handlers.ts
+- [X] T036 [P] [US3] Add provider-backed settings helpers for validation and preview in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/providers/openrouter-settings-service.ts
+- [X] T037 [US3] Register the updated settings runtime dependencies in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/desktop/src/main/index.ts
+- [X] T038 [P] [US3] Add a form-driven settings hook with `react-hook-form` and `zod` in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/lib/use-study-preferences.ts
+- [X] T039 [US3] Replace the current settings surface with the study-preferences form and explicit validation/preview actions in /Volumes/xpro/erisristemena/made-by-ai/sona/apps/renderer/components/settings/theme-settings.tsx
 
 **Checkpoint**: User Story 3 should now be independently functional for local settings management with optional provider-backed actions.
 
@@ -119,9 +119,9 @@
 
 **Purpose**: Final validation and cross-story cleanup.
 
-- [ ] T040 [P] Update the feature quickstart validation notes if implementation paths changed in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/006-home-library-settings/quickstart.md
-- [ ] T041 Validate offline startup, dashboard empty states, and no-account behavior across home, library, and settings using /Volumes/xpro/erisristemena/made-by-ai/sona/specs/006-home-library-settings/quickstart.md
-- [ ] T042 Run `npm test`, `npm run typecheck`, and `npm run build` from /Volumes/xpro/erisristemena/made-by-ai/sona
+- [X] T040 [P] Update the feature quickstart validation notes if implementation paths changed in /Volumes/xpro/erisristemena/made-by-ai/sona/specs/006-home-library-settings/quickstart.md
+- [X] T041 Validate offline startup, dashboard empty states, and no-account behavior across home, library, and settings using /Volumes/xpro/erisristemena/made-by-ai/sona/specs/006-home-library-settings/quickstart.md
+- [X] T042 Run `npm test`, `npm run typecheck`, and `npm run build` from /Volumes/xpro/erisristemena/made-by-ai/sona
 
 ---
 

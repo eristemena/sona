@@ -11,7 +11,6 @@ import type {
   DeleteContentResult,
   GeneratePracticeSentencesInput,
   ImportSrtInput,
-  ListLibraryItemsInput,
   SaveContentSuccess,
   SaveContentResult,
 } from "./content-library.js";
@@ -74,6 +73,12 @@ export interface ValidateOpenRouterKeyResult {
   message: string
 }
 
+export interface ValidateOpenAiKeyResult {
+  ok: boolean;
+  checkedAt: number;
+  message: string;
+}
+
 export interface StudyPreferencesVoiceOption {
   id: string
   label: string
@@ -81,22 +86,34 @@ export interface StudyPreferencesVoiceOption {
 }
 
 export interface StudyPreferencesSnapshot {
-  providerKeyStatus: ProviderKeyStatus
-  availableVoices: StudyPreferencesVoiceOption[]
-  selectedVoice: string
-  dailyGoal: number
+  openAiKeyStatus: ProviderKeyStatus;
+  openRouterKeyStatus: ProviderKeyStatus;
+  availableVoices: StudyPreferencesVoiceOption[];
+  selectedVoice: string;
+  dailyGoal: number;
+  koreanLevel: string;
+  maxLlmCallsPerSession: number;
+  annotationCacheDays: number;
 }
 
 export interface SaveStudyPreferencesInput {
-  openRouterApiKey: string | null
-  selectedVoice: string
-  dailyGoal: number
+  openAiApiKey?: string | null;
+  openRouterApiKey?: string | null;
+  selectedVoice: string;
+  dailyGoal: number;
+  koreanLevel: string;
+  maxLlmCallsPerSession: number;
+  annotationCacheDays: number;
 }
 
 export interface SaveStudyPreferencesResult {
-  providerKeyStatus: ProviderKeyStatus
-  selectedVoice: string
-  dailyGoal: number
+  openAiKeyStatus: ProviderKeyStatus;
+  openRouterKeyStatus: ProviderKeyStatus;
+  selectedVoice: string;
+  dailyGoal: number;
+  koreanLevel: string;
+  maxLlmCallsPerSession: number;
+  annotationCacheDays: number;
 }
 
 export interface PreviewTtsVoiceInput {
@@ -104,10 +121,15 @@ export interface PreviewTtsVoiceInput {
 }
 
 export interface PreviewTtsVoiceResult {
-  ok: boolean
-  voice: string
-  sampleText: '안녕하세요, 소나입니다.'
-  message: string
+  ok: boolean;
+  voice: string;
+  sampleText: "안녕하세요, 소나입니다.";
+  message: string;
+  audioDataUrl: string | null;
+}
+
+export interface ClearAnnotationCacheResult {
+  removedEntries: number;
 }
 
 export interface WindowSona {
@@ -120,6 +142,7 @@ export interface WindowSona {
     setThemePreference(mode: ThemePreferenceMode): Promise<ThemeUpdateResult>;
     getOpenAiApiKeyStatus(): Promise<ApiKeyStatus>;
     setOpenAiApiKey(apiKey: string | null): Promise<ApiKeyStatus>;
+    validateOpenAiKey(): Promise<ValidateOpenAiKeyResult>;
     getReadingAudioMode(): Promise<ReadingAudioMode>;
     setReadingAudioMode(
       mode: ReadingAudioMode,
@@ -136,14 +159,13 @@ export interface WindowSona {
     previewTtsVoice(
       input: PreviewTtsVoiceInput,
     ): Promise<PreviewTtsVoiceResult>;
+    clearAnnotationCache(): Promise<ClearAnnotationCacheResult>;
     subscribeThemeChanges(
       listener: (update: ThemeUpdateResult) => void,
     ): () => void;
   };
   content: {
-    listLibraryItems(
-      input?: ListLibraryItemsInput,
-    ): Promise<SaveContentSuccess["item"][]>;
+    listLibraryItems(): Promise<SaveContentSuccess["item"][]>;
     getContentBlocks(
       contentItemId: string,
     ): Promise<SaveContentSuccess["blocks"]>;

@@ -66,9 +66,9 @@ function ContentDetailPane({
   return (
     <section
       aria-label="Selected content detail"
-      className="min-w-0 border-t border-(--border) pt-6 xl:sticky xl:top-0 xl:h-[calc(100dvh-7rem)] xl:w-90 xl:border-l xl:border-t-0 xl:pl-0 xl:pt-0"
+      className="min-w-0 border-t border-(--border) pt-6 xl:sticky xl:top-0 xl:self-start xl:w-90 xl:border-l xl:border-t-0 xl:pl-0 xl:pt-0"
     >
-      <div className="flex h-full flex-col bg-(--bg-surface)">
+      <div className="flex flex-col bg-(--bg-surface)">
         <div className="border-b border-(--border) px-6 py-6">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
@@ -100,8 +100,8 @@ function ContentDetailPane({
           </div>
         </div>
 
-        <div className="flex-1 overflow-hidden px-6 py-6">
-          <div className="flex h-full flex-col gap-5 overflow-hidden">
+        <div className="px-6 py-6">
+          <div className="flex flex-col gap-5">
             <section className="space-y-2">
               <h3 className="text-[11px] font-medium uppercase tracking-[0.18em] text-(--text-muted)">
                 Source details
@@ -111,7 +111,7 @@ function ContentDetailPane({
               </p>
             </section>
 
-            <section className="flex min-h-0 flex-1 flex-col space-y-3">
+            <section className="space-y-3">
               <h3 className="text-[11px] font-medium uppercase tracking-[0.18em] text-(--text-muted)">
                 Sentence preview
               </h3>
@@ -126,7 +126,7 @@ function ContentDetailPane({
                 </p>
               ) : null}
               {!isLoadingBlocks ? (
-                <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
+                <div className="flex max-h-80 flex-col gap-2 overflow-y-auto pr-1">
                   {selectedBlocks.slice(0, 4).map((block) => (
                     <BlockDetail block={block} key={block.id} />
                   ))}
@@ -186,7 +186,8 @@ export function ContentLibraryScreen({
     selectedItem,
     setFilter,
     setSearch,
-  } = useContentLibrary()
+    setSort,
+  } = useContentLibrary();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [pendingDelete, setPendingDelete] = useState<LibraryItemSummary | null>(null)
   const [openedItemId, setOpenedItemId] = useState<string | null>(null)
@@ -240,7 +241,7 @@ export function ContentLibraryScreen({
 
   return (
     <>
-      <div className="flex flex-1 flex-col gap-5 py-6">
+      <div className="flex flex-col gap-5 py-6">
         {openedItemId ? (
           <ReadingView
             contentItemId={openedItemId}
@@ -254,9 +255,11 @@ export function ContentLibraryScreen({
           <>
             <ContentLibraryToolbar
               activeFilter={queryState.filter}
+              activeSort={queryState.sort}
               onFilterChange={setFilter}
               onOpenAddContent={() => setIsAddDialogOpen(true)}
               onSearchChange={setSearch}
+              onSortChange={setSort}
               resultCount={queryState.resultCount}
               search={queryState.search}
             />
@@ -277,7 +280,7 @@ export function ContentLibraryScreen({
 
             <div
               className={cn(
-                "grid flex-1 gap-6 xl:items-start",
+                "grid gap-6 xl:items-start",
                 hasSelectedItem
                   ? "xl:grid-cols-[minmax(0,1fr)_360px]"
                   : "xl:grid-cols-1",

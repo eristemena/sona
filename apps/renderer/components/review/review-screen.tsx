@@ -44,7 +44,7 @@ export function ReviewScreen() {
   const dueCount = snapshot?.dueCount ?? 0;
 
   return (
-    <section className="flex flex-1 flex-col gap-6">
+    <section className="flex flex-col gap-6">
       <div
         aria-label="Session progress"
         aria-valuemax={sessionCardTotal || 1}

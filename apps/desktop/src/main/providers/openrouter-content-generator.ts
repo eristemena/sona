@@ -24,11 +24,12 @@ export interface PracticeSentenceGenerator {
 export class OpenRouterProviderUnavailableError extends Error {}
 
 interface OpenRouterRuntime {
-  fetch: typeof fetch
-  apiKey: string | null
-  endpoint: string
-  siteUrl?: string
-  appTitle?: string
+  fetch: typeof fetch;
+  apiKey?: string | null;
+  getApiKey?: () => string | null;
+  endpoint: string;
+  siteUrl?: string;
+  appTitle?: string;
 }
 
 interface OpenRouterResponse {
@@ -46,77 +47,92 @@ export class OpenRouterContentGenerator implements PracticeSentenceGenerator {
   constructor(
     private readonly runtime: OpenRouterRuntime = {
       fetch,
-      apiKey: process.env.OPENROUTER_API_KEY ?? null,
-      endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-      appTitle: 'Sona Desktop',
+      getApiKey: () => null,
+      endpoint: "https://openrouter.ai/api/v1/chat/completions",
+      appTitle: "Sona Desktop",
     },
   ) {}
 
   async generateSentences(input: {
-    topic: string
-    difficulty: RequiredDifficultyLevel
+    topic: string;
+    difficulty: RequiredDifficultyLevel;
   }): Promise<GeneratedPracticeContent> {
-    const topic = assertGenerationTopic(input.topic)
+    const topic = assertGenerationTopic(input.topic);
     const content = await this.request({
       model: PRACTICE_SENTENCE_MODELS.generator,
       messages: [
-        { role: 'system', content: buildGenerationSystemPrompt() },
-        { role: 'user', content: buildGenerationUserPrompt({ topic, difficulty: input.difficulty }) },
+        { role: "system", content: buildGenerationSystemPrompt() },
+        {
+          role: "user",
+          content: buildGenerationUserPrompt({
+            topic,
+            difficulty: input.difficulty,
+          }),
+        },
       ],
       response_format: {
-        type: 'json_schema',
+        type: "json_schema",
         json_schema: {
-          name: 'generated_practice_sentences',
+          name: "generated_practice_sentences",
           strict: true,
           schema: {
-            type: 'object',
+            type: "object",
             properties: {
-              title: { type: 'string' },
+              title: { type: "string" },
               sentences: {
-                type: 'array',
-                items: { type: 'string' },
+                type: "array",
+                items: { type: "string" },
                 minItems: 1,
               },
             },
-            required: ['title', 'sentences'],
+            required: ["title", "sentences"],
             additionalProperties: false,
           },
         },
       },
-    })
+    });
 
     const parsed = JSON.parse(content) as {
-      title?: unknown
-      sentences?: unknown
-    }
+      title?: unknown;
+      sentences?: unknown;
+    };
 
     const sentences = Array.isArray(parsed.sentences)
-      ? normalizeGeneratedSentences(parsed.sentences.filter((sentence): sentence is string => typeof sentence === 'string'))
-      : []
+      ? normalizeGeneratedSentences(
+          parsed.sentences.filter(
+            (sentence): sentence is string => typeof sentence === "string",
+          ),
+        )
+      : [];
 
     if (sentences.length === 0) {
-      throw new OpenRouterProviderUnavailableError('Generated content could not be created right now.')
+      throw new OpenRouterProviderUnavailableError(
+        "Generated content could not be created right now.",
+      );
     }
 
     return {
-      title: typeof parsed.title === 'string' && parsed.title.trim().length > 0 ? parsed.title.trim() : `${topic} Practice`,
+      title:
+        typeof parsed.title === "string" && parsed.title.trim().length > 0
+          ? parsed.title.trim()
+          : `${topic} Practice`,
       sentences,
-    }
+    };
   }
 
   async validateDifficulty(input: {
-    topic: string
-    requestedDifficulty: RequiredDifficultyLevel
-    sentences: string[]
+    topic: string;
+    requestedDifficulty: RequiredDifficultyLevel;
+    sentences: string[];
   }): Promise<DifficultyValidationResult> {
-    const topic = assertGenerationTopic(input.topic)
-    const sentences = normalizeGeneratedSentences(input.sentences)
+    const topic = assertGenerationTopic(input.topic);
+    const sentences = normalizeGeneratedSentences(input.sentences);
     const content = await this.request({
       model: PRACTICE_SENTENCE_MODELS.validator,
       messages: [
-        { role: 'system', content: buildValidationSystemPrompt() },
+        { role: "system", content: buildValidationSystemPrompt() },
         {
-          role: 'user',
+          role: "user",
           content: buildValidationUserPrompt({
             topic,
             requestedDifficulty: input.requestedDifficulty,
@@ -125,96 +141,123 @@ export class OpenRouterContentGenerator implements PracticeSentenceGenerator {
         },
       ],
       response_format: {
-        type: 'json_schema',
+        type: "json_schema",
         json_schema: {
-          name: 'difficulty_validation',
+          name: "difficulty_validation",
           strict: true,
           schema: {
-            type: 'object',
+            type: "object",
             properties: {
               validationOutcome: {
-                type: 'string',
-                enum: ['accepted', 'relabeled', 'rejected'],
+                type: "string",
+                enum: ["accepted", "relabeled", "rejected"],
               },
               validatedDifficulty: {
-                anyOf: [{ type: 'integer', enum: [1, 2, 3] }, { type: 'null' }],
+                anyOf: [{ type: "integer", enum: [1, 2, 3] }, { type: "null" }],
               },
-              explanation: { type: 'string' },
+              explanation: { type: "string" },
             },
-            required: ['validationOutcome', 'validatedDifficulty', 'explanation'],
+            required: [
+              "validationOutcome",
+              "validatedDifficulty",
+              "explanation",
+            ],
             additionalProperties: false,
           },
         },
       },
-    })
+    });
 
     const parsed = JSON.parse(content) as {
-      validationOutcome?: unknown
-      validatedDifficulty?: unknown
-      explanation?: unknown
-    }
+      validationOutcome?: unknown;
+      validatedDifficulty?: unknown;
+      explanation?: unknown;
+    };
 
-    return normalizeDifficultyValidationResult(parsed, input.requestedDifficulty)
+    return normalizeDifficultyValidationResult(
+      parsed,
+      input.requestedDifficulty,
+    );
   }
 
   private async request(body: Record<string, unknown>): Promise<string> {
-    if (!this.runtime.apiKey) {
-      throw new OpenRouterProviderUnavailableError('Generated practice sentences require an OpenRouter API key.')
+    const apiKey = this.getApiKey();
+
+    if (!apiKey) {
+      throw new OpenRouterProviderUnavailableError(
+        "Generated practice sentences require an OpenRouter API key.",
+      );
     }
 
-    let response: Response
+    let response: Response;
     try {
       response = await this.runtime.fetch(this.runtime.endpoint, {
-        method: 'POST',
-        headers: this.getHeaders(),
+        method: "POST",
+        headers: this.getHeaders(apiKey),
         body: JSON.stringify(body),
-      })
+      });
     } catch {
-      throw new OpenRouterProviderUnavailableError('Generated content could not be created right now. The local library remains available.')
+      throw new OpenRouterProviderUnavailableError(
+        "Generated content could not be created right now. The local library remains available.",
+      );
     }
 
-    const payload = (await response.json()) as OpenRouterResponse
+    const payload = (await response.json()) as OpenRouterResponse;
     if (!response.ok) {
       throw new OpenRouterProviderUnavailableError(
-        payload.error?.message?.trim() || 'Generated content could not be created right now. The local library remains available.',
-      )
+        payload.error?.message?.trim() ||
+          "Generated content could not be created right now. The local library remains available.",
+      );
     }
 
-    const content = this.extractMessageContent(payload)
+    const content = this.extractMessageContent(payload);
     if (!content) {
-      throw new OpenRouterProviderUnavailableError('Generated content could not be created right now. The provider returned an empty response.')
+      throw new OpenRouterProviderUnavailableError(
+        "Generated content could not be created right now. The provider returned an empty response.",
+      );
     }
 
-    return content
+    return content;
   }
 
   private extractMessageContent(payload: OpenRouterResponse): string {
-    const content = payload.choices?.[0]?.message?.content
-    if (typeof content === 'string') {
-      return content
+    const content = payload.choices?.[0]?.message?.content;
+    if (typeof content === "string") {
+      return content;
     }
 
     if (Array.isArray(content)) {
-      return content.map((part) => part.text ?? '').join('').trim()
+      return content
+        .map((part) => part.text ?? "")
+        .join("")
+        .trim();
     }
 
-    return ''
+    return "";
   }
 
-  private getHeaders(): Record<string, string> {
-    const headers: Record<string, string> = {
-      Authorization: `Bearer ${this.runtime.apiKey}`,
-      'Content-Type': 'application/json',
+  private getApiKey(): string | null {
+    if (typeof this.runtime.getApiKey === "function") {
+      return this.runtime.getApiKey();
     }
 
+    return this.runtime.apiKey ?? null;
+  }
+
+  private getHeaders(apiKey: string): Record<string, string> {
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    };
+
     if (this.runtime.siteUrl) {
-      headers['HTTP-Referer'] = this.runtime.siteUrl
+      headers["HTTP-Referer"] = this.runtime.siteUrl;
     }
 
     if (this.runtime.appTitle) {
-      headers['X-OpenRouter-Title'] = this.runtime.appTitle
+      headers["X-OpenRouter-Title"] = this.runtime.appTitle;
     }
 
-    return headers
+    return headers;
   }
 }

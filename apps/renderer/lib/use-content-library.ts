@@ -9,12 +9,16 @@ import type {
   GeneratePracticeSentencesInput,
   ImportSrtInput,
   LibraryFilter,
-  ListLibraryItemsInput,
   SaveContentResult,
-} from '@sona/domain/contracts/content-library'
+} from "@sona/domain/contracts/content-library";
 import type { WindowSona } from '@sona/domain/contracts/window-sona'
 
-import type { ContentBlockSummary, LibraryItemSummary } from './content-library-filters'
+import {
+  applyContentLibraryQuery,
+  type ContentBlockSummary,
+  type LibraryItemSummary,
+  type LibrarySortOption,
+} from "./content-library-filters";
 
 let lastSelectedLibraryItemId: string | null = null
 
@@ -28,9 +32,10 @@ function getContentApi(): WindowSona['content'] | null {
 
 export function useContentLibrary() {
   const [filter, setFilter] = useState<LibraryFilter>('all')
+  const [sort, setSort] = useState<LibrarySortOption>("newest");
   const [search, setSearch] = useState('')
   const deferredSearch = useDeferredValue(search)
-  const [items, setItems] = useState<LibraryItemSummary[]>([])
+  const [catalogItems, setCatalogItems] = useState<LibraryItemSummary[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(lastSelectedLibraryItemId)
   const [selectedBlocks, setSelectedBlocks] = useState<ContentBlockSummary[]>([])
   const [isLoadingItems, setIsLoadingItems] = useState(true)
@@ -42,19 +47,13 @@ export function useContentLibrary() {
   async function refreshItems(preferredItemId?: string) {
     const contentApi = getContentApi()
     if (!contentApi) {
-      setItems([])
+      setCatalogItems([]);
       setSelectedItemId(null)
       return
     }
 
-    const query: ListLibraryItemsInput = { filter }
-    const normalizedSearch = deferredSearch.trim()
-    if (normalizedSearch) {
-      query.search = normalizedSearch
-    }
-
-    const nextItems = await contentApi.listLibraryItems(query)
-    setItems(nextItems)
+    const nextItems = await contentApi.listLibraryItems();
+    setCatalogItems(nextItems);
     startTransition(() => {
       setSelectedItemId((current) => {
         const candidateId = preferredItemId ?? current
@@ -68,45 +67,69 @@ export function useContentLibrary() {
   }
 
   useEffect(() => {
-    let active = true
-    const contentApi = getContentApi()
+    let active = true;
+    const contentApi = getContentApi();
 
     if (!contentApi) {
-      setItems([])
-      setIsLoadingItems(false)
-      setErrorMessage(null)
-      return
+      setCatalogItems([]);
+      setIsLoadingItems(false);
+      setErrorMessage(null);
+      return;
     }
 
-    setIsLoadingItems(true)
-    setErrorMessage(null)
+    setIsLoadingItems(true);
+    setErrorMessage(null);
 
     void refreshItems()
       .then(() => {
         if (!active) {
-          return
+          return;
         }
       })
       .catch(() => {
         if (!active) {
-          return
+          return;
         }
 
-        setItems([])
-        setSelectedItemId(null)
-        setSelectedBlocks([])
-        setErrorMessage('The Content Library could not be loaded from the local desktop bridge.')
+        setCatalogItems([]);
+        setSelectedItemId(null);
+        setSelectedBlocks([]);
+        setErrorMessage(
+          "The Content Library could not be loaded from the local desktop bridge.",
+        );
       })
       .finally(() => {
         if (active) {
-          setIsLoadingItems(false)
+          setIsLoadingItems(false);
         }
-      })
+      });
 
     return () => {
-      active = false
+      active = false;
+    };
+  }, []);
+
+  const items = useMemo(
+    () =>
+      applyContentLibraryQuery({
+        items: catalogItems,
+        filter,
+        search: deferredSearch,
+        sort,
+      }),
+    [catalogItems, deferredSearch, filter, sort],
+  );
+
+  useEffect(() => {
+    if (!selectedItemId) {
+      return;
     }
-  }, [deferredSearch, filter])
+
+    if (!items.some((item) => item.id === selectedItemId)) {
+      setSelectedItemId(null);
+      setSelectedBlocks([]);
+    }
+  }, [items, selectedItemId]);
 
   useEffect(() => {
     let active = true
@@ -355,6 +378,7 @@ export function useContentLibrary() {
     queryState: {
       filter,
       search,
+      sort,
       resultCount: items.length,
     },
     errorMessage,
@@ -365,6 +389,7 @@ export function useContentLibrary() {
     selectItem: setSelectedItemId,
     setFilter,
     setSearch,
+    setSort,
     deleteContent,
-  }
+  };
 }

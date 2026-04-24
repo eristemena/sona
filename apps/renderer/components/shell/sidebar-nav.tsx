@@ -45,22 +45,22 @@ export function SidebarNav({
   }
 
   return (
-    <aside className="flex min-h-dvh w-full max-w-[216px] shrink-0 flex-col border-r border-(--border) bg-[color-mix(in_srgb,var(--bg-surface)_78%,transparent)] px-3.5 py-4 backdrop-blur-2xl">
+    <aside className="flex h-full w-full max-w-55 shrink-0 flex-col overflow-hidden border-r border-(--border) bg-[color-mix(in_srgb,var(--bg-surface)_78%,transparent)] px-4 py-5 backdrop-blur-2xl">
       <a className="skip-link" href="#main-content">
         Skip to main content
       </a>
-      <div className="mb-6 flex items-center gap-3 px-2">
+      <div className="mb-5 flex items-center gap-3 px-0">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-(--border) bg-(--bg-elevated) text-(--accent) shadow-[0_8px_24px_rgba(8,12,22,0.18)]">
           <Sparkles className="h-4 w-4" />
         </div>
         <div>
-          <p className="text-[17px] font-semibold text-(--text-primary)">
+          <p className="text-[16px] font-bold text-(--text-primary)">
             {appName}
           </p>
         </div>
       </div>
 
-      <nav aria-label="Primary" className="flex flex-1 flex-col gap-1.5">
+      <nav aria-label="Primary" className="flex flex-col gap-1">
         {navigation.map((destination) => (
           <SidebarNavItem
             active={activeDestination === destination.id}
@@ -75,15 +75,6 @@ export function SidebarNav({
           />
         ))}
       </nav>
-
-      <div className="mt-6 rounded-[18px] border border-(--border) bg-(--bg-elevated)/72 p-4 panel-enter">
-        <p className="text-xs uppercase tracking-[0.24em] text-(--text-muted)">
-          Local-first
-        </p>
-        <p className="mt-2 text-[13px] leading-6 text-(--text-secondary)">
-          Theme, shell state, and study progress stay on this device.
-        </p>
-      </div>
     </aside>
   );
 }
