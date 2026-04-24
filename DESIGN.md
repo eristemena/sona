@@ -126,21 +126,213 @@ font-weight: 500;
 ```
 
 The sidebar is always visible on desktop. No hamburger menu needed.
-Navigation items have an icon + label. Active state uses `--accent-subtle` background with
-`--accent` left border (2px).
+
+#### Sidebar Header
+
+```
+┌─────────────────────────┐
+│  [icon 32px]  Sona      │  ← app icon left, "Sona" 16px weight 700 --text-primary
+└─────────────────────────┘
+```
+
+- Padding: `20px 16px`
+- No label above the app name (no "STUDY SHELL" or any category label)
+- App icon: rounded square, 32px, `--accent` background, white 소 character or star motif
+
+#### Navigation Items
+
+```
+┌─────────────────────────┐
+│ ■  Dashboard            │  ← inactive
+│─────────────────────────│
+│▌■  Library              │  ← active: --accent left border 2px, --accent-subtle bg
+│─────────────────────────│
+│ ■  Review          [12] │  ← inactive with due count badge
+│─────────────────────────│
+│ ■  Settings             │  ← inactive
+└─────────────────────────┘
+```
+
+- Item height: `40px`, padding: `0 16px`, border-radius: `6px`, margin: `2px 8px`
+- Icon: Lucide, 20px, `--text-muted` when inactive, `--accent` when active
+  - Dashboard: `LayoutDashboard`
+  - Library: `BookOpen`
+  - Review: `Brain`
+  - Settings: `Settings`
+- Label: 14px, weight 500, `--text-secondary` when inactive, `--text-primary` when active
+- Active state: `--accent-subtle` background, `2px solid --accent` left border, label and icon use active colors
+- Hover (inactive only): `--bg-surface` background, `--text-primary` label
+- Due count badge (Review only): small pill, `--accent` background, white text, 11px weight 600, padding `2px 6px`, border-radius `10px`. Hidden when count is 0. Never show a number on any other nav item.
+- No sequential numbers (01, 02, 03, 04) — do not add any numbers to nav items
 
 ---
 
 ## Key Screens
 
+### 0. Onboarding (First Launch)
+
+Shown only on first launch (`onboarding_complete: false` in settings). Replaces the entire app window — no sidebar, no navigation. Three steps with a progress indicator. Every step has a "Skip" option.
+
+#### Overall Structure
+
+```
+┌──────────────────────────────────────────────────────┐
+│                    ● ○ ○                             │  ← step dots, centered top
+│                                                      │
+│                                                      │
+│                  [step content]                      │  ← centered vertically
+│                                                      │
+│                                                      │
+│         [Skip]              [Continue →]             │  ← footer actions
+└──────────────────────────────────────────────────────┘
+```
+
+- Background: `--bg-base`. No sidebar. No window chrome beyond the standard title bar.
+- Step dots: 3 dots, 8px diameter, `gap: 8px`. Active: `--accent`. Inactive: `--border`.
+- "Skip" button: Ghost style, left-aligned in footer
+- "Continue" button: Primary style, right-aligned in footer, Lucide `ArrowRight` icon after label
+- Page transition between steps: fade + translate-x 16px → 0, `200ms ease`
+
+#### Step 1 — Welcome
+
+```
+        소
+
+    Welcome to Sona
+
+    Your personal Korean reading and
+    review companion. Study at your
+    own pace, with content you choose.
+
+    [Continue →]
+```
+
+- 소 character: 64px, weight 700, `--accent` color — decorative, centered
+- Title: 28px weight 700 `--text-primary`, centered
+- Body: 15px `--text-secondary`, centered, max-width `360px`, line-height 1.7
+- No illustration, no mascot, no animation beyond the page transition
+
+#### Step 2 — Korean Level
+
+```
+    What's your Korean level?
+
+    We'll use this to skip words you
+    already know when you start reading.
+
+    [Complete beginner]
+    [초급  TOPIK 1–2]
+    [중급  TOPIK 3–4]
+    [고급  TOPIK 5–6]
+```
+
+- Title: 22px weight 600 `--text-primary`, centered
+- Sublabel: 14px `--text-secondary`, centered, max-width `320px`
+- Level options: vertical stack of selectable rows, `gap: 8px`, max-width `400px`, centered
+- Each row: `--bg-surface` bg, `1px solid --border` border, `8px` radius, `14px 20px` padding, 15px weight 500 `--text-primary`. Selected: `--accent-subtle` bg, `1px solid --accent` border.
+- TOPIK level rows show the Korean label left + level range right in `--text-muted`
+- One selection required to enable "Continue" — default is "Complete beginner"
+
+#### Step 3 — API Keys
+
+```
+    Set up your API keys
+
+    Sona uses AI for word lookup and
+    audio. Both keys stay on your device.
+
+    OpenRouter API Key  (LLM · word lookup)
+    ┌──────────────────────────────┐ [Test]
+    │                              │
+    └──────────────────────────────┘
+    Get your key at openrouter.ai
+
+    OpenAI API Key  (TTS · audio)
+    ┌──────────────────────────────┐ [Test]
+    │                              │
+    └──────────────────────────────┘
+    Get your key at platform.openai.com
+```
+
+- Title: 22px weight 600, centered
+- Sublabel: 14px `--text-secondary`, centered, max-width `360px`
+- Key fields: same pattern as Settings — masked input, show/hide toggle, Test button
+- "Skip" on this step shows a note: "You can add keys later in Settings. Word lookup and audio won't work until keys are configured."
+- Keys are not required to complete onboarding — the app is fully usable for text reading without them
+
+---
+
 ### 1. Dashboard
 
-- Today's review count as a prominent number (large, centered card)
-- Streak counter with a flame icon
-- "Continue lesson" CTA — most prominent button on screen
-- Recent vocabulary list (last 5 words added to SRS deck)
-- Weekly activity chart (simple bar chart, use Recharts)
-- Keep it minimal — no more than 4 information blocks
+Calm and informational. No celebrations, no motivational copy. Just the data the learner needs to decide what to do next.
+
+#### Overall Layout
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  Good morning                                                │  ← greeting, --text-muted 14px
+│                                                              │
+│  ┌─────────────────────────┐  ┌──────────────────────────┐  │
+│  │  12                     │  │  Continue reading         │  │
+│  │  cards due today        │  │  카페에서 커피 주문하기    │  │
+│  │                         │  │  [Continue →]            │  │
+│  │  [Start Review]         │  └──────────────────────────┘  │
+│  └─────────────────────────┘                                 │
+│                                                              │
+│  This week                                                   │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  [bar chart — 7 days]                                │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                                                              │
+│  Recently added                                              │
+│  반갑습니다 · Nice to meet you                               │
+│  주문하다 · to order                                         │
+│  ···                                                         │
+└──────────────────────────────────────────────────────────────┘
+```
+
+#### Greeting
+
+- "Good morning" / "Good afternoon" / "Good evening" based on local time — 14px `--text-muted`, no name (app doesn't know the user's name)
+- If no activity ever: replace with "Welcome to Sona" — shown only on the very first open
+
+#### Review Count Card
+
+- Background: `--bg-surface`, border: `1px solid --border`, border-radius: `8px`, padding: `24px`
+- Count: 48px weight 700 `--accent` — large and prominent
+- Label: "cards due today" — 14px `--text-secondary` below the count
+- "Start Review" button: Primary style, `margin-top: 16px`
+- If count is 0: count shows "0" in `--text-muted`, label changes to "You're all caught up", button changes to "Browse Library" (Secondary style)
+
+#### Continue Reading Card
+
+- Background: `--bg-surface`, border: `1px solid --border`, border-radius: `8px`, padding: `24px`
+- Label: "Continue reading" — 11px weight 500 `--text-muted` ALL CAPS
+- Content title: 16px weight 600 `--text-primary`, single line with ellipsis
+- "Continue" button: Secondary style with Lucide `ArrowRight` icon
+- If no content ever opened: card shows "Start reading" label, "Browse Library" button — no content title
+
+#### Weekly Activity Chart
+
+- Section label: "This week" — 13px weight 500 `--text-secondary`
+- Recharts `BarChart`, 7 bars (Mon–Sun), height `80px`
+- Bar color: `--accent`, bar-radius: `4px` on top corners
+- No axis labels, no gridlines, no legend. Bars only.
+- Today's bar: `--accent` at full opacity. Past days: `--accent` at 50%. Future days: `--border`.
+- If no activity: all bars at zero height — show the empty chart, no placeholder text
+
+#### Streak
+
+- Displayed as a single line below the greeting: Lucide `Flame` icon (16px, `--warning`) + "7 day streak" in 13px `--text-secondary`
+- Only shown when streak ≥ 2 days. Hidden when streak is 0 or 1 — no "0 day streak" label.
+- No banner, no celebration, no prominent placement. Subtle and informational only.
+
+#### Recently Added Vocabulary
+
+- Section label: "Recently added" — 13px weight 500 `--text-secondary`
+- List of last 5 words added to deck, each row: Korean word (15px weight 500 `--text-primary`) + `·` separator + English gloss (15px `--text-secondary`). One row per word, `gap: 8px`.
+- If no words yet: "Words you add while reading will appear here." in 14px `--text-muted`
+- No "See all" link — Dashboard is a summary, not a list manager
 
 ### 2. Reading View
 
@@ -281,14 +473,125 @@ Pinned to the bottom of the main content area (not the window — it scrolls wit
 
 ### 3. SRS Review (Flashcard)
 
-- Card centered on screen, max 560px wide
-- Front: Korean word or sentence, large (32px for vocabulary, 20px for sentences)
-- Back: English meaning, romanization, example sentence
-- Flip animation: CSS 3D card flip via Framer Motion, 300ms ease
-- After flip, show 4 rating buttons: `다시` (Again) · `어려움` (Hard) · `좋음` (Good) · `쉬움` (Easy)
-  Use Korean labels with English subtitles below in smaller text
-- Progress bar at top showing remaining cards in session
-- Do not show the card count number prominently — keep focus on the card itself
+A calm, focused review environment. Single column, no sidebars, no panels. The card is the only thing that matters.
+
+#### Overall Layout
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  ████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  │  ← progress bar (4px)
+│                                                              │
+│  Daily Review                               12 cards left   │  ← header
+│                                                              │
+│              ┌──────────────────────────┐                   │
+│              │                          │                   │
+│              │      반갑습니다           │                   │  ← card front (Korean only)
+│              │                          │                   │
+│              │   [Reveal answer]        │                   │
+│              └──────────────────────────┘                   │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+After flip:
+
+```
+│              ┌──────────────────────────┐                   │
+│              │  반갑습니다               │                   │  ← Korean (smaller, top)
+│              │  bangapseumnida           │                   │  ← romanization
+│              │  ─────────────────────   │                   │
+│              │  Nice to meet you.        │                   │  ← English meaning
+│              │                          │                   │
+│              │  반가워요, 처음 뵙겠습니다  │                   │  ← example sentence
+│              │  (Nice to meet you,      │                   │  ← sentence translation
+│              │  formal context)         │                   │
+│              └──────────────────────────┘                   │
+│                                                              │
+│         [다시]    [어려움]    [좋음]    [쉬움]               │  ← rating buttons
+│         Again      Hard       Good      Easy                │
+```
+
+#### Progress Bar
+
+- Height: `4px`, full width of the content area, no border-radius
+- Filled portion: `--accent`
+- Unfilled portion: `--border`
+- No number label on the bar. No percentage text.
+- Sits flush at the very top of the content area, above all other elements
+
+#### Header
+
+- "Daily Review" — 22px weight 600 `--text-primary`, left-aligned
+- Cards remaining — 13px `--text-secondary` right-aligned, e.g. "12 cards left". Updates after each rating.
+- No instructional paragraph. No "Work the oldest due cards first" copy. No explanatory text of any kind.
+
+#### Card
+
+- Max-width: `560px`, centered horizontally, margin auto
+- Background: `--bg-surface`, border: `1px solid --border`, border-radius: `12px`, padding: `40px`
+- Shadow: `0 2px 8px rgba(0,0,0,0.25)`
+- **Card front:** Korean text only — no romanization, no English, no hints. The learner must attempt recall before flipping.
+  - Korean: Pretendard, 32px (vocabulary) or 20px (sentence), weight 500, `--text-primary`, centered
+  - "Reveal answer" button: Primary style, centered below the Korean text, `margin-top: 32px`
+- **Card back (after flip):**
+  - Korean: 20px weight 500 `--text-primary` (reduced from front size)
+  - Romanization: 14px italic `--text-secondary`, directly below Korean
+  - Divider: `1px solid --border`, `margin: 16px 0`
+  - English meaning: 18px weight 500 `--text-primary`
+  - Example sentence: 14px `--text-secondary`, Korean sentence from original reading context
+  - Example translation: 13px italic `--text-muted`
+- **Do not show:** FSRS state labels ("LEARNING", "REVIEW", "NEW"), due date, card ID, "DUE NOW" label, or any internal scheduler data
+- **Do not show romanization on the card front** — it removes the recall challenge
+
+#### Card Flip Animation
+
+- Framer Motion `rotateY`: front 0° → 180°, back starts at -180° → 0°
+- Duration: `300ms`, easing: `ease`
+- `backfaceVisibility: hidden` on both faces — prevents seeing through the card mid-flip
+- No bounce, no spring
+
+#### Rating Buttons
+
+Appear below the card only after the card is flipped. Hidden before flip.
+
+```
+┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+│  다시     │ │  어려움   │ │  좋음    │ │  쉬움    │
+│  Again   │ │  Hard    │ │  Good    │ │  Easy    │
+└──────────┘ └──────────┘ └──────────┘ └──────────┘
+```
+
+- Layout: 4-column grid, equal width, `gap: 8px`, max-width `560px`, centered
+- Height: `56px` (tall enough for two lines of text)
+- Korean label: 15px weight 600, top line
+- English subtitle: 12px weight 400 `--text-muted`, bottom line
+- Colors:
+  - 다시 (Again): `--danger` at 15% bg, `--danger` text. Hover: `--danger` at 25% bg
+  - 어려움 (Hard): `--warning` at 15% bg, `--warning` text. Hover: `--warning` at 25% bg
+  - 좋음 (Good): `--accent` bg, white text. Hover: `--accent-hover` bg
+  - 쉬움 (Easy): `--success` at 15% bg, `--success` text. Hover: `--success` at 25% bg
+- Border-radius: `8px`. No border. Transition: `120ms ease`.
+- Animate in after flip: fade + translate-y 8px → 0, `150ms ease`, `100ms` delay after flip completes
+
+#### Session Complete Screen
+
+When all cards in the session are rated, replace the card with:
+
+```
+              [Lucide CheckCircle, 48px, --success]
+
+              Session complete
+
+              You reviewed 12 cards.
+              Next session: tomorrow · 8 cards due
+
+              [Back to Dashboard]
+```
+
+- Title: 22px weight 600 `--text-primary`, centered
+- Body: 15px `--text-secondary`, centered
+- Button: Primary style, centered, `margin-top: 32px`
+- No confetti. No celebration animation. No streak pop-up. Calm acknowledgment only.
 
 ### 4. Content Library
 
@@ -415,6 +718,113 @@ Slides in from right when a card is selected. Fixed width `360px`. Background `-
 - "Open" button: Primary style, full width of its half, opens the reading view for this content
 - "Delete" button: Danger style (`--danger` text, `--danger` at 15% bg), triggers a confirmation dialog before deleting
 
+#### Import Modal
+
+Triggered by "Add content" button. A centered dialog, max-width `480px`, border-radius `12px`, background `--bg-surface`, border `1px solid --border`, padding `32px`.
+
+```
+┌─────────────────────────────────────────┐
+│  Add content                      [✕]   │  ← title 18px 600 + close button
+│                                         │
+│  ┌──────────────┐  ┌──────────────┐    │
+│  │  📄           │  │  ✨          │    │  ← two source type tabs
+│  │  Import file  │  │  Generate    │    │
+│  └──────────────┘  └──────────────┘    │
+│                                         │
+│  --- [ Import tab content ] ---         │
+│                                         │
+│  [Cancel]              [Import]         │  ← footer actions
+└─────────────────────────────────────────┘
+```
+
+- Title: 18px weight 600 `--text-primary`
+- Close button: Ghost, Lucide `X`, top-right
+- Two tabs at top: "Import file" and "Generate". Same pill tab style as Library filter tabs.
+- Footer: "Cancel" Ghost button left, primary action button right
+- Animate in: fade + scale 0.97 → 1, `150ms ease`. Backdrop: `rgba(0,0,0,0.5)`.
+
+**Import file tab — two sub-options (SRT or paste):**
+
+```
+  How would you like to add content?
+
+  ┌─────────────────────────────────┐
+  │  🎬  Import SRT subtitle file   │  ← selectable row
+  │  Drag a .srt file or browse     │
+  └─────────────────────────────────┘
+  ┌─────────────────────────────────┐
+  │  📋  Paste Korean text          │  ← selectable row
+  │  Article, lyrics, or any text   │
+  └─────────────────────────────────┘
+```
+
+- Sub-option rows: `--bg-elevated` bg, `1px solid --border` border, `8px` radius, `16px` padding. Selected: `--accent-subtle` bg, `1px solid --accent` border.
+- Icon: 20px, `--text-muted`
+- Label: 15px weight 500 `--text-primary`
+- Sublabel: 13px `--text-muted`
+
+When "Import SRT file" selected: show a file drop zone below:
+```
+  ┌─────────────────────────────────┐
+  │                                 │
+  │   Drop .srt file here           │
+  │   or  [Browse files]            │
+  │                                 │
+  └─────────────────────────────────┘
+```
+- Drop zone: `--bg-elevated` bg, `2px dashed --border`, `8px` radius, `80px` height, centered text 14px `--text-muted`
+- On file selected: show filename + file size in the drop zone, border changes to `--accent`
+
+When "Paste Korean text" selected: show a textarea below:
+```
+  ┌─────────────────────────────────┐
+  │  Paste Korean text here...      │
+  │                                 │
+  │                                 │
+  └─────────────────────────────────┘
+  Title (optional)
+  ┌─────────────────────────────────┐
+  │                                 │
+  └─────────────────────────────────┘
+```
+- Textarea: height `160px`, `--bg-elevated` bg, `1px solid --border`, `6px` radius, Pretendard 15px, `--text-primary`
+- Title input: standard input, 36px height, placeholder "e.g. BBC Korean article"
+
+**Generate tab:**
+
+```
+  Topic
+  ┌─────────────────────────────────┐
+  │  e.g. ordering coffee           │
+  └─────────────────────────────────┘
+
+  Difficulty
+  [초급]  중급  고급
+
+  Number of sentences
+  ┌────────┐
+  │  10    │ − +
+  └────────┘
+```
+
+- Topic: standard text input, placeholder "e.g. ordering coffee, at the airport"
+- Difficulty: pill selector, same style as onboarding level selector. Default: 초급.
+- Sentence count: number input with stepper, range 5–30, default 10
+- Primary button label changes to "Generate" on this tab
+- While generating: button shows a subtle loading spinner, label "Generating…". Input fields remain visible but disabled.
+
+#### Sort Controls
+
+Rendered as a row to the right of the filter tabs, right-aligned:
+
+```
+Sort: [Date added ▾]
+```
+
+- A single dropdown (shadcn/ui Select), 36px height, options: "Date added", "Difficulty", "Read time"
+- Label "Sort:" in 13px `--text-muted` before the dropdown
+- No sort direction toggle for v1 — always descending (newest/hardest/longest first)
+
 #### Empty State (no content imported yet)
 
 Centered in the content area, vertically and horizontally:
@@ -444,11 +854,58 @@ Same layout, but:
 
 ### 5. Settings
 
-- Simple vertical form layout, no tabs
-- Sections: General · API Keys · TTS Voice · Study Goals · Appearance
-- API key fields: masked input with show/hide toggle and a "Test connection" button
-- TTS voice: dropdown with a play button to preview the selected voice
-- Study goal: daily review target (number input with stepper)
+Simple vertical form layout. No tabs, no sidebar navigation within Settings. Max-width `640px`, centered. Sections separated by a section header and a `1px solid --border` divider.
+
+#### Section Header Style
+
+```
+GENERAL                              ← 11px weight 500 --text-muted ALL CAPS
+──────────────────────────────────   ← 1px --border divider below
+```
+
+#### Section: General
+
+- **Daily review goal:** number input with `−` / `+` stepper buttons. Label: "Daily review goal". Sublabel: "Cards per session · default 50" in 13px `--text-muted`.
+- **TOPIK level:** pill selector (Complete beginner · 초급 · 중급 · 고급). Active pill: `--accent` bg. Label: "My Korean level". Sublabel: "Used to suppress already-known words from your deck."
+- **Re-seed known words:** Ghost button with Lucide `RefreshCw` icon. Label: "Re-seed known words". Sublabel: "Adds words from your selected level to the known list. Does not remove words you've already studied." Triggers a confirmation dialog before running.
+
+#### Section: API Keys
+
+Two separate key fields, same pattern for each:
+
+```
+OpenRouter API Key (LLM)
+┌──────────────────────────────────┐ [👁] [Test]
+│  sk-or-••••••••••••••••••••••   │
+└──────────────────────────────────┘
+✓ Connected                          ← --success, 13px, shown after successful test
+```
+
+- Label above input: "OpenRouter API Key (LLM)" and "OpenAI API Key (TTS)" — clearly labelled with purpose in parentheses
+- Input: masked by default (••••), height 36px
+- Show/hide toggle: Lucide `Eye` / `EyeOff`, Ghost button, inside input right side
+- "Test" button: Secondary style, 36px height, to the right of the input
+- After successful test: green checkmark + "Connected" in `--success` below the input
+- After failed test: "Connection failed. Check your key." in `--danger` below the input
+- Sublabel below each field: "Get your key at openrouter.ai" / "Get your key at platform.openai.com" — 13px `--text-muted`
+- Settings are saved immediately on change — no Save button
+
+#### Section: TTS Voice
+
+- **Voice selector:** pill group — alloy · nova · shimmer · echo · fable · onyx. Active pill: `--accent` bg. Wrap to two rows if needed.
+- **Preview button:** Ghost button with Lucide `Volume2` icon, label "Preview voice". Plays a short fixed Korean phrase ("안녕하세요, 소나입니다.") in the selected voice. Button shows a subtle loading state while audio generates.
+
+#### Section: Appearance
+
+- **Theme:** three-way toggle — System · Light · Dark. Same pill style as voice selector.
+  - System: follows `prefers-color-scheme`
+  - Active pill: `--accent` bg, white text
+
+#### Section: Advanced
+
+- **LLM call cap:** number input, label "Max LLM calls per session", sublabel "Prevents runaway API usage. Default: 100."
+- **Annotation cache TTL:** number input (days), label "Annotation cache duration", sublabel "Cached annotations older than this are refreshed in the background. Default: 30 days."
+- **Clear annotation cache:** Danger Ghost button, label "Clear annotation cache", sublabel "Forces all word annotations to be re-fetched from the LLM. Cannot be undone." Triggers a confirmation dialog.
 
 ---
 
