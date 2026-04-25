@@ -56,6 +56,7 @@ export interface CreateArticleFromUrlInput {
 
 export interface GeneratePracticeSentencesInput {
   topic: string
+  sentenceCount: number
   difficulty: RequiredDifficultyLevel
   confirmDuplicate?: boolean
 }

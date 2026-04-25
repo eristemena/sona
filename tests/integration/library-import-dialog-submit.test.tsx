@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -9,6 +9,7 @@ import type { WindowSona } from '../../packages/domain/src/contracts/window-sona
 
 describe('library import dialog submit integration', () => {
   beforeEach(() => {
+    let generatedItemSequence = 0
     const state = {
       items: [] as Array<{
         id: string
@@ -95,6 +96,43 @@ describe('library import dialog submit integration', () => {
       }
     })
 
+    const generatePracticeSentences = vi.fn(async (input: { topic: string; sentenceCount: number; difficulty: number; confirmDuplicate?: boolean }) => {
+      generatedItemSequence += 1
+      const generatedId = `generated-${generatedItemSequence}`
+
+      state.items = [
+        {
+          id: generatedId,
+          title: 'Ordering coffee',
+          sourceType: 'generated',
+          difficulty: input.difficulty,
+          difficultyBadge: input.difficulty === 1 ? '초급' : input.difficulty === 2 ? '중급' : '고급',
+          provenanceLabel: 'Generation request',
+          provenanceDetail: `Topic: ${input.topic}`,
+          createdAt: 4,
+          blockCount: input.sentenceCount,
+        },
+        ...state.items,
+      ]
+
+      return {
+        ok: true as const,
+        item: state.items[0],
+        blocks: Array.from({ length: input.sentenceCount }, (_, index) => ({
+          id: `${generatedId}-block-${index + 1}`,
+          korean: `문장 ${index + 1}`,
+          romanization: null,
+          tokens: null,
+          annotations: {},
+          difficulty: input.difficulty,
+          sourceType: 'generated' as const,
+          audioOffset: null,
+          sentenceOrdinal: index + 1,
+          createdAt: 4,
+        })),
+      }
+    })
+
     window.sona = {
       shell: { getBootstrapState: vi.fn() },
       settings: {
@@ -109,7 +147,7 @@ describe('library import dialog submit integration', () => {
         importSrt,
         createArticleFromPaste,
         createArticleFromUrl: vi.fn(),
-        generatePracticeSentences: vi.fn(),
+        generatePracticeSentences,
         deleteContent: vi.fn(),
       },
       reading: {
@@ -173,6 +211,49 @@ describe('library import dialog submit integration', () => {
     await waitFor(() => {
       expect(screen.queryByRole('dialog', { name: 'Save new Korean study material' })).not.toBeInTheDocument()
       expect(screen.getAllByText('Market Notes')).toHaveLength(2)
+    })
+  })
+
+  it('defaults generated practice to 10 sentences and submits the selected count', async () => {
+    const user = userEvent.setup()
+    const contentApi = window.sona.content
+
+    render(<ContentLibraryScreen />)
+
+    const results = await screen.findByRole('region', { name: 'Content Library results' })
+
+    await user.click(within(results).getByRole('button', { name: 'Add content' }))
+    const dialog = screen.getByRole('dialog', { name: 'Save new Korean study material' })
+    await user.click(within(dialog).getByRole('button', { name: /Generate practice/i }))
+    await user.type(screen.getByPlaceholderText('Ordering coffee, subway directions, weekend plans'), 'ordering coffee')
+    await user.click(screen.getByRole('button', { name: 'Generate practice sentences' }))
+
+    expect(contentApi.generatePracticeSentences).toHaveBeenNthCalledWith(1, {
+      topic: 'ordering coffee',
+      sentenceCount: 10,
+      difficulty: 1,
+      confirmDuplicate: false,
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Save new Korean study material' })).not.toBeInTheDocument()
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Add content' }))
+    const reopenedDialog = screen.getByRole('dialog', { name: 'Save new Korean study material' })
+    await user.click(within(reopenedDialog).getByRole('button', { name: /Generate practice/i }))
+    await user.type(screen.getByPlaceholderText('Ordering coffee, subway directions, weekend plans'), 'ordering coffee')
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Sentence count' }), {
+      target: { value: '12' },
+    })
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Difficulty' }), '2')
+    await user.click(screen.getByRole('button', { name: 'Generate practice sentences' }))
+
+    expect(contentApi.generatePracticeSentences).toHaveBeenNthCalledWith(2, {
+      topic: 'ordering coffee',
+      sentenceCount: 12,
+      difficulty: 2,
+      confirmDuplicate: false,
     })
   })
 })

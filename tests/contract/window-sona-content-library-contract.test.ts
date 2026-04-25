@@ -18,7 +18,7 @@ describe('window.sona content preload contract', () => {
     await api.content.importSrt({ filePath: '/tmp/sample.srt', difficulty: 1 })
     await api.content.createArticleFromPaste({ text: '안녕하세요.', difficulty: 2 })
     await api.content.createArticleFromUrl({ url: 'https://example.com', difficulty: 2 })
-    await api.content.generatePracticeSentences({ topic: 'coffee shop', difficulty: 3 })
+    await api.content.generatePracticeSentences({ topic: 'coffee shop', sentenceCount: 10, difficulty: 3 })
     await api.content.deleteContent('item-1')
 
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
@@ -45,7 +45,7 @@ describe('window.sona content preload contract', () => {
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(
       7,
       'sona:content:generate-practice-sentences',
-      { topic: 'coffee shop', difficulty: 3 },
+      { topic: 'coffee shop', sentenceCount: 10, difficulty: 3 },
     )
     expect(electronMockState.ipcRenderer.invoke).toHaveBeenNthCalledWith(8, 'sona:content:delete-content', 'item-1')
   })

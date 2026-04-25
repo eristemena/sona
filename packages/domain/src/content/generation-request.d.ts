@@ -5,8 +5,7 @@ export declare const PRACTICE_SENTENCE_MODELS: {
     readonly validator: "openai/gpt-4o-mini";
 };
 export interface GeneratedPracticeContent {
-    title: string;
-    sentences: string[];
+  sentences: string[];
 }
 export declare function normalizeGenerationTopic(topic: string): string;
 export declare function assertGenerationTopic(topic: string): string;

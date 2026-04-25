@@ -1,5 +1,6 @@
 import type { SaveContentDraft } from '@sona/data/sqlite/content-library-repository'
 import {
+  assertGenerationTopic,
   buildContentBlockId,
   buildContentItemId,
   createGeneratedDuplicateCheckText,
@@ -10,7 +11,7 @@ import {
   PRACTICE_SENTENCE_MODELS,
   toDifficultyBadge,
   type RequiredDifficultyLevel,
-} from '@sona/domain/content'
+} from "@sona/domain/content";
 import { localJsSegmenter } from "@sona/domain/tokenizer/local-js-segmenter";
 import type { GeneratePracticeSentencesInput } from '@sona/domain/contracts/content-library'
 import { validateCorpusSegment } from '@sona/domain/provenance/corpus-segment'
@@ -40,33 +41,38 @@ export class GeneratedContentService {
   async createFromTopic(input: GeneratePracticeSentencesInput): Promise<SaveContentDraft> {
     const createdAt = this.getCreatedAtTimestamp()
     const sessionId = `generation-request:${createdAt}`
+    const topic = assertGenerationTopic(input.topic);
+    const title = deriveGeneratedTitle(topic);
 
     try {
       const generated = await this.generator.generateSentences({
-        topic: input.topic,
+        topic,
+        sentenceCount: input.sentenceCount,
         difficulty: input.difficulty,
-      })
+      });
       const validation = await this.generator.validateDifficulty({
-        topic: input.topic,
+        topic,
         requestedDifficulty: input.difficulty,
         sentences: generated.sentences,
-      })
+      });
 
       if (validation.validationOutcome === 'rejected' || validation.validatedDifficulty === null) {
         throw new GeneratedContentValidationRejectedError(validation.explanation)
       }
 
       return this.createDraft({
-        topic: input.topic,
-        title: generated.title,
+        topic,
+        title,
         sentences: generated.sentences,
         requestedDifficulty: input.difficulty,
         validatedDifficulty: validation.validatedDifficulty,
         validationOutcome: validation.validationOutcome,
         createdAt,
         sessionId,
-        ...(input.confirmDuplicate !== undefined ? { confirmDuplicate: input.confirmDuplicate } : {}),
-      })
+        ...(input.confirmDuplicate !== undefined
+          ? { confirmDuplicate: input.confirmDuplicate }
+          : {}),
+      });
     } catch (error) {
       if (error instanceof OpenRouterProviderUnavailableError) {
         throw new GeneratedContentProviderUnavailableError(error.message)
@@ -99,7 +105,7 @@ export class GeneratedContentService {
       throw new Error('Generated content did not contain any usable Korean sentences.')
     }
 
-    const title = input.title.trim().length > 0 ? input.title.trim() : deriveGeneratedTitle(input.topic)
+    const title = input.title;
     const contentItemId = buildContentItemId({
       sourceType: 'generated',
       sourceLocator: input.sessionId,
@@ -153,20 +159,25 @@ export class GeneratedContentService {
       item: {
         id: contentItemId,
         title,
-        sourceType: 'generated',
+        sourceType: "generated",
         difficulty: input.validatedDifficulty,
         difficultyLabel: toDifficultyBadge(input.validatedDifficulty),
-        provenanceLabel: 'Generation request',
+        provenanceLabel: "Generation request",
         sourceLocator: input.sessionId,
         provenanceDetail,
-        searchText: createGeneratedSearchText(title, input.topic, normalizedSentences),
-        duplicateCheckText: createGeneratedDuplicateCheckText(normalizedSentences),
+        searchText: createGeneratedSearchText(
+          title,
+          input.topic,
+          normalizedSentences,
+        ),
+        duplicateCheckText:
+          createGeneratedDuplicateCheckText(normalizedSentences),
         createdAt: input.createdAt,
       },
       blocks,
       sourceRecord: {
         contentItemId,
-        originMode: 'generation-request',
+        originMode: "generation-request",
         filePath: null,
         url: null,
         sessionId: input.sessionId,
@@ -177,7 +188,7 @@ export class GeneratedContentService {
       },
       generationRequest: {
         sessionId: input.sessionId,
-        topic: input.topic.trim(),
+        topic: input.topic,
         requestedDifficulty: input.requestedDifficulty,
         generatorModel: PRACTICE_SENTENCE_MODELS.generator,
         validatorModel: PRACTICE_SENTENCE_MODELS.validator,
@@ -185,7 +196,9 @@ export class GeneratedContentService {
         validationOutcome: input.validationOutcome,
         createdAt: input.createdAt,
       },
-      ...(input.confirmDuplicate !== undefined ? { confirmDuplicate: input.confirmDuplicate } : {}),
-    }
+      ...(input.confirmDuplicate !== undefined
+        ? { confirmDuplicate: input.confirmDuplicate }
+        : {}),
+    };
   }
 }

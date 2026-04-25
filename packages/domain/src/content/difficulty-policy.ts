@@ -7,19 +7,29 @@ export interface DifficultyValidationResult {
   explanation: string
 }
 
-export function buildGenerationSystemPrompt(): string {
+export function buildGenerationSystemPrompt(input: {
+  topic: string
+  sentenceCount: number
+  difficulty: RequiredDifficultyLevel
+}): string {
   return [
     'You create Korean practice content for a self-directed learner.',
+    `Generate exactly ${input.sentenceCount} Korean sentences on the topic "${input.topic}" at ${toDifficultyBadge(input.difficulty)} (${input.difficulty}) difficulty level.`,
+    `Return exactly ${input.sentenceCount} sentences, no more and no less.`,
     'Return natural Korean sentences only, with no translations, romanization, numbering, or markdown.',
     'Keep the sentences focused on one topic and make the difficulty match the requested level.',
   ].join(' ')
 }
 
-export function buildGenerationUserPrompt(input: { topic: string; difficulty: RequiredDifficultyLevel }): string {
+export function buildGenerationUserPrompt(input: {
+  topic: string
+  sentenceCount: number
+  difficulty: RequiredDifficultyLevel
+}): string {
   return [
-    `Create 4 Korean practice sentences about: ${input.topic}.`,
+    `Generate exactly ${input.sentenceCount} Korean practice sentences about: ${input.topic}.`,
     `Target difficulty: ${toDifficultyBadge(input.difficulty)} (${input.difficulty}).`,
-    'Return a short title and the sentences in JSON.',
+    `Return exactly ${input.sentenceCount} sentences in JSON using the sentences array only.`,
   ].join(' ')
 }
 

@@ -8,17 +8,20 @@ import {
   normalizeGeneratedSentences,
   PRACTICE_SENTENCE_MODELS,
   type DifficultyValidationResult,
-  type GeneratedPracticeContent,
   type RequiredDifficultyLevel,
-} from '@sona/domain/content'
+} from "@sona/domain/content";
 
 export interface PracticeSentenceGenerator {
-  generateSentences(input: { topic: string; difficulty: RequiredDifficultyLevel }): Promise<GeneratedPracticeContent>
+  generateSentences(input: {
+    topic: string;
+    sentenceCount: number;
+    difficulty: RequiredDifficultyLevel;
+  }): Promise<{ sentences: string[] }>;
   validateDifficulty(input: {
-    topic: string
-    requestedDifficulty: RequiredDifficultyLevel
-    sentences: string[]
-  }): Promise<DifficultyValidationResult>
+    topic: string;
+    requestedDifficulty: RequiredDifficultyLevel;
+    sentences: string[];
+  }): Promise<DifficultyValidationResult>;
 }
 
 export class OpenRouterProviderUnavailableError extends Error {}
@@ -30,6 +33,7 @@ interface OpenRouterRuntime {
   endpoint: string;
   siteUrl?: string;
   appTitle?: string;
+  warn?: (message: string) => void;
 }
 
 interface OpenRouterResponse {
@@ -55,17 +59,67 @@ export class OpenRouterContentGenerator implements PracticeSentenceGenerator {
 
   async generateSentences(input: {
     topic: string;
+    sentenceCount: number;
     difficulty: RequiredDifficultyLevel;
-  }): Promise<GeneratedPracticeContent> {
+  }): Promise<{ sentences: string[] }> {
     const topic = assertGenerationTopic(input.topic);
+    const sentenceCount = this.assertSentenceCount(input.sentenceCount);
+    const firstAttempt = await this.requestGeneration({
+      topic,
+      sentenceCount,
+      difficulty: input.difficulty,
+    });
+
+    if (this.isCountWithinTolerance(firstAttempt.length, sentenceCount)) {
+      return {
+        sentences: firstAttempt,
+      };
+    }
+
+    this.warnCountMismatch(sentenceCount, firstAttempt.length, 1);
+
+    try {
+      const retryAttempt = await this.requestGeneration({
+        topic,
+        sentenceCount,
+        difficulty: input.difficulty,
+      });
+
+      if (!this.isCountWithinTolerance(retryAttempt.length, sentenceCount)) {
+        this.warnCountMismatch(sentenceCount, retryAttempt.length, 2);
+      }
+
+      return {
+        sentences: retryAttempt,
+      };
+    } catch {
+      return {
+        sentences: firstAttempt,
+      };
+    }
+  }
+
+  private async requestGeneration(input: {
+    topic: string;
+    sentenceCount: number;
+    difficulty: RequiredDifficultyLevel;
+  }): Promise<string[]> {
     const content = await this.request({
       model: PRACTICE_SENTENCE_MODELS.generator,
       messages: [
-        { role: "system", content: buildGenerationSystemPrompt() },
+        {
+          role: "system",
+          content: buildGenerationSystemPrompt({
+            topic: input.topic,
+            sentenceCount: input.sentenceCount,
+            difficulty: input.difficulty,
+          }),
+        },
         {
           role: "user",
           content: buildGenerationUserPrompt({
-            topic,
+            topic: input.topic,
+            sentenceCount: input.sentenceCount,
             difficulty: input.difficulty,
           }),
         },
@@ -78,14 +132,14 @@ export class OpenRouterContentGenerator implements PracticeSentenceGenerator {
           schema: {
             type: "object",
             properties: {
-              title: { type: "string" },
               sentences: {
                 type: "array",
                 items: { type: "string" },
-                minItems: 1,
+                minItems: input.sentenceCount,
+                maxItems: input.sentenceCount,
               },
             },
-            required: ["title", "sentences"],
+            required: ["sentences"],
             additionalProperties: false,
           },
         },
@@ -93,7 +147,6 @@ export class OpenRouterContentGenerator implements PracticeSentenceGenerator {
     });
 
     const parsed = JSON.parse(content) as {
-      title?: unknown;
       sentences?: unknown;
     };
 
@@ -111,13 +164,7 @@ export class OpenRouterContentGenerator implements PracticeSentenceGenerator {
       );
     }
 
-    return {
-      title:
-        typeof parsed.title === "string" && parsed.title.trim().length > 0
-          ? parsed.title.trim()
-          : `${topic} Practice`,
-      sentences,
-    };
+    return sentences;
   }
 
   async validateDifficulty(input: {
@@ -259,5 +306,22 @@ export class OpenRouterContentGenerator implements PracticeSentenceGenerator {
     }
 
     return headers;
+  }
+
+  private assertSentenceCount(sentenceCount: number): number {
+    if (!Number.isInteger(sentenceCount) || sentenceCount < 5 || sentenceCount > 30) {
+      throw new Error('Generated sentence count must be an integer between 5 and 30.')
+    }
+
+    return sentenceCount
+  }
+
+  private isCountWithinTolerance(actualCount: number, requestedCount: number): boolean {
+    return Math.abs(actualCount - requestedCount) <= 1
+  }
+
+  private warnCountMismatch(requestedCount: number, actualCount: number, attempt: number): void {
+    const warn = this.runtime.warn ?? ((message: string) => console.warn(message))
+    warn(`Generated sentence count mismatch on attempt ${attempt}: requested ${requestedCount}, received ${actualCount}.`)
   }
 }

@@ -8,8 +8,7 @@ export const PRACTICE_SENTENCE_MODELS = {
 } as const
 
 export interface GeneratedPracticeContent {
-  title: string
-  sentences: string[]
+  sentences: string[];
 }
 
 export function normalizeGenerationTopic(topic: string): string {
@@ -31,7 +30,11 @@ export function normalizeGeneratedSentences(sentences: string[]): string[] {
 }
 
 export function deriveGeneratedTitle(topic: string): string {
-  return `${assertGenerationTopic(topic)} Practice`
+  const normalizedTopic = assertGenerationTopic(topic);
+  const [firstCharacter = "", ...remainingCharacters] =
+    Array.from(normalizedTopic);
+
+  return `${firstCharacter.toLocaleUpperCase()}${remainingCharacters.join("")}`;
 }
 
 export function createGeneratedSearchText(title: string, topic: string, sentences: string[]): string {

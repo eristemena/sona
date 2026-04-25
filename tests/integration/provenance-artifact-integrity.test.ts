@@ -158,7 +158,6 @@ describe("provenance artifact integrity", () => {
     const generator: PracticeSentenceGenerator = {
       async generateSentences() {
         return {
-          title: "Station Practice",
           sentences: [
             "이번 역에서 내려서 오른쪽 출구로 나가세요.",
             "출구 앞에서 바로 버스를 갈아타면 돼요.",
@@ -179,6 +178,7 @@ describe("provenance artifact integrity", () => {
         now: () => 1_713_690_000_000,
       }).createFromTopic({
         topic: "station directions",
+        sentenceCount: 10,
         difficulty: 2,
       }),
     );

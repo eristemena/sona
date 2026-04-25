@@ -1,16 +1,18 @@
 import { assertRequiredDifficultyLevel, toDifficultyBadge } from './difficulty.js';
-export function buildGenerationSystemPrompt() {
+export function buildGenerationSystemPrompt(input) {
     return [
         'You create Korean practice content for a self-directed learner.',
+        `Generate exactly ${input.sentenceCount} Korean sentences on the topic "${input.topic}" at ${toDifficultyBadge(input.difficulty)} (${input.difficulty}) difficulty level.`,
+        `Return exactly ${input.sentenceCount} sentences, no more and no less.`,
         'Return natural Korean sentences only, with no translations, romanization, numbering, or markdown.',
         'Keep the sentences focused on one topic and make the difficulty match the requested level.',
     ].join(' ');
 }
 export function buildGenerationUserPrompt(input) {
     return [
-        `Create 4 Korean practice sentences about: ${input.topic}.`,
+        `Generate exactly ${input.sentenceCount} Korean practice sentences about: ${input.topic}.`,
         `Target difficulty: ${toDifficultyBadge(input.difficulty)} (${input.difficulty}).`,
-        'Return a short title and the sentences in JSON.',
+        `Return exactly ${input.sentenceCount} sentences in JSON using the sentences array only.`,
     ].join(' ');
 }
 export function buildValidationSystemPrompt() {

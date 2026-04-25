@@ -17,7 +17,9 @@ export function normalizeGeneratedSentences(sentences) {
     return sentences.map((sentence) => sentence.trim().replace(/\s+/g, ' ')).filter((sentence) => sentence.length > 0);
 }
 export function deriveGeneratedTitle(topic) {
-    return `${assertGenerationTopic(topic)} Practice`;
+    const normalizedTopic = assertGenerationTopic(topic);
+    const [firstCharacter = '', ...remainingCharacters] = Array.from(normalizedTopic);
+    return `${firstCharacter.toLocaleUpperCase()}${remainingCharacters.join('')}`;
 }
 export function createGeneratedSearchText(title, topic, sentences) {
     return normalizeSearchText([title, topic, ...normalizeGeneratedSentences(sentences)].join(' '));

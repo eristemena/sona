@@ -47,9 +47,177 @@ describe('content library schema contract', () => {
     )
 
     expect(appliedMigrations).toEqual(
-      expect.arrayContaining([{ version: 2, name: '002_content_library_v1' }]),
-    )
+      expect.arrayContaining([
+        { version: 2, name: "002_content_library_v1" },
+        { version: 7, name: "007_content_library_v2" },
+      ]),
+    );
   })
+
+  it("backfills generated titles from stored topics and uses a fallback when the topic is missing", async () => {
+    const {
+      buildContentBlockId,
+      buildContentItemId,
+      normalizeSearchText,
+      toDifficultyBadge,
+    } = await import("../../packages/domain/src/content/index.js");
+    const { SqliteContentLibraryRepository } =
+      await import("../../packages/data/src/sqlite/content-library-repository.js");
+
+    const database = createTestDatabase();
+    const repository = new SqliteContentLibraryRepository(database);
+
+    const topicBackfilledCreatedAt = 1_713_571_200_010;
+    const topicBackfilledSourceLocator =
+      "generation-request:legacy-korean-title";
+    const topicBackfilledContentItemId = buildContentItemId({
+      sourceType: "generated",
+      sourceLocator: topicBackfilledSourceLocator,
+      createdAt: topicBackfilledCreatedAt,
+    });
+
+    repository.saveContent({
+      item: {
+        id: topicBackfilledContentItemId,
+        title: "커피 주문 연습",
+        sourceType: "generated",
+        difficulty: 2,
+        difficultyLabel: toDifficultyBadge(2),
+        provenanceLabel: "Generation request",
+        sourceLocator: topicBackfilledSourceLocator,
+        provenanceDetail:
+          "Topic: ordering coffee · requested difficulty: 중급 · validated difficulty: 중급",
+        searchText: normalizeSearchText(
+          "커피 주문 연습 ordering coffee 따뜻한 커피 한 잔 주세요",
+        ),
+        duplicateCheckText: normalizeSearchText("따뜻한 커피 한 잔 주세요"),
+        createdAt: topicBackfilledCreatedAt,
+      },
+      blocks: [
+        {
+          id: buildContentBlockId({
+            sourceType: "generated",
+            sourceLocator: topicBackfilledSourceLocator,
+            contentItemCreatedAt: topicBackfilledCreatedAt,
+            sentenceOrdinal: 1,
+          }),
+          contentItemId: topicBackfilledContentItemId,
+          korean: "따뜻한 커피 한 잔 주세요.",
+          romanization: null,
+          tokens: null,
+          annotations: {},
+          difficulty: 2,
+          sourceType: "generated",
+          audioOffset: null,
+          sentenceOrdinal: 1,
+          createdAt: topicBackfilledCreatedAt,
+        },
+      ],
+      sourceRecord: {
+        contentItemId: topicBackfilledContentItemId,
+        originMode: "generation-request",
+        filePath: null,
+        url: null,
+        sessionId: topicBackfilledSourceLocator,
+        displaySource:
+          "Topic: ordering coffee · requested difficulty: 중급 · validated difficulty: 중급",
+        requestedDifficulty: 2,
+        validatedDifficulty: 2,
+        capturedAt: topicBackfilledCreatedAt,
+      },
+      generationRequest: {
+        sessionId: topicBackfilledSourceLocator,
+        topic: "ordering coffee",
+        requestedDifficulty: 2,
+        validatedDifficulty: 2,
+        validationOutcome: "accepted",
+        generatorModel: "anthropic/claude-3-5-haiku",
+        validatorModel: "openai/gpt-4o-mini",
+        createdAt: topicBackfilledCreatedAt,
+      },
+    });
+
+    const fallbackCreatedAt = 1_713_571_200_011;
+    const fallbackSourceLocator = "generation-request:missing-topic";
+    const fallbackContentItemId = buildContentItemId({
+      sourceType: "generated",
+      sourceLocator: fallbackSourceLocator,
+      createdAt: fallbackCreatedAt,
+    });
+
+    repository.saveContent({
+      item: {
+        id: fallbackContentItemId,
+        title: "길 찾기 연습",
+        sourceType: "generated",
+        difficulty: 1,
+        difficultyLabel: toDifficultyBadge(1),
+        provenanceLabel: "Generation request",
+        sourceLocator: fallbackSourceLocator,
+        provenanceDetail: "Legacy generated content without a stored topic.",
+        searchText: normalizeSearchText(
+          "길 찾기 연습 길을 건너면 바로 역이 보여요",
+        ),
+        duplicateCheckText: normalizeSearchText("길을 건너면 바로 역이 보여요"),
+        createdAt: fallbackCreatedAt,
+      },
+      blocks: [
+        {
+          id: buildContentBlockId({
+            sourceType: "generated",
+            sourceLocator: fallbackSourceLocator,
+            contentItemCreatedAt: fallbackCreatedAt,
+            sentenceOrdinal: 1,
+          }),
+          contentItemId: fallbackContentItemId,
+          korean: "길을 건너면 바로 역이 보여요.",
+          romanization: null,
+          tokens: null,
+          annotations: {},
+          difficulty: 1,
+          sourceType: "generated",
+          audioOffset: null,
+          sentenceOrdinal: 1,
+          createdAt: fallbackCreatedAt,
+        },
+      ],
+      sourceRecord: {
+        contentItemId: fallbackContentItemId,
+        originMode: "generation-request",
+        filePath: null,
+        url: null,
+        sessionId: fallbackSourceLocator,
+        displaySource: "Legacy generated content without a stored topic.",
+        requestedDifficulty: 1,
+        validatedDifficulty: 1,
+        capturedAt: fallbackCreatedAt,
+      },
+    });
+
+    database.prepare("DELETE FROM schema_migrations WHERE version = 7").run();
+    database
+      .prepare("UPDATE content_library_items SET title = ? WHERE id = ?")
+      .run("커피 주문 연습", topicBackfilledContentItemId);
+    database
+      .prepare("UPDATE content_library_items SET title = ? WHERE id = ?")
+      .run("길 찾기 연습", fallbackContentItemId);
+
+    runShellMigrations(database);
+
+    const migratedTitles = database
+      .prepare(
+        "SELECT id, title FROM content_library_items WHERE id IN (?, ?) ORDER BY id ASC",
+      )
+      .all(fallbackContentItemId, topicBackfilledContentItemId) as Array<{
+      id: string;
+      title: string;
+    }>;
+
+    expect(migratedTitles).toEqual([
+      { id: topicBackfilledContentItemId, title: "Ordering coffee" },
+      { id: fallbackContentItemId, title: "Generated content" },
+    ]);
+  });
 
   it('persists and cascades content-library records transactionally', async () => {
     const { buildContentBlockId, buildContentItemId, normalizeSearchText, toDifficultyBadge } = await import(

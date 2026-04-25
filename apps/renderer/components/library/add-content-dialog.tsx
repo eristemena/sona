@@ -22,6 +22,10 @@ import {
 
 type AddContentMode = 'subtitle' | 'article-paste' | 'article-scrape' | 'generated'
 
+const MIN_GENERATED_SENTENCE_COUNT = 5
+const MAX_GENERATED_SENTENCE_COUNT = 30
+const DEFAULT_GENERATED_SENTENCE_COUNT = 10
+
 const DIFFICULTY_OPTIONS = [
   { value: 1, label: '초급' },
   { value: 2, label: '중급' },
@@ -69,6 +73,8 @@ export function AddContentDialog({
   onSubmitSubtitle,
 }: AddContentDialogProps) {
   const subtitleInputId = useId()
+  const sentenceCountInputId = useId()
+  const sentenceCountHelpId = useId()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [mode, setMode] = useState<AddContentMode>('subtitle')
   const [filePath, setFilePath] = useState('')
@@ -78,6 +84,7 @@ export function AddContentDialog({
   const [articleUrl, setArticleUrl] = useState('')
   const [topic, setTopic] = useState('')
   const [title, setTitle] = useState('')
+  const [sentenceCount, setSentenceCount] = useState(DEFAULT_GENERATED_SENTENCE_COUNT)
   const [difficulty, setDifficulty] = useState<1 | 2 | 3>(1)
   const [pendingDuplicateConfirmation, setPendingDuplicateConfirmation] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -94,6 +101,7 @@ export function AddContentDialog({
       setArticleUrl('')
       setTopic('')
       setTitle('')
+      setSentenceCount(DEFAULT_GENERATED_SENTENCE_COUNT)
       setDifficulty(1)
       setPendingDuplicateConfirmation(false)
       setErrorMessage(null)
@@ -160,6 +168,7 @@ export function AddContentDialog({
     } else {
       const nextInput: GeneratePracticeSentencesInput = {
         topic,
+        sentenceCount,
         difficulty,
         confirmDuplicate,
       }
@@ -240,6 +249,21 @@ export function AddContentDialog({
     }
 
     return topic.trim().length > 0
+  }
+
+  function handleSentenceCountChange(event: ChangeEvent<HTMLInputElement>) {
+    const nextValue = Number(event.target.value)
+
+    if (!Number.isFinite(nextValue)) {
+      return
+    }
+
+    const clampedValue = Math.min(
+      MAX_GENERATED_SENTENCE_COUNT,
+      Math.max(MIN_GENERATED_SENTENCE_COUNT, Math.trunc(nextValue)),
+    )
+
+    setSentenceCount(clampedValue)
   }
 
   return (
@@ -375,18 +399,39 @@ export function AddContentDialog({
           ) : null}
 
           {mode === "generated" ? (
-            <label className="grid gap-2">
-              <span className="text-sm font-medium text-(--text-primary)">
-                Practice topic
-              </span>
-              <input
-                className="h-9 rounded-[6px] border border-(--border) bg-(--bg-surface) px-3 text-sm text-(--text-primary) outline-none focus:ring-2 focus:ring-(--accent) focus:ring-offset-2 focus:ring-offset-(--bg-surface)"
-                onChange={(event) => setTopic(event.target.value)}
-                placeholder="Ordering coffee, subway directions, weekend plans"
-                type="text"
-                value={topic}
-              />
-            </label>
+            <>
+              <label className="grid gap-2">
+                <span className="text-sm font-medium text-(--text-primary)">
+                  Practice topic
+                </span>
+                <input
+                  className="h-9 rounded-[6px] border border-(--border) bg-(--bg-surface) px-3 text-sm text-(--text-primary) outline-none focus:ring-2 focus:ring-(--accent) focus:ring-offset-2 focus:ring-offset-(--bg-surface)"
+                  onChange={(event) => setTopic(event.target.value)}
+                  placeholder="Ordering coffee, subway directions, weekend plans"
+                  type="text"
+                  value={topic}
+                />
+              </label>
+
+              <div className="grid gap-2">
+                <label className="text-sm font-medium text-(--text-primary)" htmlFor={sentenceCountInputId}>
+                  Sentence count
+                </label>
+                <input
+                  aria-describedby={sentenceCountHelpId}
+                  className="h-9 rounded-[6px] border border-(--border) bg-(--bg-surface) px-3 text-sm text-(--text-primary) outline-none focus:ring-2 focus:ring-(--accent) focus:ring-offset-2 focus:ring-offset-(--bg-surface)"
+                  id={sentenceCountInputId}
+                  max={MAX_GENERATED_SENTENCE_COUNT}
+                  min={MIN_GENERATED_SENTENCE_COUNT}
+                  onChange={handleSentenceCountChange}
+                  type="number"
+                  value={sentenceCount}
+                />
+                <span className="text-xs leading-5 text-(--text-secondary)" id={sentenceCountHelpId}>
+                  Choose between {MIN_GENERATED_SENTENCE_COUNT} and {MAX_GENERATED_SENTENCE_COUNT} sentences. The default is {DEFAULT_GENERATED_SENTENCE_COUNT}.
+                </span>
+              </div>
+            </>
           ) : null}
 
           {mode !== "generated" ? (

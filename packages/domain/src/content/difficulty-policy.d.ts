@@ -5,9 +5,14 @@ export interface DifficultyValidationResult {
     validationOutcome: ValidationOutcome;
     explanation: string;
 }
-export declare function buildGenerationSystemPrompt(): string;
+export declare function buildGenerationSystemPrompt(input: {
+    topic: string;
+    sentenceCount: number;
+    difficulty: RequiredDifficultyLevel;
+}): string;
 export declare function buildGenerationUserPrompt(input: {
     topic: string;
+    sentenceCount: number;
     difficulty: RequiredDifficultyLevel;
 }): string;
 export declare function buildValidationSystemPrompt(): string;
