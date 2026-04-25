@@ -38,6 +38,7 @@ import { READING_CHANNELS } from "@sona/domain/contracts/content-reading";
 import type {
   ClearKnownWordInput,
   CompleteKnownWordOnboardingInput,
+  EnsureReviewSentenceAudioInput,
   MarkKnownWordInput,
   SubmitReviewRatingInput,
   UpdateReviewCardDetailsInput,
@@ -147,6 +148,20 @@ function isReadingAudioVoice(value: unknown): value is ReadingAudioVoice {
     value === "echo" ||
     value === "fable" ||
     value === "onyx"
+  );
+}
+
+function isEnsureReviewSentenceAudioInput(
+  value: unknown,
+): value is EnsureReviewSentenceAudioInput {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Partial<EnsureReviewSentenceAudioInput>;
+  return (
+    typeof candidate.reviewCardId === "string" &&
+    candidate.reviewCardId.trim().length > 0
   );
 }
 
@@ -391,6 +406,18 @@ export function createWindowSonaApi(
         return preloadIpc.invoke(CHANNELS.getQueue, limit) as ReturnType<
           WindowSona["review"]["getQueue"]
         >;
+      },
+      ensureSentenceAudio(input: EnsureReviewSentenceAudioInput) {
+        if (!isEnsureReviewSentenceAudioInput(input)) {
+          return Promise.reject(
+            new Error("Invalid review sentence audio request."),
+          );
+        }
+
+        return preloadIpc.invoke(
+          CHANNELS.ensureSentenceAudio,
+          input,
+        ) as ReturnType<WindowSona["review"]["ensureSentenceAudio"]>;
       },
       submitRating(input: SubmitReviewRatingInput) {
         return preloadIpc.invoke(CHANNELS.submitRating, input) as ReturnType<

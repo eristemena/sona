@@ -1,25 +1,39 @@
-'use client'
+"use client";
 
-import type { ReviewQueueCard } from '@sona/domain/content'
+import type { ReviewQueueCard } from "@sona/domain/content";
 
-import { Button } from '../ui/button'
-import { ReviewCardBack } from './review-card-back'
+import { Button } from "../ui/button";
+import { ReviewCardBack } from "./review-card-back";
 
 interface ReviewCardProps {
-  card: ReviewQueueCard
-  isFlipped: boolean
-  isMarkingKnown: boolean
-  isSavingDetails: boolean
-  onFlip: () => void
-  onMarkKnown: () => Promise<void>
+  card: ReviewQueueCard;
+  isFlipped: boolean;
+  isMarkingKnown: boolean;
+  isSavingDetails: boolean;
+  canReplaySentenceAudio: boolean;
+  showSentenceAudioControl: boolean;
+  onFlip: () => void;
+  onMarkKnown: () => Promise<void>;
+  onReplaySentenceAudio: () => Promise<void>;
   onSaveDetails: (input: {
-    meaning: string | null
-    grammarPattern: string | null
-    grammarDetails: string | null
-  }) => Promise<void>
+    meaning: string | null;
+    grammarPattern: string | null;
+    grammarDetails: string | null;
+  }) => Promise<void>;
 }
 
-export function ReviewCard({ card, isFlipped, isMarkingKnown, isSavingDetails, onFlip, onMarkKnown, onSaveDetails }: ReviewCardProps) {
+export function ReviewCard({
+  card,
+  isFlipped,
+  isMarkingKnown,
+  isSavingDetails,
+  canReplaySentenceAudio,
+  showSentenceAudioControl,
+  onFlip,
+  onMarkKnown,
+  onReplaySentenceAudio,
+  onSaveDetails,
+}: ReviewCardProps) {
   const isSentenceCard = /\s/.test(card.front.surface.trim());
 
   return (
@@ -52,7 +66,10 @@ export function ReviewCard({ card, isFlipped, isMarkingKnown, isSavingDetails, o
             card={card}
             isMarkingKnown={isMarkingKnown}
             isSavingDetails={isSavingDetails}
+            canReplaySentenceAudio={canReplaySentenceAudio}
+            showSentenceAudioControl={showSentenceAudioControl}
             onMarkKnown={onMarkKnown}
+            onReplaySentenceAudio={onReplaySentenceAudio}
             onSaveDetails={onSaveDetails}
           />
         ) : null}

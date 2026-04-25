@@ -76,6 +76,20 @@ export interface UpdateReviewCardDetailsResult {
   updatedAt: number;
 }
 
+export interface EnsureReviewSentenceAudioInput {
+  reviewCardId: string;
+}
+
+export interface ReviewSentenceAudioAsset {
+  reviewCardId: string;
+  state: "ready" | "unavailable" | "failed";
+  audioFilePath: string | null;
+  modelId: string;
+  voice: string;
+  failureMessage?: string;
+  fromCache: boolean;
+}
+
 export interface ReviewEventRecord {
   id: string;
   reviewCardId: string;

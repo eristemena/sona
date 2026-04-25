@@ -14,6 +14,7 @@ import { GeneratedContentService } from "./content/generated-content-service.js"
 import { KnownWordOnboardingService } from "./content/known-word-onboarding-service.js";
 import { KnownWordService } from "./content/known-word-service.js";
 import { ReadingProgressService } from "./content/reading-progress-service.js";
+import { ReviewAudioService } from "./content/review-audio-service.js";
 import { ReviewCardService } from "./content/review-card-service.js";
 import { ReadingSessionService } from "./content/reading-session-service.js";
 import { SrtImportService } from "./content/srt-import-service.js";
@@ -62,9 +63,10 @@ async function bootstrapDesktopShell() {
       appTitle: "Sona Desktop",
     }),
   );
+  const audioCacheDirectory = path.join(app.getPath("userData"), "audio-cache");
   const audioCacheService = new AudioCacheService({
     repository: contentRepository,
-    cacheDirectory: path.join(app.getPath("userData"), "reading-audio-cache"),
+    cacheDirectory: audioCacheDirectory,
     provider: openAiTtsProvider,
     getReadingAudioMode: () => settingsRepository.getReadingAudioMode(),
     getReadingAudioVoice: () => settingsRepository.getReadingAudioVoice(),
@@ -76,6 +78,12 @@ async function bootstrapDesktopShell() {
   });
   const reviewCardService = new ReviewCardService({
     repository: contentRepository,
+  });
+  const reviewAudioService = new ReviewAudioService({
+    repository: contentRepository,
+    settingsRepository,
+    cacheDirectory: audioCacheDirectory,
+    provider: openAiTtsProvider,
   });
   const dailyReviewService = new DailyReviewService({
     repository: contentRepository,
@@ -121,6 +129,7 @@ async function bootstrapDesktopShell() {
     dailyReviewService,
     knownWordService,
     knownWordOnboardingService,
+    reviewAudioService,
   });
   registerNativeThemeEvents({ settingsRepository, windows: () => BrowserWindow.getAllWindows() })
 

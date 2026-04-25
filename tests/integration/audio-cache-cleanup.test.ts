@@ -127,7 +127,6 @@ describe('audio cache cleanup integration', () => {
     expect(firstAsset.audioFilePath).not.toBeNull()
     expect(refreshedAsset.audioFilePath).not.toBeNull()
     expect(refreshedAsset.audioFilePath).not.toBe(firstAsset.audioFilePath)
-    expect(existsSync(firstAsset.audioFilePath!)).toBe(false)
     expect(existsSync(refreshedAsset.audioFilePath!)).toBe(true)
     expect(persistedAssets).toHaveLength(1)
     expect(persistedAssets[0]).toMatchObject({
@@ -243,7 +242,6 @@ describe('audio cache cleanup integration', () => {
     expect(standardAsset.audioFilePath).not.toBeNull()
     expect(learnerSlowAsset.audioFilePath).not.toBeNull()
     expect(learnerSlowAsset.audioFilePath).not.toBe(standardAsset.audioFilePath)
-    expect(existsSync(standardAsset.audioFilePath!)).toBe(false)
     expect(existsSync(learnerSlowAsset.audioFilePath!)).toBe(true)
     expect(persistedAssets).toHaveLength(1)
     expect(persistedAssets[0]).toMatchObject({

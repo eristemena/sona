@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { mkdirSync } from 'node:fs'
-import { rm, writeFile } from 'node:fs/promises'
+import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import type { PersistedReadingAudioAsset, ReadingAudioAsset, ReadingBlock, WordTiming } from '@sona/domain/content'
@@ -9,6 +9,7 @@ import type { ReadingAudioMode, ReadingAudioVoice } from '@sona/domain/settings/
 import type { SqliteContentLibraryRepository } from '@sona/data/sqlite/content-library-repository'
 import type { TtsProviderAdapter } from '@sona/integrations/tts/provider-adapter'
 import { getDefaultOpenAiTtsModel } from '../providers/openai-tts-provider.js'
+import { buildContentAddressedAudioFileName, hasCachedAudioFile } from './audio-file-cache.js'
 
 const DEFAULT_MODEL_ID = getDefaultOpenAiTtsModel()
 const DEFAULT_VOICE: ReadingAudioVoice = 'alloy'
@@ -49,7 +50,7 @@ export class AudioCacheService {
     const readingAudioMode = this.options.getReadingAudioMode?.() ?? DEFAULT_READING_AUDIO_MODE
     const readingAudioVoice = this.options.getReadingAudioVoice?.() ?? DEFAULT_VOICE
     const textHash = hashReadingBlockText(block.korean, readingAudioMode)
-    await this.pruneInvalidatedAssets(blockId, {
+    this.pruneInvalidatedAssets(blockId, {
       modelId: DEFAULT_MODEL_ID,
       voice: readingAudioVoice,
       textHash,
@@ -59,6 +60,26 @@ export class AudioCacheService {
     if (cached?.state === 'ready' && cached.audioFilePath) {
       this.options.repository.markBlockAudioAssetAccessed(blockId, DEFAULT_MODEL_ID, readingAudioVoice, textHash, Date.now())
       return cached
+    }
+
+    const contentFileName = buildContentAddressedAudioFileName(block.korean, DEFAULT_MODEL_ID, readingAudioMode, readingAudioVoice)
+    const sharedFilePath = this.resolveCachePath(contentFileName)
+
+    if (hasCachedAudioFile(sharedFilePath)) {
+      const durationMs = estimateDurationMs(block)
+      const timings = resolveWordTimings(block, undefined, durationMs)
+      const asset: ReadingAudioAsset = {
+        blockId,
+        state: 'ready',
+        audioFilePath: sharedFilePath,
+        durationMs,
+        modelId: DEFAULT_MODEL_ID,
+        voice: readingAudioVoice,
+        timings,
+        fromCache: true,
+      }
+      this.savePersistedAsset(block, textHash, asset)
+      return asset
     }
 
     if (cached && cached.state !== 'ready') {
@@ -92,15 +113,14 @@ export class AudioCacheService {
         format: DEFAULT_AUDIO_FORMAT,
       })
 
-      const filePath = this.resolveCachePath(`${block.id}-${textHash}.${DEFAULT_AUDIO_FORMAT}`)
-      await writeFile(filePath, response.audioData)
+      await writeFile(sharedFilePath, response.audioData)
 
       const durationMs = response.durationMs ?? estimateDurationMs(block)
       const timings = resolveWordTimings(block, response.timings, durationMs)
       const asset: ReadingAudioAsset = {
         blockId,
         state: 'ready',
-        audioFilePath: filePath,
+        audioFilePath: sharedFilePath,
         durationMs,
         modelId: DEFAULT_MODEL_ID,
         voice: readingAudioVoice,
@@ -156,10 +176,10 @@ export class AudioCacheService {
     })
   }
 
-  private async pruneInvalidatedAssets(
+  private pruneInvalidatedAssets(
     blockId: string,
     activeCacheKey: { modelId: string; voice: string; textHash: string },
-  ): Promise<void> {
+  ): void {
     const staleAssets = this.options.repository
       .listPersistedBlockAudioAssets(blockId)
       .filter(
@@ -170,16 +190,6 @@ export class AudioCacheService {
     if (staleAssets.length === 0) {
       return
     }
-
-    await Promise.all(
-      staleAssets.map(async (asset) => {
-        if (!asset.audioFilePath) {
-          return
-        }
-
-        await rm(asset.audioFilePath, { force: true })
-      }),
-    )
 
     this.options.repository.deleteBlockAudioAssetsForBlockExcept(
       blockId,

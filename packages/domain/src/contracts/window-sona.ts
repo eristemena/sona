@@ -31,12 +31,14 @@ import type {
   ClearKnownWordResult,
   CompleteKnownWordOnboardingInput,
   CompleteKnownWordOnboardingResult,
+  EnsureReviewSentenceAudioInput,
   KnownWordOnboardingStatus,
   MarkKnownWordInput,
   MarkKnownWordResult,
   ReviewQueueSnapshot,
   SubmitReviewRatingInput,
   SubmitReviewRatingResult,
+  ReviewSentenceAudioAsset,
   UpdateReviewCardDetailsInput,
   UpdateReviewCardDetailsResult,
   WordStudyStatus,
@@ -197,6 +199,9 @@ export interface WindowSona {
   };
   review: {
     getQueue(limit?: number): Promise<ReviewQueueSnapshot>;
+    ensureSentenceAudio(
+      input: EnsureReviewSentenceAudioInput,
+    ): Promise<ReviewSentenceAudioAsset>;
     submitRating(
       input: SubmitReviewRatingInput,
     ): Promise<SubmitReviewRatingResult>;

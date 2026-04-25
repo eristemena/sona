@@ -1,6 +1,7 @@
 'use client'
 
 import { useReviewSession } from '../../lib/use-review-session'
+import { useReviewSentenceAudio } from "../../lib/use-review-sentence-audio";
 import { useKnownWordOnboarding } from '../../lib/use-known-word-onboarding'
 import { Button } from '../ui/button'
 import { KnownWordOnboarding } from './known-word-onboarding'
@@ -36,6 +37,12 @@ export function ReviewScreen() {
     submitRating,
     undoMarkKnownWord,
   } = useReviewSession();
+  const {
+    audioRef,
+    isConfigured: isSentenceAudioConfigured,
+    canReplay,
+    replay,
+  } = useReviewSentenceAudio(currentCard, isFlipped);
 
   const progressValue =
     sessionCardTotal > 0
@@ -170,14 +177,22 @@ export function ReviewScreen() {
             isFlipped={isFlipped}
             isMarkingKnown={isUpdatingKnownWord}
             isSavingDetails={isSavingDetails}
+            canReplaySentenceAudio={canReplay}
+            showSentenceAudioControl={
+              isSentenceAudioConfigured &&
+              Boolean(currentCard.back.romanization) &&
+              Boolean(currentCard.back.sentenceContext)
+            }
             onFlip={revealAnswer}
             onMarkKnown={markCurrentCardKnown}
+            onReplaySentenceAudio={replay}
             onSaveDetails={saveCardDetails}
           />
           <ReviewRatingGrid
             disabled={!isFlipped || isSubmitting}
             onRate={(rating) => void submitRating(rating)}
           />
+          <audio ref={audioRef} preload="none" />
         </div>
       ) : null}
     </section>

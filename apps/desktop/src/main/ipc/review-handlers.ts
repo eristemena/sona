@@ -1,11 +1,15 @@
 import { ipcMain } from 'electron'
 
-import type { SubmitReviewRatingInput } from '@sona/domain/content/review-card'
+import type {
+  EnsureReviewSentenceAudioInput,
+  SubmitReviewRatingInput,
+} from "@sona/domain/content/review-card";
 import { REVIEW_CHANNELS } from '@sona/domain/contracts/content-review'
 
 import { DailyReviewService } from '../content/daily-review-service.js'
 import { KnownWordOnboardingService } from '../content/known-word-onboarding-service.js'
 import { KnownWordService } from '../content/known-word-service.js'
+import { ReviewAudioService } from "../content/review-audio-service.js";
 
 interface ReviewElectronRuntime {
   ipcMain: {
@@ -14,9 +18,10 @@ interface ReviewElectronRuntime {
 }
 
 interface RegisterReviewHandlersOptions {
-  dailyReviewService: DailyReviewService
-  knownWordService: KnownWordService
-  knownWordOnboardingService: KnownWordOnboardingService
+  dailyReviewService: DailyReviewService;
+  knownWordService: KnownWordService;
+  knownWordOnboardingService: KnownWordOnboardingService;
+  reviewAudioService: ReviewAudioService;
 }
 
 export function registerReviewHandlers(
@@ -26,6 +31,15 @@ export function registerReviewHandlers(
   runtime.ipcMain.handle(REVIEW_CHANNELS.getQueue, (_event, limit?: number) => {
     return options.dailyReviewService.getQueue(limit)
   })
+
+  runtime.ipcMain.handle(
+    REVIEW_CHANNELS.ensureSentenceAudio,
+    (_event, input) => {
+      return options.reviewAudioService.ensureSentenceAudio(
+        normalizeEnsureSentenceAudioInput(input),
+      );
+    },
+  );
 
   runtime.ipcMain.handle(REVIEW_CHANNELS.submitRating, (_event, input) => {
     return options.dailyReviewService.submitRating(normalizeSubmitRatingInput(input))
@@ -54,6 +68,26 @@ export function registerReviewHandlers(
   runtime.ipcMain.handle(REVIEW_CHANNELS.getWordStudyStatus, (_event, input) => {
     return options.knownWordService.getWordStudyStatus(input as never)
   })
+}
+
+function normalizeEnsureSentenceAudioInput(
+  value: unknown,
+): EnsureReviewSentenceAudioInput {
+  if (!value || typeof value !== "object") {
+    throw new Error("Invalid review sentence audio payload.");
+  }
+
+  const input = value as Partial<EnsureReviewSentenceAudioInput>;
+  if (
+    typeof input.reviewCardId !== "string" ||
+    input.reviewCardId.trim().length === 0
+  ) {
+    throw new Error("Invalid review sentence audio payload.");
+  }
+
+  return {
+    reviewCardId: input.reviewCardId,
+  };
 }
 
 function normalizeSubmitRatingInput(value: unknown): SubmitReviewRatingInput {
