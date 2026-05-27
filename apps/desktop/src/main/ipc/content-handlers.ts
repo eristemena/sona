@@ -148,4 +148,12 @@ export function registerContentHandlers(
   runtime.ipcMain.handle(CONTENT_CHANNELS.deleteContent, (_event, contentItemId: string) => {
     return options.contentRepository.deleteContent(contentItemId)
   })
+
+  runtime.ipcMain.handle(CONTENT_CHANNELS.updateContent, (_event, input) => {
+    try {
+      return options.contentRepository.updateContent(input)
+    } catch (error) {
+      return notImplementedFailure(error instanceof Error ? error.message : 'Content update failed.')
+    }
+  })
 }

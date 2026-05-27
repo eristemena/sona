@@ -3,6 +3,7 @@ import { localJsSegmenter } from "@sona/domain/tokenizer/local-js-segmenter";
 import type { HomeDashboardSnapshot } from '@sona/domain/content/home-dashboard'
 
 import {
+  buildContentBlockId,
   createDefaultReadingProgress,
   normalizeSearchText,
   toDifficultyBadge,
@@ -35,6 +36,9 @@ import type {
   SaveContentFailure,
   SaveContentResult,
   SaveContentSuccess,
+  UpdateContentBlockOp,
+  UpdateContentFailure,
+  UpdateContentResult,
 } from "@sona/domain/contracts/content-library";
 
 interface ContentLibraryItemRow {
@@ -246,6 +250,322 @@ export class SqliteContentLibraryRepository {
       .prepare("DELETE FROM content_library_items WHERE id = ?")
       .run(contentItemId);
     return { deletedId: contentItemId };
+  }
+
+  updateContent(input: {
+    contentItemId: string
+    title?: string
+    difficulty?: RequiredDifficultyLevel
+    blockOps: UpdateContentBlockOp[]
+    acknowledgeReviewCardDeletion?: boolean
+  }): UpdateContentResult {
+    const itemRow = this.database
+      .prepare(
+        `SELECT id, title, source_type, difficulty, source_locator,
+                provenance_label, provenance_detail, search_text,
+                duplicate_check_text, created_at
+         FROM content_library_items WHERE id = ?`,
+      )
+      .get(input.contentItemId) as
+      | (ContentLibraryItemRow & {
+          source_locator: string
+          search_text: string
+          duplicate_check_text: string
+        })
+      | undefined;
+
+    if (!itemRow) {
+      return {
+        ok: false,
+        reason: "not-found",
+        message: "Content item not found.",
+      } satisfies UpdateContentFailure;
+    }
+
+    const deleteOps = input.blockOps.filter(
+      (op): op is Extract<UpdateContentBlockOp, { op: "delete" }> =>
+        op.op === "delete",
+    );
+
+    if (deleteOps.length > 0 && !input.acknowledgeReviewCardDeletion) {
+      const blockIdsToDelete = deleteOps.map((op) => op.blockId);
+      const placeholders = blockIdsToDelete.map(() => "?").join(",");
+      const reviewCardCount = (
+        this.database
+          .prepare(
+            `SELECT COUNT(*) as cnt FROM review_cards
+             WHERE source_block_id IN (${placeholders})`,
+          )
+          .get(...blockIdsToDelete) as { cnt: number }
+      ).cnt;
+
+      if (reviewCardCount > 0) {
+        return {
+          ok: false,
+          reason: "block-has-review-cards",
+          blockIds: blockIdsToDelete,
+          reviewCardCount,
+          message: `${reviewCardCount} review card(s) will be lost if you delete these sentences.`,
+        };
+      }
+    }
+
+    const editOps = input.blockOps.filter(
+      (op): op is Extract<UpdateContentBlockOp, { op: "edit" }> =>
+        op.op === "edit",
+    );
+
+    if (!input.acknowledgeReviewCardDeletion && editOps.length > 0) {
+      const editBlockIds = editOps.map((op) => op.blockId);
+      const placeholders = editBlockIds.map(() => "?").join(",");
+      const editReviewCount = (
+        this.database
+          .prepare(
+            `SELECT COUNT(*) as cnt FROM review_cards
+             WHERE source_block_id IN (${placeholders})`,
+          )
+          .get(...editBlockIds) as { cnt: number }
+      ).cnt;
+
+      if (editReviewCount > 0) {
+        return {
+          ok: false,
+          reason: "block-has-review-cards",
+          blockIds: editBlockIds,
+          reviewCardCount: editReviewCount,
+          message: `${editReviewCount} review card(s) will be reset for the edited sentences.`,
+        };
+      }
+    }
+
+    const addOps = input.blockOps.filter(
+      (op): op is Extract<UpdateContentBlockOp, { op: "add" }> =>
+        op.op === "add",
+    );
+
+    const transaction = this.database.transaction(() => {
+      const deleteReviewCards = this.database.prepare(
+        "DELETE FROM review_cards WHERE source_block_id = ?",
+      );
+      const deleteBlock = this.database.prepare(
+        "DELETE FROM content_blocks WHERE id = ?",
+      );
+
+      for (const op of deleteOps) {
+        deleteReviewCards.run(op.blockId);
+        deleteBlock.run(op.blockId);
+      }
+
+      const updateBlock = this.database.prepare(
+        `UPDATE content_blocks
+         SET korean = @korean, tokens_json = @tokens_json,
+             annotations_json = '{}', romanization = NULL
+         WHERE id = @id`,
+      );
+
+      for (const op of editOps) {
+        const tokens = localJsSegmenter
+          .tokenize(op.korean)
+          .map((surface) => ({ surface, normalized: surface }));
+        deleteReviewCards.run(op.blockId);
+        updateBlock.run({
+          id: op.blockId,
+          korean: op.korean,
+          tokens_json: JSON.stringify(tokens),
+        });
+      }
+
+      const existingBlocks = this.database
+        .prepare(
+          `SELECT id, sentence_ordinal FROM content_blocks
+           WHERE content_item_id = ? ORDER BY sentence_ordinal ASC`,
+        )
+        .all(input.contentItemId) as Array<{
+        id: string;
+        sentence_ordinal: number;
+      }>;
+
+      if (existingBlocks.length === 0 && addOps.length === 0) {
+        throw new Error(
+          "At least one sentence block is required.",
+        );
+      }
+
+      const merged: Array<{ id: string | null; isNew: boolean; korean?: string }> = [];
+      const addsByAfterOrdinal = new Map<number, Array<Extract<UpdateContentBlockOp, { op: "add" }>>>();
+      for (const op of addOps) {
+        const list = addsByAfterOrdinal.get(op.insertAfterOrdinal) ?? [];
+        list.push(op);
+        addsByAfterOrdinal.set(op.insertAfterOrdinal, list);
+      }
+
+      const insertsAtStart = addsByAfterOrdinal.get(0) ?? [];
+      for (const op of insertsAtStart) {
+        merged.push({ id: null, isNew: true, korean: op.korean });
+      }
+
+      for (const block of existingBlocks) {
+        merged.push({ id: block.id, isNew: false });
+        const insertsAfterThis = addsByAfterOrdinal.get(block.sentence_ordinal) ?? [];
+        for (const op of insertsAfterThis) {
+          merged.push({ id: null, isNew: true, korean: op.korean });
+        }
+      }
+
+      if (merged.length === 0) {
+        throw new Error(
+          "At least one sentence block is required.",
+        );
+      }
+
+      const finalDifficulty = input.difficulty ?? itemRow.difficulty;
+      const tempOffset = 100000;
+      const setOrdinal = this.database.prepare(
+        "UPDATE content_blocks SET sentence_ordinal = @ordinal WHERE id = @id",
+      );
+
+      for (const block of existingBlocks) {
+        setOrdinal.run({
+          id: block.id,
+          ordinal: block.sentence_ordinal + tempOffset,
+        });
+      }
+
+      const insertBlock = this.database.prepare(
+        `INSERT INTO content_blocks (
+           id, content_item_id, sentence_ordinal, korean, romanization,
+           tokens_json, annotations_json, difficulty, source_type,
+           audio_offset, created_at
+         ) VALUES (
+           @id, @content_item_id, @sentence_ordinal, @korean, NULL,
+           @tokens_json, '{}', @difficulty, @source_type, NULL, @created_at
+         )`,
+      );
+
+      const newBlockTimestamp = Date.now();
+      let ordinal = 1;
+      for (const entry of merged) {
+        if (entry.isNew && entry.korean) {
+          const tokens = localJsSegmenter
+            .tokenize(entry.korean)
+            .map((surface) => ({ surface, normalized: surface }));
+          const blockId = buildContentBlockId({
+            sourceType: itemRow.source_type,
+            sourceLocator: itemRow.source_locator,
+            contentItemCreatedAt: newBlockTimestamp,
+            sentenceOrdinal: ordinal,
+          });
+          insertBlock.run({
+            id: blockId,
+            content_item_id: input.contentItemId,
+            sentence_ordinal: ordinal,
+            korean: entry.korean,
+            tokens_json: JSON.stringify(tokens),
+            difficulty: finalDifficulty,
+            source_type: itemRow.source_type,
+            created_at: Date.now(),
+          });
+        } else if (entry.id) {
+          setOrdinal.run({ id: entry.id, ordinal });
+        }
+        ordinal++;
+      }
+
+      const newTitle = input.title ?? itemRow.title;
+      if (input.title !== undefined || input.difficulty !== undefined) {
+        const allKoreans = (
+          this.database
+            .prepare(
+              `SELECT korean FROM content_blocks
+               WHERE content_item_id = ? ORDER BY sentence_ordinal ASC`,
+            )
+            .all(input.contentItemId) as Array<{ korean: string }>
+        ).map((r) => r.korean);
+
+        const searchText = normalizeSearchText(
+          [newTitle, itemRow.provenance_detail, ...allKoreans].join(" "),
+        );
+        const duplicateCheckText = normalizeSearchText(allKoreans.join(" "));
+
+        this.database
+          .prepare(
+            `UPDATE content_library_items
+             SET title = @title, difficulty = @difficulty,
+                 search_text = @search_text, duplicate_check_text = @duplicate_check_text
+             WHERE id = @id`,
+          )
+          .run({
+            id: input.contentItemId,
+            title: newTitle,
+            difficulty: finalDifficulty,
+            search_text: searchText,
+            duplicate_check_text: duplicateCheckText,
+          });
+
+        if (input.difficulty !== undefined) {
+          this.database
+            .prepare(
+              "UPDATE content_blocks SET difficulty = ? WHERE content_item_id = ?",
+            )
+            .run(finalDifficulty, input.contentItemId);
+        }
+      } else if (editOps.length > 0 || deleteOps.length > 0 || addOps.length > 0) {
+        const allKoreans = (
+          this.database
+            .prepare(
+              `SELECT korean FROM content_blocks
+               WHERE content_item_id = ? ORDER BY sentence_ordinal ASC`,
+            )
+            .all(input.contentItemId) as Array<{ korean: string }>
+        ).map((r) => r.korean);
+
+        const searchText = normalizeSearchText(
+          [newTitle, itemRow.provenance_detail, ...allKoreans].join(" "),
+        );
+        const duplicateCheckText = normalizeSearchText(allKoreans.join(" "));
+
+        this.database
+          .prepare(
+            `UPDATE content_library_items
+             SET search_text = @search_text, duplicate_check_text = @duplicate_check_text
+             WHERE id = @id`,
+          )
+          .run({
+            id: input.contentItemId,
+            search_text: searchText,
+            duplicate_check_text: duplicateCheckText,
+          });
+      }
+    });
+
+    transaction();
+
+    const updatedItemRow = this.database
+      .prepare(
+        `SELECT id, title, source_type, difficulty, provenance_label,
+                provenance_detail, created_at,
+                (SELECT COUNT(*) FROM content_blocks WHERE content_item_id = content_library_items.id) AS block_count
+         FROM content_library_items WHERE id = ?`,
+      )
+      .get(input.contentItemId) as ContentLibraryItemRow & { block_count: number };
+
+    const updatedBlocks = this.getContentBlocks(input.contentItemId);
+
+    return {
+      ok: true,
+      item: {
+        id: updatedItemRow.id,
+        title: updatedItemRow.title,
+        sourceType: updatedItemRow.source_type,
+        difficulty: updatedItemRow.difficulty,
+        difficultyBadge: toDifficultyBadge(updatedItemRow.difficulty),
+        provenanceLabel: updatedItemRow.provenance_label,
+        provenanceDetail: updatedItemRow.provenance_detail,
+        createdAt: updatedItemRow.created_at,
+        blockCount: updatedBlocks.length,
+      },
+      blocks: updatedBlocks,
+    };
   }
 
   getReadingSession(contentItemId: string): ReadingSessionSnapshot | null {

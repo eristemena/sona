@@ -25,6 +25,7 @@ import type {
   CreateArticleFromUrlInput,
   GeneratePracticeSentencesInput,
   ImportSrtInput,
+  UpdateContentInput,
 } from "@sona/domain/contracts/content-library";
 import { CONTENT_CHANNELS } from "@sona/domain/contracts/content-library";
 import type {
@@ -352,6 +353,12 @@ export function createWindowSonaApi(
           CHANNELS.deleteContent,
           contentItemId,
         ) as ReturnType<WindowSona["content"]["deleteContent"]>;
+      },
+      updateContent(input: UpdateContentInput) {
+        return preloadIpc.invoke(
+          CHANNELS.updateContent,
+          input,
+        ) as ReturnType<WindowSona["content"]["updateContent"]>;
       },
     },
     reading: {

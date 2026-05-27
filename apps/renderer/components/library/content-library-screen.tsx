@@ -10,6 +10,7 @@ import { AddContentDialog } from './add-content-dialog'
 import { ContentDeleteDialog } from './content-delete-dialog'
 import { ContentLibraryCard } from './content-library-card'
 import { ContentLibraryToolbar } from './content-library-toolbar'
+import { ContentEditView } from '../reading/content-edit-view'
 import { ReadingView } from "../reading/reading-view";
 import { Button } from '../ui/button'
 
@@ -187,10 +188,12 @@ export function ContentLibraryScreen({
     setFilter,
     setSearch,
     setSort,
+    updateContent,
   } = useContentLibrary();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [pendingDelete, setPendingDelete] = useState<LibraryItemSummary | null>(null)
   const [openedItemId, setOpenedItemId] = useState<string | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
   const hasSelectedItem = selectedItem !== null;
 
   useEffect(() => {
@@ -229,6 +232,7 @@ export function ContentLibraryScreen({
 
   function handleCloseReadingView() {
     setOpenedItemId(null)
+    setIsEditing(false)
   }
 
   const readingViewFallbackMeta = selectedItem
@@ -242,7 +246,22 @@ export function ContentLibraryScreen({
   return (
     <>
       <div className="flex flex-col gap-5 py-6">
-        {openedItemId ? (
+        {openedItemId && isEditing && selectedItem ? (
+          <ContentEditView
+            contentItemId={openedItemId}
+            initialBlocks={selectedBlocks}
+            initialDifficulty={selectedItem.difficulty}
+            initialTitle={selectedItem.title}
+            onDiscard={() => setIsEditing(false)}
+            onSave={async (input) => {
+              const result = await updateContent(input)
+              if (result.ok) {
+                setIsEditing(false)
+              }
+              return result
+            }}
+          />
+        ) : openedItemId ? (
           <ReadingView
             contentItemId={openedItemId}
             fallbackBlocks={selectedBlocks.map(toReadingFallbackBlock)}
@@ -250,6 +269,7 @@ export function ContentLibraryScreen({
               ? { fallbackMeta: readingViewFallbackMeta }
               : {})}
             onBack={handleCloseReadingView}
+            onEdit={() => setIsEditing(true)}
           />
         ) : (
           <>

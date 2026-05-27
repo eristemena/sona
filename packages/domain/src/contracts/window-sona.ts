@@ -13,6 +13,8 @@ import type {
   ImportSrtInput,
   SaveContentSuccess,
   SaveContentResult,
+  UpdateContentInput,
+  UpdateContentResult,
 } from "./content-library.js";
 import type {
   AddToDeckInput,
@@ -183,6 +185,7 @@ export interface WindowSona {
       input: GeneratePracticeSentencesInput,
     ): Promise<SaveContentResult>;
     deleteContent(contentItemId: string): Promise<DeleteContentResult>;
+    updateContent(input: UpdateContentInput): Promise<UpdateContentResult>;
   };
   reading: {
     getReadingSession(contentItemId: string): Promise<ReadingSessionSnapshot>;

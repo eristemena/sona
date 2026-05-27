@@ -29,6 +29,7 @@ export const CONTENT_CHANNELS = {
   createArticleFromUrl: 'sona:content:create-article-from-url',
   generatePracticeSentences: 'sona:content:generate-practice-sentences',
   deleteContent: 'sona:content:delete-content',
+  updateContent: 'sona:content:update-content',
 } as const
 
 export interface ImportSrtInput {
@@ -93,3 +94,41 @@ export type SaveContentResult = SaveContentSuccess | DuplicateWarningResult | Sa
 export interface DeleteContentResult {
   deletedId: string
 }
+
+export type UpdateContentBlockOp =
+  | { op: 'edit'; blockId: string; korean: string }
+  | { op: 'add'; korean: string; insertAfterOrdinal: number }
+  | { op: 'delete'; blockId: string }
+
+export interface UpdateContentInput {
+  contentItemId: string
+  title?: string
+  difficulty?: RequiredDifficultyLevel
+  blockOps: UpdateContentBlockOp[]
+  acknowledgeReviewCardDeletion?: boolean
+}
+
+export interface UpdateContentSuccess {
+  ok: true
+  item: SaveContentSuccess['item']
+  blocks: SaveContentSuccess['blocks']
+}
+
+export interface UpdateContentBlockHasReviewCards {
+  ok: false
+  reason: 'block-has-review-cards'
+  blockIds: string[]
+  reviewCardCount: number
+  message: string
+}
+
+export interface UpdateContentFailure {
+  ok: false
+  reason: 'invalid-input' | 'not-found'
+  message: string
+}
+
+export type UpdateContentResult =
+  | UpdateContentSuccess
+  | UpdateContentBlockHasReviewCards
+  | UpdateContentFailure

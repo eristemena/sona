@@ -10,6 +10,8 @@ import type {
   ImportSrtInput,
   LibraryFilter,
   SaveContentResult,
+  UpdateContentInput,
+  UpdateContentResult,
 } from "@sona/domain/contracts/content-library";
 import type { WindowSona } from '@sona/domain/contracts/window-sona'
 
@@ -366,12 +368,52 @@ export function useContentLibrary() {
     }
   }
 
+  async function updateContent(input: UpdateContentInput): Promise<UpdateContentResult> {
+    const contentApi = getContentApi()
+    if (!contentApi) {
+      return {
+        ok: false,
+        reason: 'invalid-input',
+        message: 'The desktop content bridge is unavailable.',
+      }
+    }
+
+    setIsImporting(true)
+    setErrorMessage(null)
+
+    try {
+      const result = await contentApi.updateContent(input)
+
+      if (result.ok) {
+        await refreshItems(result.item.id)
+        setSelectedBlocks(result.blocks)
+      }
+
+      if (!result.ok && result.reason !== 'block-has-review-cards') {
+        setErrorMessage(result.message)
+      }
+
+      return result
+    } catch {
+      const failure: UpdateContentResult = {
+        ok: false,
+        reason: 'invalid-input',
+        message: 'Content update could not be completed.',
+      }
+      setErrorMessage(failure.message)
+      return failure
+    } finally {
+      setIsImporting(false)
+    }
+  }
+
   return {
     browseSubtitleFile,
     createArticleFromPaste,
     createArticleFromUrl,
     generatePracticeSentences,
     importSrt,
+    updateContent,
     items,
     selectedBlocks,
     selectedItem,

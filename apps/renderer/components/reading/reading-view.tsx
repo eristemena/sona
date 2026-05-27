@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Pencil } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
 import type { ReadingBlock } from '@sona/domain/content'
@@ -34,11 +34,13 @@ interface ReadingViewFallbackMeta {
 export function ReadingView({
   contentItemId,
   onBack,
+  onEdit,
   fallbackBlocks = [],
   fallbackMeta,
 }: {
   contentItemId: string
   onBack: () => void
+  onEdit?: () => void
   fallbackBlocks?: ReadingViewFallbackBlock[]
   fallbackMeta?: ReadingViewFallbackMeta
 }) {
@@ -139,7 +141,18 @@ export function ReadingView({
           {itemTitle}
         </h2>
 
-        <div className="flex justify-end">
+        <div className="flex items-center justify-end gap-2">
+          {onEdit ? (
+            <Button
+              aria-label="Edit content"
+              className="h-8 gap-1.5 px-3 text-[13px]"
+              onClick={onEdit}
+              variant="ghost"
+            >
+              <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
+              Edit
+            </Button>
+          ) : null}
           {difficultyBadge ? (
             <span className="rounded-sm border border-(--border) px-2 py-1 text-[11px] font-medium text-(--text-primary)">
               {difficultyBadge}
